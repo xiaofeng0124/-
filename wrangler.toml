@@ -1,0 +1,7 @@
+name = "snapprice"
+compatibility_date = "2025-04-01"
+pages_build_output_dir = "."
+
+[[kv_namespaces]]
+binding = "USERS"
+id = "89de6c5d433b426dae7fbe4fe148b2f1"

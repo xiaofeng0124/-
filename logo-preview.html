@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SnappRice — SP Monogram Logo</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#f5f5f7;padding:40px 20px;color:#1d1d1f}
+  h1{text-align:center;font-size:28px;font-weight:700;margin-bottom:4px}
+  h1 span{color:#2563eb}
+  .sub{text-align:center;color:#86868b;font-size:14px;margin-bottom:40px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:40px;max-width:1100px;margin:0 auto}
+  .card{background:white;border-radius:20px;padding:40px 30px;text-align:center;box-shadow:0 2px 20px rgba(0,0,0,0.06);border:1px solid #e8e8ed}
+  .card:hover{border-color:#2563eb;box-shadow:0 8px 40px rgba(37,99,235,0.1);transform:translateY(-2px)}
+  .card svg{display:block;margin:0 auto;max-width:100%}
+  .card h3{margin:20px 0 6px;font-size:15px;font-weight:600}
+  .card p{color:#86868b;font-size:13px;line-height:1.6;max-width:280px;margin:0 auto}
+  .tag{display:inline-block;background:#e8f4fd;color:#2563eb;font-size:10px;font-weight:600;padding:3px 12px;border-radius:20px;margin-top:12px;letter-spacing:0.3px}
+  .divider{max-width:1100px;margin:50px auto 30px;text-align:center;border-top:1px solid #e8e8ed;padding-top:30px}
+  .divider h2{font-size:20px;font-weight:600;color:#1d1d1f}
+  .divider p{color:#86868b;font-size:13px;margin-top:4px}
+  .wordmark-section{max-width:600px;margin:0 auto;background:white;border-radius:20px;padding:50px 40px;border:1px solid #e8e8ed;text-align:center}
+  .wordmark-section svg{display:block;margin:0 auto}
+  @media(max-width:600px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<h1>Snapp<span>Rice</span></h1>
+<p class="sub">SP Monogram — S + Down Arrow &bull; P + $</p>
+
+<div class="grid">
+
+<!-- ============================================ -->
+<!-- V1: Bold Geometric -->
+<!-- ============================================ -->
+<div class="card">
+  <svg viewBox="0 0 300 300" width="280" height="280">
+    <defs>
+      <linearGradient id="g1" x1="0" y1="0" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#2563eb"/>
+        <stop offset="100%" stop-color="#0d9488"/>
+      </linearGradient>
+    </defs>
+
+    <!-- S + Down Arrow -->
+    <g fill="none" stroke="url(#g1)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Top bar -->
+      <path d="M 200 95 L 100 95"/>
+      <!-- Middle diagonal -->
+      <path d="M 100 95 L 195 175"/>
+      <!-- Bottom to arrow -->
+      <path d="M 195 175 L 140 230"/>
+    </g>
+    <!-- Arrowhead -->
+    <polygon points="123,245 155,228 140,250" fill="url(#g1)"/>
+
+    <!-- P + $ -->
+    <g fill="none" stroke="#2563eb" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+      <!-- P stem -->
+      <path d="M 225 95 L 225 245"/>
+      <!-- P bowl -->
+      <path d="M 225 95 A 45 45 0 0 1 225 175"/>
+    </g>
+    <!-- $ sign in P -->
+    <text x="271" y="148" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-weight="800" font-size="46" fill="#0d9488">$</text>
+  </svg>
+  <h3>V1 · 几何硬朗</h3>
+  <p>S 三段式几何折线 + 向下箭头，P 半圆碗内含 $，蓝青渐变。</p>
+  <span class="tag">蓝色渐变</span>
+</div>
+
+<!-- ============================================ -->
+<!-- V2: Curved Premium -->
+<!-- ============================================ -->
+<div class="card">
+  <svg viewBox="0 0 300 300" width="280" height="280">
+    <defs>
+      <linearGradient id="g2" x1="0" y1="0" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1e40af"/>
+        <stop offset="100%" stop-color="#0d9488"/>
+      </linearGradient>
+    </defs>
+
+    <!-- S + Down Arrow (continuous path) -->
+    <g fill="none" stroke="url(#g2)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+      <!-- S continuous curve ending in arrow -->
+      <path d="M 200 95
+               Q 90 95 90 140
+               Q 90 175 200 185
+               Q 210 188 200 210
+               L 145 245"/>
+    </g>
+    <!-- S arrowhead -->
+    <polygon points="130,255 160,237 145,262" fill="url(#g2)"/>
+
+    <!-- P + $ -->
+    <g fill="none" stroke="#1e40af" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+      <!-- P stem -->
+      <path d="M 225 95 L 225 255"/>
+      <!-- P bowl -->
+      <path d="M 225 95 C 285 95 285 175 225 175"/>
+    </g>
+    <!-- $ sign in P -->
+    <text x="265" y="148" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-weight="800" font-size="42" fill="#0d9488">$</text>
+  </svg>
+  <h3>V2 · 流畅曲线</h3>
+  <p>S 连续曲线路径，底部平滑过渡为箭头，P 圆润碗形含 $。</p>
+  <span class="tag">深蓝渐变</span>
+</div>
+
+<!-- ============================================ -->
+<!-- V3: Integrated Duo -->
+<!-- ============================================ -->
+<div class="card">
+  <svg viewBox="0 0 300 300" width="280" height="280">
+    <defs>
+      <linearGradient id="g3" x1="0" y1="0" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#2563eb"/>
+        <stop offset="100%" stop-color="#0d9488"/>
+      </linearGradient>
+    </defs>
+
+    <!-- S + Down Arrow (S-s Curve tail becomes arrow) -->
+    <g fill="none" stroke="url(#g3)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+      <!-- S top curve -->
+      <path d="M 195 95 L 95 95 Q 70 95 70 135 Q 70 175 100 185 L 185 190 L 140 235"/>
+    </g>
+    <!-- Arrowhead at bottom -->
+    <polygon points="122,250 155,232 140,255" fill="url(#g3)"/>
+
+    <!-- P + $ -->
+    <g fill="none" stroke="#0d9488" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+      <!-- P stem -->
+      <path d="M 215 95 L 215 250"/>
+      <!-- P bowl -->
+      <path d="M 215 95 C 275 95 275 175 215 175"/>
+    </g>
+    <!-- $ in P -->
+    <text x="255" y="148" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-weight="800" font-size="42" fill="#2563eb">$</text>
+  </svg>
+  <h3>V3 · 字母联动</h3>
+  <p>S 顶部弧线过渡到底部箭头，P 纯青色碗形 + 蓝色 $，呼应感强。</p>
+  <span class="tag">双色呼应</span>
+</div>
+
+<!-- ============================================ -->
+<!-- V4: Precision Minimal -->
+<!-- ============================================ -->
+<div class="card">
+  <svg viewBox="0 0 300 300" width="280" height="280">
+    <defs>
+      <linearGradient id="g4" x1="0" y1="0" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#2563eb"/>
+        <stop offset="100%" stop-color="#0d9488"/>
+      </linearGradient>
+      <linearGradient id="g4r" x1="100%" y1="0" x2="0" y2="100%">
+        <stop offset="0%" stop-color="#2563eb"/>
+        <stop offset="100%" stop-color="#0d9488"/>
+      </linearGradient>
+    </defs>
+
+    <!-- S with integrated down chevron -->
+    <g fill="none" stroke="url(#g4)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Top horizontal -->
+      <path d="M 205 95 L 105 95"/>
+      <!-- Diagonal connector -->
+      <path d="M 105 95 L 205 185"/>
+      <!-- Bottom chevron arm -->
+      <path d="M 205 185 L 155 235"/>
+    </g>
+    <!-- Clean chevron arrow -->
+    <polygon points="133,248 167,228 150,258" fill="url(#g4)"/>
+
+    <!-- P -->
+    <g fill="none" stroke="url(#g4r)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+      <!-- P stem -->
+      <path d="M 230 95 L 230 250"/>
+      <!-- P bowl -->
+      <path d="M 230 95 A 48 48 0 0 1 230 180"/>
+    </g>
+    <!-- $ in P bowl -->
+    <text x="278" y="150" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-weight="700" font-size="44" fill="#0d9488">$</text>
+  </svg>
+  <h3>V4 · 精准极简</h3>
+  <p>S 线条更舒展，底部折角箭头干净利落，P 圆碗精准含 $。</p>
+  <span class="tag">推荐</span>
+</div>
+
+</div>
+
+<!-- ============================================ -->
+<!-- Full Logo with Wordmark -->
+<!-- ============================================ -->
+<div class="divider">
+  <h2>Logo + Wordmark 组合</h2>
+  <p>Monogram + 品牌名横排</p>
+</div>
+
+<div class="wordmark-section">
+  <svg viewBox="0 0 500 140" width="480" height="135">
+    <defs>
+      <linearGradient id="gw" x1="0" y1="0" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#2563eb"/>
+        <stop offset="100%" stop-color="#0d9488"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Monogram (smaller, left) -->
+    <g transform="translate(10, 5) scale(0.38)">
+      <!-- S + Arrow -->
+      <g fill="none" stroke="url(#gw)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 200 95 L 100 95"/>
+        <path d="M 100 95 L 195 175"/>
+        <path d="M 195 175 L 140 230"/>
+      </g>
+      <polygon points="123,245 155,228 140,250" fill="url(#gw)"/>
+
+      <!-- P + $ -->
+      <g fill="none" stroke="#2563eb" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 225 95 L 225 245"/>
+        <path d="M 225 95 A 45 45 0 0 1 225 175"/>
+      </g>
+      <text x="271" y="148" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-weight="800" font-size="46" fill="#0d9488">$</text>
+    </g>
+
+    <!-- Wordmark -->
+    <text x="155" y="80" font-family="'Segoe UI',Arial,sans-serif" font-weight="700" font-size="42" fill="#0f172a">Snapp</text>
+    <text x="310" y="80" font-family="'Segoe UI',Arial,sans-serif" font-weight="300" font-size="42" fill="#2563eb">Rice</text>
+    <text x="155" y="108" font-family="'Segoe UI',Arial,sans-serif" font-weight="400" font-size="13" fill="#86868b" letter-spacing="1.5">COMPARE · SAVE</text>
+
+    <!-- Green $ dot -->
+    <circle cx="448" cy="50" r="14" fill="#16a34a"/>
+    <text x="448" y="57" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="14" fill="white">$</text>
+  </svg>
+</div>
+
+</body>
+</html>

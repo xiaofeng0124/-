@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnappRice — Search, compare, save — it's that simple</title>
+  <meta name="description" content="Compare prices across Amazon, Walmart, eBay, Best Buy and more. Search by name or upload a photo to find the best deal.">
+  <link rel="stylesheet" href="src/css/style.css?v4">
+  <link rel="icon" href="src/logo.png?v3">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <img src="src/logo.png?v2" alt="SnappRice" style="width:56px;height:56px;border-radius:12px">
+      <span style="font-size:34px;font-weight:800;color:var(--dark);margin-left:8px">Snap</span>
+      <span style="font-size:34px;font-weight:800;color:#16a34a">Price</span>
+    </a>
+    <div class="header-actions" id="headerActions">
+      <div class="history-wrap">
+        <button class="btn-ghost" id="historyNavBtn">🕐 History</button>
+        <div class="history-dropdown" id="historyDropdown">
+          <div class="history-dropdown-header">
+            <span>Recent Searches</span>
+            <button id="historyClearBtn">Clear</button>
+          </div>
+          <div class="history-dropdown-list" id="historyList"></div>
+        </div>
+      </div>
+      <button class="btn-ghost" id="couponsNavBtn">🎫 Coupons</button>
+      <button class="btn-outline" id="loginBtn">Sign In</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Search, compare, <span class="save-highlight">save — it's that simple</span></h1>
+    <p>Type it in or snap it — we'll find you the best price.</p>
+  </section>
+
+  <section class="main-section">
+    <!-- Search Box -->
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search any product... (e.g. AirPods, PS5, 苹果耳机, 三星电视)" autocomplete="off">
+      <div class="search-actions">
+        <button class="btn-voice" id="voiceBtn" title="Voice search">
+          🎤
+        </button>
+        <button class="btn-camera" id="cameraBtn">
+          📷 <span>Photo</span>
+        </button>
+        <button class="btn-search" id="searchBtn">Search</button>
+      </div>
+      <!-- Hidden file input -->
+      <input type="file" id="galleryInput" accept="image/*" multiple style="display:none">
+    </div>
+
+    <!-- Photo bar (appears after adding photos) -->
+    <div class="photo-bar" id="photoBar"></div>
+
+    <!-- Popular Products -->
+    <div class="popular-section" id="popularSection">
+      <div class="popular-header">
+        <h3>🔥 Popular Products</h3>
+        <button class="btn-refresh" id="refreshPopularBtn">Refresh</button>
+      </div>
+      <div class="popular-grid" id="popularGrid"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+      <div class="loading-spinner"></div>
+      <p>Searching for the best prices...</p>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section" id="resultsSection">
+      <div class="product-header" id="productHeader"></div>
+
+      <div class="filter-bar">
+        <label>Sort by:</label>
+        <select id="sortSelect">
+          <option value="price">Price (Low to High)</option>
+          <option value="price-desc">Price (High to Low)</option>
+          <option value="rating">Rating (Highest)</option>
+          <option value="shipping">Shipping (Fastest)</option>
+          <option value="reputation">Seller Reputation</option>
+        </select>
+
+        <label style="margin-left:12px;">Store:</label>
+        <select id="storeFilter">
+          <option value="all">All Stores</option>
+          <option value="Amazon">Amazon</option>
+          <option value="Walmart">Walmart</option>
+          <option value="eBay">eBay</option>
+          <option value="Best Buy">Best Buy</option>
+          <option value="Target">Target</option>
+        </select>
+      </div>
+
+      <div class="price-grid" id="priceGrid"></div>
+    </div>
+  </section>
+
+  <!-- Dashboard Section -->
+  <section class="dashboard-section" id="dashboardSection">
+    <div class="dashboard-header">
+      <div>
+        <h2>My Dashboard</h2>
+        <p id="dashboardUserEmail"></p>
+      </div>
+      <button class="btn-ghost" id="dashboardCloseBtn">← Back to search</button>
+    </div>
+
+    <div class="dashboard-tabs">
+      <button class="active" data-tab="favorites">❤️ Favorites</button>
+      <button data-tab="alerts">🔔 Price Alerts</button>
+      <button data-tab="coupons">🎫 Coupons</button>
+    </div>
+
+    <div class="dashboard-content" id="dashboardContent">
+      <!-- Rendered by JS -->
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 SnappRice. Search, compare, save.</p>
+  <p class="disclosure">As an Amazon Associate we earn from qualifying purchases. Prices and availability may vary.</p>
+</footer>
+
+<!-- Auth Modal -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <button class="modal-close" id="authModalClose">×</button>
+    <div id="authFormContainer">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Price History Modal -->
+<div class="modal-overlay" id="historyModal">
+  <div class="modal history-modal">
+    <button class="modal-close" id="historyModalClose">×</button>
+    <h2 id="historyProductName">Price History</h2>
+    <p class="sub" id="historyStoreName"></p>
+    <div class="history-controls" id="historyControls">
+      <button data-range="7">7 days</button>
+      <button data-range="30" class="active">30 days</button>
+      <button data-range="90">90 days</button>
+    </div>
+    <div class="history-chart-wrap">
+      <canvas id="priceChart"></canvas>
+    </div>
+    <div class="history-meta">
+      <span id="historyCurrentPrice"></span>
+      <span id="historyLowestPrice"></span>
+    </div>
+
+    <div class="alert-section">
+      <h4>🔔 Get notified when price drops</h4>
+      <div class="alert-form">
+        <input type="number" id="alertTargetPrice" placeholder="Target price ($)" min="1" step="0.01">
+        <button id="alertSetBtn">Alert me</button>
+      </div>
+      <div class="alert-success" id="alertSuccess">We'll notify you when the price drops!</div>
+    </div>
+  </div>
+</div>
+
+<script src="src/js/main.js?v4"></script>
+</body>
+</html>
