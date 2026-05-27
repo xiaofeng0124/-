@@ -1772,14 +1772,6 @@ footer .disclosure {
 .btn-primary.pricing-btn:hover {
   background: var(--primary-dark);
 }
-.btn-trial {
-  background: transparent;
-  border: 1.5px solid #16a34a;
-  color: #16a34a;
-}
-.btn-trial:hover {
-  background: #f0fdf4;
-}
 .pricing-btn:disabled {
   opacity: 0.6;
   cursor: default;

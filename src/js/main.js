@@ -1461,7 +1461,6 @@ function initPricingModal() {
     showToast('💳 Payment coming soon — stay tuned!');
   });
 
-  document.getElementById('trialBtn')?.addEventListener('click', startFreeTrial);
 }
 
 // Gate: check if free user can upload photos
@@ -1484,31 +1483,3 @@ function canAddAlert() {
   return alertCount < (membershipData?.alertsLimit || 3);
 }
 
-// Start 7-day free trial
-async function startFreeTrial() {
-  if (!currentUser) { hidePricingModal(); showAuthModal('login'); return; }
-  const btn = document.getElementById('trialBtn');
-  btn.disabled = true;
-  btn.textContent = 'Starting...';
-  try {
-    const res = await fetch('/api/membership', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
-      body: JSON.stringify({ startTrial: true }),
-    });
-    const data = await res.json();
-    if (data.ok) {
-      await checkMembership();
-      hidePricingModal();
-      showToast('🎉 Welcome to Premium! Your 7-day trial has started.');
-    } else {
-      showToast(data.error || 'Unable to start trial');
-      btn.disabled = false;
-      btn.textContent = '🎁 Start 7-Day Free Trial';
-    }
-  } catch {
-    showToast('Something went wrong. Please try again.');
-    btn.disabled = false;
-    btn.textContent = '🎁 Start 7-Day Free Trial';
-  }
-}
