@@ -452,9 +452,8 @@ function updateUIForAuth() {
 
   if (user) {
     const initial = user.email[0].toUpperCase();
-    const premiumBtn = membershipData && !isPremium()
-      ? '<button class="btn-premium" id="pricingNavBtn">⭐ Go Premium</button>'
-      : '';
+    const premiumBtnText = membershipData && isPremium() ? '⭐ Premium' : '⭐ Go Premium';
+    const premiumBtn = `<button class="btn-premium" id="pricingNavBtn">${premiumBtnText}</button>`;
     const expiryHtml = isPremium() && membershipData?.expiresAt
       ? `<div class="membership-expiry">⭐ Premium &middot; Expires ${formatDate(membershipData.expiresAt)}</div>`
       : '';
@@ -1437,14 +1436,14 @@ function initPricingToggle() {
       document.querySelectorAll('.toggle-label').forEach(l => l.classList.remove('active'));
       label.classList.add('active');
       const period = label.dataset.period;
-      const priceEl = document.getElementById('premiumPrice');
-      const periodEl = document.getElementById('premiumPeriod');
+      const monthlyRow = document.querySelector('#premiumPriceBlock .price-row:first-child');
+      const yearlyRow = document.getElementById('yearlyDeal');
       if (period === 'year') {
-        priceEl.textContent = '$39.99';
-        periodEl.textContent = '/ year';
+        monthlyRow.style.display = 'none';
+        yearlyRow.style.display = 'flex';
       } else {
-        priceEl.textContent = '$4.99';
-        periodEl.textContent = '/ month';
+        monthlyRow.style.display = 'flex';
+        yearlyRow.style.display = 'none';
       }
     });
   });
@@ -1460,6 +1459,8 @@ function initPricingModal() {
   document.getElementById('upgradeBtn')?.addEventListener('click', () => {
     showToast('💳 Payment coming soon — stay tuned!');
   });
+
+  document.getElementById('trialBtn')?.addEventListener('click', startFreeTrial);
 }
 
 // Gate: check if free user can upload photos
@@ -1480,4 +1481,33 @@ function canAddAlert() {
   if (isPremium()) return true;
   const alertCount = localUserData?.alerts?.length || 0;
   return alertCount < (membershipData?.alertsLimit || 3);
+}
+
+// Start 7-day free trial
+async function startFreeTrial() {
+  if (!currentUser) { hidePricingModal(); showAuthModal('login'); return; }
+  const btn = document.getElementById('trialBtn');
+  btn.disabled = true;
+  btn.textContent = 'Starting...';
+  try {
+    const res = await fetch('/api/membership', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
+      body: JSON.stringify({ startTrial: true }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      await checkMembership();
+      hidePricingModal();
+      showToast('🎉 Welcome to Premium! Your 7-day trial has started.');
+    } else {
+      showToast(data.error || 'Unable to start trial');
+      btn.disabled = false;
+      btn.textContent = '🎁 Start 7-Day Free Trial';
+    }
+  } catch {
+    showToast('Something went wrong. Please try again.');
+    btn.disabled = false;
+    btn.textContent = '🎁 Start 7-Day Free Trial';
+  }
 }

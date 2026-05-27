@@ -73,6 +73,22 @@ export async function onRequest(context) {
         });
       }
 
+      // Start free trial (7 days)
+      if (body.startTrial) {
+        const memberData = JSON.parse(await env.USERS.get(memberKey) || '{"tier":"free","expiresAt":null,"trialUsed":false}');
+        if (memberData.trialUsed) {
+          return new Response(JSON.stringify({ error: 'Trial already used' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+        }
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+        memberData.tier = 'premium';
+        memberData.expiresAt = expiresAt;
+        memberData.trialUsed = true;
+        await env.USERS.put(memberKey, JSON.stringify(memberData));
+        return new Response(JSON.stringify({ ok: true, tier: 'premium', expiresAt }), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
       return new Response(JSON.stringify({ error: 'Unknown action' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     } catch (e) {
       return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
