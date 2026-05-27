@@ -397,7 +397,7 @@ async function handleLogin() {
   btn.disabled = true; btn.textContent = 'Signing in...';
   const result = await login(email, pw);
   btn.disabled = false; btn.textContent = 'Sign In';
-  if (result.ok) { hideAuthModal(); currentUser = getSession(); updateUIForAuth(); saveLoginPrefs(email, pw, remember, autoLogin); }
+  if (result.ok) { hideAuthModal(); currentUser = getSession(); updateUIForAuth(); saveLoginPrefs(email, pw, remember, autoLogin); checkMembership(); }
   else { err.textContent = result.error; err.classList.add('show'); }
 }
 
@@ -410,7 +410,7 @@ async function handleRegister() {
   btn.disabled = true; btn.textContent = 'Creating account...';
   const result = await register(email, pw);
   btn.disabled = false; btn.textContent = 'Create Account';
-  if (result.ok) { hideAuthModal(); currentUser = getSession(); updateUIForAuth(); saveLoginPrefs(email, pw); }
+  if (result.ok) { hideAuthModal(); currentUser = getSession(); updateUIForAuth(); saveLoginPrefs(email, pw); checkMembership(); }
   else { err.textContent = result.error; err.classList.add('show'); }
 }
 
@@ -452,7 +452,14 @@ function updateUIForAuth() {
 
   if (user) {
     const initial = user.email[0].toUpperCase();
+    const premiumBtn = membershipData && !isPremium()
+      ? '<button class="btn-premium" id="pricingNavBtn">⭐ Go Premium</button>'
+      : '';
+    const expiryHtml = isPremium() && membershipData?.expiresAt
+      ? `<div class="membership-expiry">⭐ Premium &middot; Expires ${formatDate(membershipData.expiresAt)}</div>`
+      : '';
     actions.innerHTML = `
+      ${premiumBtn}
       <button class="btn-ghost" id="dashboardBtn">📊 Dashboard</button>
       <div class="history-wrap">
         <button class="btn-ghost" id="historyNavBtn">🕐 History</button>
@@ -468,7 +475,10 @@ function updateUIForAuth() {
       <div class="user-menu">
         <button class="user-menu-trigger" id="userMenuTrigger">
           <span class="user-avatar">${initial}</span>
-          <span style="font-size:13px">${user.email}</span>
+          <span class="user-menu-info">
+            <span class="user-menu-email">${user.email}</span>
+            ${expiryHtml}
+          </span>
         </button>
         <div class="user-dropdown" id="userDropdown">
           <a id="dropdownDashboard">📊 Dashboard</a>
@@ -492,6 +502,7 @@ function updateUIForAuth() {
       window._dropdownListener = true;
     }
     document.getElementById('dashboardBtn')?.addEventListener('click', showDashboard);
+    document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
     document.getElementById('dropdownDashboard')?.addEventListener('click', showDashboard);
     document.getElementById('dropdownFavorites')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('favorites'); });
     document.getElementById('dropdownAlerts')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('alerts'); });
@@ -512,9 +523,11 @@ function updateUIForAuth() {
 							</div>
 						</div>
 						<button class="btn-ghost" id="couponsNavBtn">🎫 Coupons</button>
+      <button class="btn-premium" id="pricingNavBtn">⭐ Go Premium</button>
       <button class="btn-outline" id="loginBtn">Sign In</button>
     `;
     document.getElementById('loginBtn')?.addEventListener('click', () => showAuthModal('login'));
+    document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
     document.getElementById('couponsNavBtn')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
 				document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); toggleSearchHistory(); });
   }
@@ -626,7 +639,7 @@ async function searchProduct(name) {
         <h2>${apiProduct.name}</h2>
         <p>${apiProduct.stores.length} stores compared — find the best deal</p>
       </div>`;
-    renderSortedStores(apiProduct.stores, 'price');
+    renderSortedStores(apiProduct.stores, 'featured');
     return;
   }
 
@@ -809,9 +822,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initPhotoUpload();
   initSortFilter();
   initModals();
+  initPricingModal();
   renderPopularProducts();
   updateUIForAuth();
   if (getSession()) syncUserData();
+  if (getSession()) checkMembership();
   tryAutoLogin();
   // Search history
   document.getElementById('refreshPopularBtn')?.addEventListener('click', refreshPopular);
@@ -870,6 +885,12 @@ function initModals() {
     const val = parseFloat(input.value);
     if (!val || val <= 0) { input.style.borderColor = '#ef4444'; setTimeout(() => input.style.borderColor = '', 800); return; }
     if (!currentUser) { document.getElementById('historyModal').classList.remove('active'); showAuthModal('login'); return; }
+    if (!canAddAlert()) {
+      showToast(`🔔 Free limit: ${membershipData?.alertsLimit || 3} alerts. Upgrade for unlimited!`);
+      hidePricingModal();
+      showPricingModal();
+      return;
+    }
     addAlert({ productName: currentHistoryProduct, store: currentHistoryStore, targetPrice: val, currentPrice: parseFloat(document.getElementById('historyCurrentPrice').textContent.replace(/[^0-9.]/g,'')) });
     const success = document.getElementById('alertSuccess');
     success.classList.add('show');
@@ -1031,7 +1052,7 @@ async function performSearch() {
   if (results) results.classList.remove('active');
   document.getElementById('popularSection')?.classList.add('hidden');
   document.getElementById('dashboardSection')?.classList.remove('active');
-  document.getElementById('sortSelect').value = 'price';
+  document.getElementById('sortSelect').value = 'featured';
   document.getElementById('storeFilter').value = 'all';
 
   // Try real API first
@@ -1051,7 +1072,7 @@ async function performSearch() {
         <h2>${apiProduct.name}</h2>
         <p>${apiProduct.stores.length} stores compared — find the best deal</p>
       </div>`;
-    renderSortedStores(apiProduct.stores, 'price');
+    renderSortedStores(apiProduct.stores, 'featured');
   } else {
     // Fall back to mock data
     setTimeout(() => { renderResults(query); }, 400);
@@ -1123,7 +1144,7 @@ function renderResults(query) {
       <h2>${product.name}</h2>
       <p>${product.stores.length} stores compared — find the best deal</p>
     </div>`;
-  renderSortedStores(product.stores, 'price');
+  renderSortedStores(product.stores, 'featured');
 }
 
 // ======== Sort & Filter ========
@@ -1136,7 +1157,7 @@ function initSortFilter() {
 
 function applySort() {
   if (!currentProduct) return;
-  const sortBy = document.getElementById('sortSelect')?.value || 'price';
+  const sortBy = document.getElementById('sortSelect')?.value || 'featured';
   const storeFilter = document.getElementById('storeFilter')?.value || 'all';
   let stores = [...currentProduct.stores];
   if (storeFilter !== 'all') stores = stores.filter(s => s.store === storeFilter);
@@ -1147,11 +1168,12 @@ function renderSortedStores(stores, sortBy) {
   const grid = document.getElementById('priceGrid');
   if (!grid) return;
   switch (sortBy) {
+    case 'featured': stores.sort((a,b) => a.price - b.price); break;
     case 'price': stores.sort((a,b) => a.price - b.price); break;
     case 'price-desc': stores.sort((a,b) => b.price - a.price); break;
     case 'rating': stores.sort((a,b) => b.rating - a.rating); break;
-    case 'shipping': stores.sort((a,b) => a.shipDays - b.shipDays); break;
-    case 'reputation': stores.sort((a,b) => b.reputation - a.reputation); break;
+    case 'newest': break; // requires date data
+    case 'bestsellers': break; // requires sales data
   }
   const bestPrice = Math.min(...stores.filter(s => s.price).map(s => s.price));
   const user = getSession();
@@ -1246,6 +1268,11 @@ function initPhotoUpload() {
       showToast('Maximum 6 photos — remove some first');
       return;
     }
+    if (currentUser && !canUploadPhoto()) {
+      showToast(`📷 Free limit: ${membershipData?.photoLimit || 5} photos/month. Upgrade for unlimited!`);
+      showPricingModal();
+      return;
+    }
     galleryInput.click();
   });
 
@@ -1262,6 +1289,11 @@ function initPhotoUpload() {
     e.preventDefault(); searchBox?.style.removeProperty('border-color');
     if (uploadedPhotos.length >= 6) {
       showToast('Maximum 6 photos — remove some first');
+      return;
+    }
+    if (currentUser && !canUploadPhoto()) {
+      showToast(`📷 Free limit: ${membershipData?.photoLimit || 5} photos/month. Upgrade for unlimited!`);
+      showPricingModal();
       return;
     }
     const files = Array.from(e.dataTransfer?.files || []);
@@ -1289,6 +1321,7 @@ function handleFiles(files) {
   }))).then(results => {
     uploadedPhotos.push(...results);
     renderPhotoBar();
+    if (currentUser) trackPhotoUsage();
     if (skipped > 0) {
       showToast(`Added ${results.length}, max 6 reached`);
     }
@@ -1317,15 +1350,134 @@ function renderPhotoBar() {
   }
 
   bar.classList.add('active');
+  const remaining = currentUser ? getPhotoRemaining() : 999;
+  const limitHint = (!isPremium() && currentUser)
+    ? `<span class="photo-bar-limit">${remaining} photo searches left this month</span>`
+    : '';
   bar.innerHTML = uploadedPhotos.map((src, i) => `
     <div class="photo-bar-item">
       <img src="${src}" alt="Photo ${i+1}">
       <button class="remove-btn" onclick="removePhoto(${i})">×</button>
     </div>`).join('') +
-    `<span class="photo-bar-count">${uploadedPhotos.length}/6</span>`;
+    `<span class="photo-bar-count">${uploadedPhotos.length}/6</span>` +
+    limitHint;
 }
 
 function removePhoto(index) {
   uploadedPhotos.splice(index, 1);
   renderPhotoBar();
+}
+
+// ======== Membership System ========
+let membershipData = null;
+
+async function checkMembership() {
+  const s = getSession();
+  if (!s) { membershipData = null; return; }
+  try {
+    const res = await fetch('/api/membership', { headers: { 'Authorization': `Bearer ${s.token}` } });
+    if (res.ok) membershipData = await res.json();
+    updateUIForAuth();
+    updatePremiumUI();
+  } catch { membershipData = null; }
+}
+
+async function trackPhotoUsage() {
+  const s = getSession();
+  if (!s) return;
+  try {
+    const res = await fetch('/api/membership', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${s.token}` },
+      body: JSON.stringify({ trackPhoto: true }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (membershipData) membershipData.photoUsage = data.photoUsage;
+    }
+  } catch {}
+}
+
+function isPremium() {
+  return membershipData?.tier === 'premium';
+}
+
+function formatDate(isoStr) {
+  const d = new Date(isoStr);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function updatePremiumUI() {
+  const existingBadge = document.getElementById('premiumBadge');
+  if (isPremium()) {
+    if (!existingBadge) {
+      const badge = document.createElement('span');
+      badge.id = 'premiumBadge';
+      badge.className = 'premium-badge';
+      badge.textContent = '⭐ PREMIUM';
+      const userMenu = document.querySelector('.user-menu');
+      if (userMenu) userMenu.parentNode.insertBefore(badge, userMenu);
+    }
+  } else {
+    if (existingBadge) existingBadge.remove();
+  }
+}
+
+function showPricingModal() {
+  document.getElementById('pricingModal').classList.add('active');
+}
+
+function hidePricingModal() {
+  document.getElementById('pricingModal').classList.remove('active');
+}
+
+function initPricingToggle() {
+  document.querySelectorAll('.toggle-label').forEach(label => {
+    label.addEventListener('click', () => {
+      document.querySelectorAll('.toggle-label').forEach(l => l.classList.remove('active'));
+      label.classList.add('active');
+      const period = label.dataset.period;
+      const priceEl = document.getElementById('premiumPrice');
+      const periodEl = document.getElementById('premiumPeriod');
+      if (period === 'year') {
+        priceEl.textContent = '$39.99';
+        periodEl.textContent = '/ year';
+      } else {
+        priceEl.textContent = '$4.99';
+        periodEl.textContent = '/ month';
+      }
+    });
+  });
+}
+
+function initPricingModal() {
+  document.getElementById('pricingModalClose')?.addEventListener('click', hidePricingModal);
+  document.getElementById('pricingModal')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) hidePricingModal();
+  });
+  initPricingToggle();
+
+  document.getElementById('upgradeBtn')?.addEventListener('click', () => {
+    showToast('💳 Payment coming soon — stay tuned!');
+  });
+}
+
+// Gate: check if free user can upload photos
+function canUploadPhoto() {
+  if (!currentUser) return true;
+  if (isPremium()) return true;
+  return (membershipData?.photoUsage || 0) < (membershipData?.photoLimit || 5);
+}
+
+function getPhotoRemaining() {
+  if (!currentUser || isPremium()) return 999;
+  return (membershipData?.photoLimit || 5) - (membershipData?.photoUsage || 0);
+}
+
+// Gate: check if free user can add more alerts
+function canAddAlert() {
+  if (!currentUser) return true;
+  if (isPremium()) return true;
+  const alertCount = localUserData?.alerts?.length || 0;
+  return alertCount < (membershipData?.alertsLimit || 3);
 }

@@ -83,11 +83,12 @@
       <div class="filter-bar">
         <label>Sort by:</label>
         <select id="sortSelect">
-          <option value="price">Price (Low to High)</option>
-          <option value="price-desc">Price (High to Low)</option>
-          <option value="rating">Rating (Highest)</option>
-          <option value="shipping">Shipping (Fastest)</option>
-          <option value="reputation">Seller Reputation</option>
+          <option value="featured">Featured</option>
+          <option value="price">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating">Avg. Customer Review</option>
+          <option value="newest">Newest Arrivals</option>
+          <option value="bestsellers">Best Sellers</option>
         </select>
 
         <label style="margin-left:12px;">Store:</label>
@@ -131,6 +132,80 @@
   <p>&copy; 2026 SnappRice. Search, compare, save.</p>
   <p class="disclosure">As an Amazon Associate we earn from qualifying purchases. Prices and availability may vary.</p>
 </footer>
+
+<!-- Pricing Modal -->
+<div class="modal-overlay" id="pricingModal">
+  <div class="modal pricing-modal">
+    <button class="modal-close" id="pricingModalClose">&times;</button>
+    <div class="pricing-header">
+      <h2>Choose Your Plan</h2>
+      <p>Search smarter, save more. Upgrade for unlimited access.</p>
+    </div>
+
+    <div class="pricing-toggle">
+      <span class="toggle-label active" data-period="month">Monthly</span>
+      <span class="toggle-label" data-period="year">Yearly <span class="toggle-badge">Save 33%</span></span>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Free Plan -->
+      <div class="pricing-card free">
+        <div class="pricing-card-header">
+          <h3>Free</h3>
+          <div class="pricing-price">
+            <span class="price-amount">$0</span>
+            <span class="price-period">forever</span>
+          </div>
+        </div>
+        <ul class="pricing-features">
+          <li class="yes">Text &amp; voice search &mdash; unlimited</li>
+          <li class="yes">Photo search &mdash; <strong>5 / month</strong></li>
+          <li class="yes">Price history charts</li>
+          <li class="yes">Price alerts &mdash; <strong>3 max</strong></li>
+          <li class="yes">Coupons &amp; deals</li>
+          <li class="no">Price predictions</li>
+          <li class="no">Multi-product comparison</li>
+          <li class="no">Export data (CSV)</li>
+          <li class="no">Ad-free experience</li>
+        </ul>
+        <div class="pricing-card-footer">
+          <button class="btn-outline pricing-btn" disabled>Current Plan</button>
+        </div>
+      </div>
+
+      <!-- Premium Plan -->
+      <div class="pricing-card premium recommended" id="premiumPricingCard">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-card-header">
+          <h3>Premium</h3>
+          <div class="pricing-price">
+            <span class="price-amount" id="premiumPrice">$4.99</span>
+            <span class="price-period" id="premiumPeriod">/ month</span>
+          </div>
+        </div>
+        <ul class="pricing-features">
+          <li class="yes">Text &amp; voice search &mdash; unlimited</li>
+          <li class="yes">Photo search &mdash; <strong>unlimited</strong></li>
+          <li class="yes">Price history charts</li>
+          <li class="yes">Price alerts &mdash; <strong>unlimited</strong></li>
+          <li class="yes">Coupons &amp; deals</li>
+          <li class="yes">Price predictions</li>
+          <li class="yes">Multi-product comparison</li>
+          <li class="yes">Export data (CSV)</li>
+          <li class="yes">Ad-free experience</li>
+        </ul>
+        <div class="pricing-card-footer">
+          <button class="btn-primary pricing-btn" id="upgradeBtn">Upgrade to Premium</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pricing-footer-note">
+      <p>All plans come with our core price comparison engine. Prices in USD. Cancel anytime.</p>
+      <p>&#x1F389; New users: <strong>first year at $29.99</strong> &mdash; lock in the rate. Renew at the same price before it expires.</p>
+    </div>
+  </div>
+</div>
 
 <!-- Auth Modal -->
 <div class="modal-overlay" id="authModal">
