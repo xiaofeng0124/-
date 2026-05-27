@@ -822,8 +822,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSortFilter();
   initModals();
   initPricingModal();
-  document.getElementById('heroPricingLink')?.addEventListener('click', showPricingModal);
-  renderPopularProducts();
+renderPopularProducts();
   updateUIForAuth();
   if (getSession()) syncUserData();
   if (getSession()) checkMembership();

@@ -120,31 +120,6 @@ header .logo { margin-left: 80px; margin-right: auto; }
   color: var(--gray-500);
 }
 
-.hero-pricing-link {
-  margin-top: 16px;
-}
-.hero-pricing-link button {
-  display: inline-block;
-  font-size: 14px;
-  font-weight: 700;
-  color: #d97706;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
-  padding: 8px 18px;
-  border-radius: 100px;
-  cursor: pointer;
-  transition: all 0.2s;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-.hero-pricing-link button:hover {
-  background: #fef3c7;
-  transform: translateY(-1px);
-}
-
-@media (max-width: 480px) {
-  .hero-pricing-link button { font-size: 12px; padding: 6px 14px; }
-}
 
 /* ======== Popular Products ======== */
 .popular-section {
