@@ -80,8 +80,8 @@ git push origin master
 ```
 
 ### 远程仓库
-- **GitHub** (origin)：`推送 → 自动部署到 Cloudflare Pages`
-- **Gitee** (gitee)：`git push gitee master`（仅代码备份）
+- **GitHub** (origin)：`git push origin master`（SSH 免密，推送 → 自动部署到 Cloudflare Pages）
+- **Gitee** (gitee)：`git push gitee master`（HTTPS，仅代码备份）
 - 两个远程并存，分别推送
 
 ## 工作规则
