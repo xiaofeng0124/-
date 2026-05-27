@@ -906,6 +906,7 @@ function initVoiceSearch() {
   let recognition = null;
   let isRecording = false;
   let recordingBadge = null;
+  let recordingTimer = null;
 
   function stopRecording() {
     isRecording = false;
@@ -913,6 +914,7 @@ function initVoiceSearch() {
     btn.innerHTML = '🎤';
     if (recordingBadge) { recordingBadge.remove(); recordingBadge = null; }
     document.removeEventListener('keydown', handleEscKey);
+    if (recordingTimer) { clearTimeout(recordingTimer); recordingTimer = null; }
   }
 
   function handleEscKey(e) {
@@ -926,7 +928,7 @@ function initVoiceSearch() {
     recordingBadge.className = 'recording-badge';
     recordingBadge.innerHTML = `
       <span class="recording-badge-dot"></span>
-      Recording... <span style="font-size:11px;color:rgba(255,255,255,0.6)">(click mic to stop)</span>
+      Speak now...
       <button class="recording-badge-close" id="recordingCloseBtn">✕</button>
     `;
     btn.parentElement.appendChild(recordingBadge);
@@ -955,8 +957,13 @@ function initVoiceSearch() {
     }
 
     recognition.lang = navigator.language || 'en-US';
-    recognition.continuous = true;
+    recognition.continuous = false;
     recognition.interimResults = false;
+
+    // Safety timeout — auto-stop after 10s if browser hangs
+    recordingTimer = setTimeout(() => {
+      if (isRecording) { recognition?.stop(); }
+    }, 10000);
 
     recognition.onstart = () => {
       isRecording = true;
