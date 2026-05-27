@@ -134,6 +134,8 @@ header .logo { margin-left: 80px; margin-right: auto; }
   border-radius: 100px;
   cursor: pointer;
   transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 .hero-pricing-link button:hover {
   background: #fef3c7;
@@ -1532,11 +1534,9 @@ footer .disclosure {
 @media (max-width: 768px) {
   .header-inner { padding: 0 12px; }
   header .logo { margin-left: 0; }
-  .header-actions { margin-right: 0; gap: 4px; }
-  .header-actions .history-wrap { display: none; }
-  .header-actions .btn-ghost,
-  .header-actions .btn-outline,
-  .header-actions .btn-premium { font-size: 12px; padding: 6px 10px; }
+  header .logo img { width: 32px; height: 32px; }
+  header .logo span { font-size: 18px !important; }
+  header .logo { gap: 4px; }
   .search-box { flex-wrap: wrap; }
   .search-box input { width: 100%; min-width: 0; }
   .search-actions { width: 100%; justify-content: flex-end; margin-top: 4px; }

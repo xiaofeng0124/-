@@ -6,9 +6,9 @@
   <title>SnappRice — Search, compare, save — it's that simple</title>
 <!-- v6 -->
   <meta name="description" content="Compare prices across Amazon, Walmart, eBay, Best Buy and more. Search by name or upload a photo to find the best deal.">
-  <link rel="stylesheet" href="src/css/style.css?v5">
+  <link rel="stylesheet" href="src/css/style.css?v6">
   <link rel="icon" href="src/logo.png?v3">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -42,7 +42,7 @@
     <h1>Search, compare, <span class="save-highlight">save — it's that simple</span></h1>
     <p>Type it in or snap it — we'll find you the best price.</p>
     <div class="hero-pricing-link">
-      <button id="heroPricingLink">⭐ See what Premium offers</button>
+      <button id="heroPricingLink" onclick="showPricingModal()">⭐ See what Premium offers</button>
     </div>
   </section>
 
@@ -259,6 +259,6 @@
   </div>
 </div>
 
-<script src="src/js/main.js?v4"></script>
+<script defer src="src/js/main.js?v5"></script>
 </body>
 </html>
