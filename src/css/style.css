@@ -1444,10 +1444,12 @@ footer .disclosure {
 /* Responsive additions */
 @media (max-width: 1100px) {
   .price-grid { grid-template-columns: repeat(4, 1fr); }
+  .popular-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
 @media (max-width: 720px) {
   .price-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .popular-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 600px) {
