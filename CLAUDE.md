@@ -10,7 +10,7 @@ SnappRice (snapprice.co) — 跨平台比价引擎。用户输入商品名或上
 
 - **前端**: Vanilla HTML + CSS + JavaScript（无框架）
 - **后端**: Cloudflare Pages Functions (Workers runtime)
-- **部署**: Cloudflare Pages（Git 集成自动部署，**不是 Vercel**）
+- **部署**: Cloudflare Pages（GitHub Actions 自动部署，**不是 Vercel**）
 - **KV 存储**: Cloudflare KV（用户数据、Session）
 - **AI 识别**: Claude API / GPT-4o Vision（待接入）
 - **比价数据**: SerpAPI（`/api/search` 代理）

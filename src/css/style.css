@@ -219,13 +219,6 @@ header .logo { margin-left: 80px; margin-right: auto; }
   margin-top: 2px;
 }
 
-@media (max-width: 720px) {
-  .popular-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 600px) {
-  .popular-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
 /* Search Section */
 .main-section {
   max-width: 1100px;
