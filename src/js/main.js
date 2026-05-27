@@ -892,11 +892,48 @@ function initSearch() {
 function initVoiceSearch() {
   const btn = document.getElementById('voiceBtn');
   if (!btn) return;
+
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) { btn.style.display = 'none'; return; }
+
+  // Browser doesn't support voice input → show 3s toast on click
+  if (!SpeechRecognition) {
+    btn.addEventListener('click', () => {
+      showToast('Voice search is not supported on this browser', 3000);
+    });
+    return;
+  }
 
   let recognition = null;
   let isRecording = false;
+  let recordingBadge = null;
+
+  function stopRecording() {
+    isRecording = false;
+    btn.classList.remove('recording');
+    btn.innerHTML = '🎤';
+    if (recordingBadge) { recordingBadge.remove(); recordingBadge = null; }
+    document.removeEventListener('keydown', handleEscKey);
+  }
+
+  function handleEscKey(e) {
+    if (e.key === 'Escape' && isRecording) {
+      recognition?.abort();
+    }
+  }
+
+  function showRecordingBadge() {
+    recordingBadge = document.createElement('div');
+    recordingBadge.className = 'recording-badge';
+    recordingBadge.innerHTML = `
+      <span class="recording-badge-dot"></span>
+      Recording... <span style="font-size:11px;color:rgba(255,255,255,0.6)">(click mic to stop)</span>
+      <button class="recording-badge-close" id="recordingCloseBtn">✕</button>
+    `;
+    btn.parentElement.appendChild(recordingBadge);
+    document.getElementById('recordingCloseBtn')?.addEventListener('click', () => {
+      recognition?.stop();
+    });
+  }
 
   btn.addEventListener('click', () => {
     if (isRecording) {
@@ -904,39 +941,51 @@ function initVoiceSearch() {
       return;
     }
 
+    // Clean up previous instance if lingering
+    if (recognition) {
+      try { recognition.abort(); } catch {}
+      recognition = null;
+    }
+
     try {
       recognition = new SpeechRecognition();
     } catch {
-      showToast('Voice not available on this browser');
+      showToast('Voice search is not supported on this browser');
       return;
     }
+
     recognition.lang = 'en-US';
-    recognition.continuous = false;
+    recognition.continuous = true;
     recognition.interimResults = false;
 
     recognition.onstart = () => {
       isRecording = true;
       btn.classList.add('recording');
-      btn.textContent = '⏹';
+      btn.innerHTML = '⏹ <span class="btn-voice-label">Stop</span>';
+      showRecordingBadge();
+      document.addEventListener('keydown', handleEscKey);
     };
 
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      const input = document.getElementById('searchInput');
-      if (input) {
-        input.value = transcript;
-        // Auto search after voice input
-        setTimeout(() => performSearch(), 300);
+      const last = event.results[event.results.length - 1];
+      if (last && last[0]) {
+        const input = document.getElementById('searchInput');
+        if (input) {
+          input.value = last[0].transcript;
+        }
       }
     };
 
     recognition.onerror = (e) => {
-      if (e.error === 'not-allowed') {
-        showToast('Microphone access denied — allow in browser settings');
-      } else if (e.error === 'aborted') {
-        // user cancelled, no message needed
-      } else {
-        showToast('Voice not available on this browser');
+      const ERR_MSGS = {
+        'not-allowed': 'Microphone access denied — allow in browser settings',
+        'no-speech': 'No speech detected — try again',
+        'audio-capture': 'No microphone found on this device',
+        'network': 'Network error — check your connection',
+        'service-not-allowed': 'Voice service not allowed on this browser',
+      };
+      if (e.error !== 'aborted') {
+        showToast(ERR_MSGS[e.error] || 'Voice search not available on this browser', 3000);
       }
       stopRecording();
     };
@@ -945,14 +994,8 @@ function initVoiceSearch() {
       stopRecording();
     };
 
-    try { recognition.start(); } catch { showToast("Voice not available on this browser"); stopRecording(); }
+    try { recognition.start(); } catch { showToast('Voice search is not supported on this browser'); stopRecording(); }
   });
-
-  function stopRecording() {
-    isRecording = false;
-    btn.classList.remove('recording');
-    btn.textContent = '🎤';
-  }
 }
 
 async function performSearch() {
@@ -1232,7 +1275,7 @@ function handleFiles(files) {
   });
 }
 
-function showToast(msg) {
+function showToast(msg, duration = 2000) {
   const existing = document.querySelector('.toast-msg');
   if (existing) existing.remove();
   const el = document.createElement('div');
@@ -1240,7 +1283,7 @@ function showToast(msg) {
   el.textContent = msg;
   document.body.appendChild(el);
   el.classList.add('active');
-  setTimeout(() => { el.classList.remove('active'); setTimeout(() => el.remove(), 300); }, 2000);
+  setTimeout(() => { el.classList.remove('active'); setTimeout(() => el.remove(), 300); }, duration);
 }
 
 function renderPhotoBar() {

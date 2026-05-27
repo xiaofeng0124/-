@@ -318,6 +318,69 @@ header .logo { margin-left: 80px; margin-right: auto; }
 
 .search-box { position: relative; }
 
+/* Recording Badge */
+.recording-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #1e293b;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  z-index: 50;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  animation: badgeIn 0.2s ease;
+  white-space: nowrap;
+}
+@keyframes badgeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.recording-badge-dot {
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: recordingPulse 1s ease-in-out infinite;
+}
+@keyframes recordingPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+.recording-badge-close {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  transition: background 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+.recording-badge-close:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.btn-voice-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .btn-voice-label { display: none; }
+}
+
 /* Photo Bar */
 .photo-bar {
   display: none;

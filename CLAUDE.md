@@ -10,7 +10,7 @@ SnappRice (snapprice.co) — 跨平台比价引擎。用户输入商品名或上
 
 - **前端**: Vanilla HTML + CSS + JavaScript（无框架）
 - **后端**: Cloudflare Pages Functions (Workers runtime)
-- **部署**: Cloudflare Pages（通过 `wrangler`，**不是 Vercel**）
+- **部署**: Cloudflare Pages（Git 集成自动部署，**不是 Vercel**）
 - **KV 存储**: Cloudflare KV（用户数据、Session）
 - **AI 识别**: Claude API / GPT-4o Vision（待接入）
 - **比价数据**: SerpAPI（`/api/search` 代理）
@@ -63,15 +63,26 @@ SnappRice (snapprice.co) — 跨平台比价引擎。用户输入商品名或上
 # 本地开发（Wrangler + KV）
 wrangler pages dev . --kv USERS
 
-# 部署到生产
-wrangler pages deploy . --branch production --project-name snapprice
-
 # 查看部署列表
 wrangler pages deployment list --project-name snapprice
 
-# 部署注意：wranger 已全局安装，直接 wrangler 不用 npx（npx 每次检查更新慢 3-5 秒）
+# wrangler 已全局安装，直接 wrangler 不用 npx（npx 每次检查更新慢 3-5 秒）
 ```
+
+## 部署工作流
+
+```bash
+# GitHub 推送 → Cloudflare 自动部署（无需手动 wrangler pages deploy）
+git add .
+git commit -m "改了什么东西"
+git push origin master
+# 等待 1-2 分钟，Cloudflare Pages 自动构建部署
 ```
+
+### 远程仓库
+- **GitHub** (origin)：`推送 → 自动部署到 Cloudflare Pages`
+- **Gitee** (gitee)：`git push gitee master`（仅代码备份）
+- 两个远程并存，分别推送
 
 ## 工作规则
 
@@ -81,8 +92,9 @@ wrangler pages deployment list --project-name snapprice
 4. **改后必检 + 自动部署**: 任何修改完成后必须：
    - a. 逐行审查所有改动，确认代码正确、无语法错误
    - b. 检查改动是否与已有功能冲突或产生副作用（包括 mock 数据、API 路由、前端渲染逻辑、用户系统等）
-   - c. 确认无问题后，自动执行 `wrangler pages deploy . --branch production` 部署上线
-   - d. 如部署失败，分析原因并修复后重新部署，直至成功
+   - c. 确认无问题后运行 `git add . && git commit -m "描述改动"`，然后 `git push origin master` 推送到 GitHub
+   - d. Cloudflare Pages 会基于 GitHub 推送自动构建部署（约 1-2 分钟），无需手动 wrangler pages deploy
+   - e. 如部署失败，分析原因并修复后重新推送，直至成功
 
 5. **老外优先**: 比价网面向海外用户（欧美），所有设计、审美、交互、文案必须符合老外习惯。如果用户指令不符合老外习惯，必须用"这不符合老外审美或习惯"提醒。
 
