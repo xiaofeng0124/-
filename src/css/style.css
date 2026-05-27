@@ -1213,6 +1213,12 @@ footer .disclosure {
 }
 .history-controls button:hover:not(.active) { border-color: var(--primary); }
 
+.premium-badge-sm {
+  font-size: 9px;
+  margin-left: 2px;
+  opacity: 0.6;
+}
+
 /* ======== Price Alert ======== */
 .alert-section {
   margin-top: 16px;

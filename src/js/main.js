@@ -659,7 +659,12 @@ function openPriceHistory(productName, storeName, currentPrice) {
   document.getElementById('historyStoreName').textContent = storeName;
   document.getElementById('historyCurrentPrice').textContent = `Current: $${currentPrice.toFixed(2)}`;
   document.getElementById('historyModal').classList.add('active');
-  renderPriceChart(30);
+  // Free users default to 7 days, premium to 30
+  const defaultDays = isPremium() ? 30 : 7;
+  document.querySelectorAll('#historyControls button').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.range) === defaultDays);
+  });
+  renderPriceChart(defaultDays);
 }
 
 function renderPriceChart(days) {
@@ -875,9 +880,16 @@ function initModals() {
   document.getElementById('historyControls')?.addEventListener('click', (e) => {
     const btn = e.target.closest('button');
     if (!btn) return;
+    const days = parseInt(btn.dataset.range);
+    // Gate: free users can only see 7 days
+    if (days > 7 && !isPremium()) {
+      showToast('📈 Price history beyond 7 days is a Premium feature. Upgrade for full access!');
+      showPricingModal();
+      return;
+    }
     document.querySelectorAll('#historyControls button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    renderPriceChart(parseInt(btn.dataset.range));
+    renderPriceChart(days);
   });
   document.getElementById('alertSetBtn')?.addEventListener('click', () => {
     const input = document.getElementById('alertTargetPrice');
