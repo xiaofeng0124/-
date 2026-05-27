@@ -954,7 +954,7 @@ function initVoiceSearch() {
       return;
     }
 
-    recognition.lang = 'en-US';
+    recognition.lang = navigator.language || 'en-US';
     recognition.continuous = true;
     recognition.interimResults = false;
 
