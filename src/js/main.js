@@ -895,14 +895,9 @@ function initVoiceSearch() {
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  // Check browsing engine limitations (QQ / UC / Baidu browsers)
-  const ua = navigator.userAgent.toLowerCase();
-  const isBrokenBrowser = !SpeechRecognition ||
-    /qqbrowser|ucbrowser|bidubrowser|baidubrowser|lbbrowser|metasr/i.test(ua);
-
-  if (isBrokenBrowser) {
+  if (!SpeechRecognition) {
     btn.addEventListener('click', () => {
-      showToast('Please use Chrome or Edge for voice search', 3000);
+      showToast('Voice search is not supported on this browser', 3000);
     });
     return;
   }
