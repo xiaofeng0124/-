@@ -219,10 +219,10 @@ header .logo { margin-left: 80px; margin-right: auto; }
   margin-top: 2px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 720px) {
   .popular-grid { grid-template-columns: repeat(3, 1fr); }
 }
-@media (max-width: 540px) {
+@media (max-width: 600px) {
   .popular-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
@@ -1446,26 +1446,16 @@ footer .disclosure {
   .price-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 720px) {
   .price-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
 }
 
-@media (max-width: 768px) {
-  .hero h1 { font-size: 20px; }
+@media (max-width: 600px) {
+  .hero h1 { font-size: 24px; }
   .price-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .price-card { padding: 10px; }
-  .price-amount { font-size: 16px; }
-  .price-card-img { height: 60px; }
-}
-
-@media (max-width: 540px) {
-  .price-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 480px) {
-  .hero h1 { font-size: 18px; }
-  .search-actions .btn-camera span { display: none; }
-  .store-info { min-width: auto; }
   .price-grid { grid-template-columns: 1fr; }
 }
 
@@ -1497,6 +1487,7 @@ footer .disclosure {
   .search-actions .btn-search { font-size: 14px; padding: 10px 16px; }
   .hero { padding: 30px 10px 10px; }
   .hero p { font-size: 13px; }
+  .hero h1 { font-size: 18px; }
   .price-card { padding: 8px; }
   .price-card-img { height: 70px; }
   .price-amount { font-size: 16px; }
