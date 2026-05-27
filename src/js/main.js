@@ -609,7 +609,7 @@ function copyCoupon(code) {
 async function searchProduct(name) {
   document.getElementById('dashboardSection').classList.remove('active');
   document.getElementById('resultsSection').classList.add('active');
-					document.getElementById('popularSection')?.classList.remove('active');
+					document.getElementById('popularSection')?.classList.add('hidden');
   const loading = document.getElementById('loading');
   if (loading) loading.classList.add('active');
   const query = name.toLowerCase();
@@ -853,6 +853,7 @@ function initModals() {
   });
   document.getElementById('dashboardCloseBtn')?.addEventListener('click', () => {
     document.getElementById('dashboardSection').classList.remove('active');
+    document.getElementById('popularSection')?.classList.remove('hidden');
   });
   document.querySelectorAll('.dashboard-tabs button').forEach(btn => {
     btn.addEventListener('click', () => switchDashboardTab(btn.dataset.tab));
@@ -1028,6 +1029,7 @@ async function performSearch() {
   const results = document.getElementById('resultsSection');
   if (loading) loading.classList.add('active');
   if (results) results.classList.remove('active');
+  document.getElementById('popularSection')?.classList.add('hidden');
   document.getElementById('dashboardSection')?.classList.remove('active');
   document.getElementById('sortSelect').value = 'price';
   document.getElementById('storeFilter').value = 'all';
@@ -1102,6 +1104,7 @@ function findProduct(query) {
 
 function renderResults(query) {
   const product = findProduct(query);
+  document.getElementById('popularSection')?.classList.add('hidden');
   if (!product) {
     document.getElementById('resultsSection')?.classList.add('active');
     document.getElementById('priceGrid').innerHTML = `<div class="no-results"><h3>No matches found</h3><p>Try a different search term or upload a photo.</p></div>`;

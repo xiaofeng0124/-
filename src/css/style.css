@@ -124,6 +124,9 @@ header .logo { margin-left: 80px; margin-right: auto; }
 .popular-section {
   margin-top: 20px;
 }
+.popular-section.hidden {
+  display: none;
+}
 .popular-header {
   display: flex;
   align-items: center;
