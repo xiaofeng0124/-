@@ -895,10 +895,14 @@ function initVoiceSearch() {
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  // Browser doesn't support voice input → show 3s toast on click
-  if (!SpeechRecognition) {
+  // Check browsing engine limitations (QQ / UC / Baidu browsers)
+  const ua = navigator.userAgent.toLowerCase();
+  const isBrokenBrowser = !SpeechRecognition ||
+    /qqbrowser|ucbrowser|bidubrowser|baidubrowser|lbbrowser|metasr/i.test(ua);
+
+  if (isBrokenBrowser) {
     btn.addEventListener('click', () => {
-      showToast('Voice search is not supported on this browser', 3000);
+      showToast('Please use Chrome or Edge for voice search', 3000);
     });
     return;
   }
@@ -907,6 +911,7 @@ function initVoiceSearch() {
   let isRecording = false;
   let recordingBadge = null;
   let recordingTimer = null;
+  let startTimeout = null;
 
   function stopRecording() {
     isRecording = false;
@@ -915,6 +920,7 @@ function initVoiceSearch() {
     if (recordingBadge) { recordingBadge.remove(); recordingBadge = null; }
     document.removeEventListener('keydown', handleEscKey);
     if (recordingTimer) { clearTimeout(recordingTimer); recordingTimer = null; }
+    if (startTimeout) { clearTimeout(startTimeout); startTimeout = null; }
   }
 
   function handleEscKey(e) {
@@ -965,7 +971,16 @@ function initVoiceSearch() {
       if (isRecording) { recognition?.stop(); }
     }, 10000);
 
+    // If onstart doesn't fire within 2s the API is broken
+    startTimeout = setTimeout(() => {
+      if (!isRecording) {
+        recognition?.abort();
+        showToast('Voice search unavailable on this browser — try Chrome', 3000);
+      }
+    }, 2000);
+
     recognition.onstart = () => {
+      if (startTimeout) { clearTimeout(startTimeout); startTimeout = null; }
       isRecording = true;
       btn.classList.add('recording');
       btn.innerHTML = '⏹ <span class="btn-voice-label">Stop</span>';
