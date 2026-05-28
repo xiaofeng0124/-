@@ -1845,13 +1845,13 @@ function showPremiumWelcome(email) {
   }
   animate();
 
-  // Auto-remove after 5 seconds with fade
+  // Auto-remove after 4 seconds with fade
   setTimeout(() => {
     cancelAnimationFrame(frame);
     overlay.style.transition = 'opacity 0.5s ease';
     overlay.style.opacity = '0';
     setTimeout(() => overlay.remove(), 500);
-  }, 5000);
+  }, 4000);
 }
 
 function formatDate(isoStr) {
