@@ -1734,7 +1734,7 @@ function showPremiumWelcome(email) {
   // Create overlay
   const overlay = document.createElement('div');
   overlay.id = 'premiumWelcome';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none';
 
   // Canvas for fireworks
   const canvas = document.createElement('canvas');
@@ -1743,10 +1743,10 @@ function showPremiumWelcome(email) {
   canvas.style.cssText = 'position:absolute;inset:0';
   overlay.appendChild(canvas);
 
-  // Welcome text
+  // Welcome text — positioned in the gap between search bar and results
   const name = email.split('@')[0];
   const textGroup = document.createElement('div');
-  textGroup.style.cssText = 'position:relative;z-index:1;margin-top:-10vh;text-align:center';
+  textGroup.style.cssText = 'position:absolute;left:50%;top:28vh;transform:translateX(-50%);z-index:1;text-align:center';
   const text = document.createElement('div');
   text.textContent = '✨ Welcome back, ' + name + '! ✨';
   text.style.cssText = 'font-size:52px;font-weight:900;color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,0.6),0 0 60px rgba(255,215,0,0.3),0 4px 12px rgba(0,0,0,0.3);animation:premiumFadeIn 0.6s ease-out;letter-spacing:2px';
