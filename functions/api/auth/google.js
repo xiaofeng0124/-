@@ -3,7 +3,7 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   const origin = url.origin;
 
-  const clientId = env.GOOGLE_CLIENT_ID;
+  const clientId = await env.USERS.get('config:google_client_id') || env.GOOGLE_CLIENT_ID;
   if (!clientId) {
     return new Response('Google OAuth not configured', { status: 500 });
   }

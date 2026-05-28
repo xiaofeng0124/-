@@ -8,8 +8,8 @@ export async function onRequest(context) {
     return new Response('Missing authorization code', { status: 400 });
   }
 
-  const clientId = env.GOOGLE_CLIENT_ID;
-  const clientSecret = env.GOOGLE_CLIENT_SECRET;
+  const clientId = await env.USERS.get('config:google_client_id') || env.GOOGLE_CLIENT_ID;
+  const clientSecret = await env.USERS.get('config:google_client_secret') || env.GOOGLE_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
     return new Response('Google OAuth not configured', { status: 500 });
   }
