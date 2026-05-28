@@ -352,7 +352,7 @@ function renderAuthForm(tab) {
       <div class="auth-divider"><span>or continue with email</span></div>
       <div class="auth-error" id="authError"></div>
       <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter your password"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter your password" style="padding-right:40px"><span class="pw-toggle" data-for="loginPassword" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span></div>
       <div style="text-align:right;margin:-4px 0 8px"><a id="forgotPwLink" style="font-size:13px;color:var(--primary);cursor:pointer">Forgot password?</a></div>
       <div class="form-row">
         <label class="checkbox-label"><input type="checkbox" id="rememberPw"> Remember password</label>
@@ -365,6 +365,7 @@ function renderAuthForm(tab) {
     document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
     document.getElementById('authSwitchToRegister').addEventListener('click', () => renderAuthForm('register'));
     document.getElementById('forgotPwLink').addEventListener('click', showForgotPasswordForm);
+    initLoginPwToggle();
 				// Restore saved login prefs
 				const prefs = loadLoginPrefs();
 				if (prefs.remember) {
@@ -419,6 +420,17 @@ function renderAuthForm(tab) {
 function initPwToggle() {
   const toggle = document.getElementById('pwToggle');
   const input = document.getElementById('regPassword');
+  if (!toggle || !input) return;
+  toggle.addEventListener('click', () => {
+    const isPw = input.type === 'password';
+    input.type = isPw ? 'text' : 'password';
+    toggle.textContent = isPw ? '🙈' : '👁️';
+  });
+}
+
+function initLoginPwToggle() {
+  const toggle = document.querySelector('.pw-toggle[data-for="loginPassword"]');
+  const input = document.getElementById('loginPassword');
   if (!toggle || !input) return;
   toggle.addEventListener('click', () => {
     const isPw = input.type === 'password';

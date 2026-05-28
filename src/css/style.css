@@ -817,6 +817,7 @@ footer .disclosure {
 
 .form-group {
   margin-bottom: 16px;
+  position: relative;
 }
 .form-group label {
   display: block;
