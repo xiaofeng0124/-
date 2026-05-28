@@ -1703,10 +1703,14 @@ async function checkMembership() {
     if (res.ok) membershipData = await res.json();
     updateUIForAuth();
     updatePremiumUI();
-    // Show premium welcome animation once per session
-    if (isPremium() && !window._welcomeShown) {
-      window._welcomeShown = true;
-      showPremiumWelcome(s.email);
+    // Show premium welcome animation once per day
+    if (isPremium()) {
+      const today = new Date().toISOString().slice(0, 10);
+      const lastWelcome = localStorage.getItem('premiumWelcome');
+      if (lastWelcome !== today) {
+        localStorage.setItem('premiumWelcome', today);
+        showPremiumWelcome(s.email);
+      }
     }
   } catch { membershipData = null; }
 }
