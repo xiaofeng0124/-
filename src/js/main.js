@@ -1230,6 +1230,10 @@ function initSearch() {
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
     searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
+    // Remove readonly on first interaction to prevent browser autofill of saved accounts
+    const unlock = () => { searchInput.removeAttribute('readonly'); searchInput.removeEventListener('focus', unlock); searchInput.removeEventListener('click', unlock); };
+    searchInput.addEventListener('focus', unlock);
+    searchInput.addEventListener('click', unlock);
   }
   initVoiceSearch();
 }

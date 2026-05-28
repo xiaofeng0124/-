@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SnappRice — Search, compare, save — it's that simple</title>
-<!-- v6 -->
+<!-- v7 -->
   <meta name="description" content="Compare prices across Amazon, Walmart, eBay, Best Buy and more. Search by name or upload a photo to find the best deal.">
-  <link rel="stylesheet" href="src/css/style.css?v7">
+  <link rel="stylesheet" href="src/css/style.css?v8">
   <link rel="icon" href="src/logo.png?v3">
   <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script defer src="src/js/main.js?v7"></script>
+  <script defer src="src/js/main.js?v8"></script>
 </head>
 <body>
 
@@ -47,7 +47,9 @@
   <section class="main-section">
     <!-- Search Box -->
     <div class="search-box">
-      <input type="search" id="searchInput" placeholder="Search any product... (e.g. AirPods, PS5, 苹果耳机, 三星电视)" autocomplete="off" spellcheck="false">
+      <input type="search" id="searchInput" placeholder="Search any product... (e.g. AirPods, PS5, 苹果耳机, 三星电视)" autocomplete="nope" spellcheck="false" readonly data-form-type="other">
+      <!-- Dummy input to redirect browser autofill away -->
+      <input type="text" aria-hidden="true" tabindex="-1" style="position:absolute;left:-9999px" autocomplete="nope">
       <div class="search-actions">
         <button class="btn-voice" id="voiceBtn" title="Voice search">
           🎤
