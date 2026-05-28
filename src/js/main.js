@@ -532,7 +532,18 @@ async function handleRegister() {
     const data = await res.json();
     if (data.ok) {
       setSession(data.session, data.email);
-      currentUser = getSession(); hideAuthModal(); updateUIForAuth(); saveLoginPrefs(email, pw); checkMembership();
+      currentUser = getSession(); updateUIForAuth(); saveLoginPrefs(email, pw); checkMembership();
+      // Show success message instead of auto-closing
+      const container = document.getElementById('authFormContainer');
+      container.innerHTML = `
+        <div style="text-align:center;padding:20px 8px">
+          <div style="font-size:48px;margin-bottom:12px">🎉</div>
+          <h2 style="margin-bottom:8px">Registration successful!</h2>
+          <p class="sub" style="font-size:14px;color:var(--gray-500);margin-bottom:20px">Welcome to SnappRice! Start searching and saving today.</p>
+          <button class="btn-primary" id="successCloseBtn" style="width:100%">Start searching</button>
+        </div>
+      `;
+      document.getElementById('successCloseBtn').addEventListener('click', hideAuthModal);
     } else {
       btn.disabled = false; btn.textContent = 'Create Account';
       err.textContent = data.error || 'Verification failed'; err.classList.add('show');
