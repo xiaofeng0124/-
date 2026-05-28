@@ -53,7 +53,7 @@ align-items: center;
 justify-content: flex-start;
 }
 
-header .logo { margin-left: 80px; margin-right: auto; }
+header .logo { margin-left: 40px; margin-right: auto; }
 
 .logo {
 display: flex;
@@ -1518,6 +1518,10 @@ transition: background 0.2s;
 
 @media (max-width: 480px) {
 .price-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 920px) {
+header .logo { margin-left: 20px; }
 }
 
 @media (max-width: 768px) {
