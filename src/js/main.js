@@ -1050,14 +1050,7 @@ renderPopularProducts();
 
 function initModals() {
   document.getElementById('authModalClose')?.addEventListener('click', hideAuthModal);
-  // Close modal when clicking outside (on the overlay backdrop)
-  let authPointerDownOnOverlay = false;
-  document.getElementById('authModal')?.addEventListener('pointerdown', (e) => {
-    authPointerDownOnOverlay = e.target === e.currentTarget;
-  });
-  document.getElementById('authModal')?.addEventListener('click', (e) => {
-    if (e.target === e.currentTarget && authPointerDownOnOverlay) hideAuthModal();
-  });
+  // Only close on close button, not on backdrop click
   document.getElementById('historyModalClose')?.addEventListener('click', () => {
     document.getElementById('historyModal').classList.remove('active');
     if (priceChartInstance) { priceChartInstance.destroy(); priceChartInstance = null; }
