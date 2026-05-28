@@ -501,28 +501,31 @@ async function handleLogin() {
 }
 
 async function handleRegister() {
-  const email = document.getElementById('regEmail').value.trim();
-  const pw = document.getElementById('regPassword').value;
+  const code = document.getElementById('regCodeInput').value.trim();
+  const email = window._pendingEmail;
+  const pw = window._pendingPassword;
   const err = document.getElementById('authError');
-  if (!email || !pw) { err.textContent = 'Please fill in all fields'; err.classList.add('show'); return; }
-  const btn = document.getElementById('registerSubmitBtn');
-  btn.disabled = true; btn.textContent = 'Sending verification...';
-  const result = await register(email, pw);
-  btn.disabled = false; btn.textContent = 'Create Account';
-  if (result.needVerify) {
-    showVerifyForm(result.email, pw);
-  } else if (result.ok) {
-    hideAuthModal(); currentUser = getSession(); updateUIForAuth(); saveLoginPrefs(email, pw); checkMembership();
-  } else {
-    if (result.error === 'Daily registration limit reached. Please try again tomorrow.') {
-      btn.disabled = true;
-      btn.textContent = '🚫 Today\'s limit reached';
-      btn.style.background = 'var(--gray-400)';
-      btn.style.cursor = 'not-allowed';
-      document.getElementById('regEmail').disabled = true;
-      document.getElementById('regPassword').disabled = true;
+  if (!code || code.length !== 6) { err.textContent = 'Please enter the 6-digit verification code'; err.classList.add('show'); return; }
+  if (!email || !pw) { err.textContent = 'Session expired. Please start over.'; err.classList.add('show'); return; }
+  const btn = document.getElementById('createAccountBtn');
+  btn.disabled = true; btn.textContent = 'Creating account...';
+  try {
+    const res = await fetch('/api/verify-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, code, password: pw }),
+    });
+    const data = await res.json();
+    if (data.ok || data.token) {
+      if (data.token) sessionStorage.setItem('session', data.token);
+      hideAuthModal(); currentUser = getSession(); updateUIForAuth(); saveLoginPrefs(email, pw); checkMembership();
+    } else {
+      btn.disabled = false; btn.textContent = 'Create Account';
+      err.textContent = data.error || 'Verification failed'; err.classList.add('show');
     }
-    err.textContent = result.error; err.classList.add('show');
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Create Account';
+    err.textContent = 'Network error. Please try again.'; err.classList.add('show');
   }
 }
 
