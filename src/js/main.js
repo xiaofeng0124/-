@@ -1752,12 +1752,12 @@ function showPremiumWelcome(email) {
   const name = email.split('@')[0];
   const text = document.createElement('div');
   text.textContent = '✨ Welcome back, ' + name + '! ✨';
-  text.style.cssText = 'position:relative;font-size:36px;font-weight:800;color:#f59e0b;text-shadow:0 0 20px rgba(245,158,11,0.5),0 0 40px rgba(245,158,11,0.3);z-index:1;animation:premiumFadeIn 0.6s ease-out';
+  text.style.cssText = 'position:relative;font-size:52px;font-weight:900;color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,0.6),0 0 60px rgba(255,215,0,0.3),0 4px 12px rgba(0,0,0,0.3);z-index:1;animation:premiumFadeIn 0.6s ease-out;letter-spacing:2px';
   overlay.appendChild(text);
 
   const sub = document.createElement('div');
   sub.textContent = '⭐ Premium Member';
-  sub.style.cssText = 'position:relative;font-size:18px;font-weight:500;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);margin-top:8px;z-index:1;animation:premiumFadeIn 0.8s ease-out';
+  sub.style.cssText = 'position:relative;font-size:24px;font-weight:700;color:#FFE082;text-shadow:0 0 20px rgba(255,224,130,0.5),0 2px 8px rgba(0,0,0,0.2);margin-top:12px;z-index:1;animation:premiumFadeIn 0.8s ease-out;letter-spacing:1px';
   overlay.appendChild(sub);
 
   document.body.appendChild(overlay);
@@ -1773,7 +1773,7 @@ function showPremiumWelcome(email) {
   // Fireworks particles
   const ctx = canvas.getContext('2d');
   const particles = [];
-  const colors = ['#f59e0b','#fbbf24','#f97316','#ef4444','#ec4899','#8b5cf6','#3b82f6','#10b981','#14b8a6'];
+  const colors = ['#FFD700','#FFC107','#FFB300','#FFA000','#FF8F00','#FF6F00','#FFD54F','#FFE082','#FFECB3','#FFFFFF'];
 
   function createBurst(x, y) {
     const count = 40 + Math.floor(Math.random() * 40);
@@ -1789,13 +1789,22 @@ function showPremiumWelcome(email) {
     }
   }
 
-  // Initial bursts across the screen
+  // Initial bursts spread across 5 seconds
   for (let i = 0; i < 5; i++) {
     setTimeout(() => createBurst(
       canvas.width * (0.15 + Math.random() * 0.7),
       canvas.height * (0.15 + Math.random() * 0.6)
-    ), i * 200);
+    ), i * 300);
   }
+  // Extra delayed bursts
+  setTimeout(() => {
+    for (let i = 0; i < 3; i++) {
+      setTimeout(() => createBurst(
+        canvas.width * (0.15 + Math.random() * 0.7),
+        canvas.height * (0.15 + Math.random() * 0.6)
+      ), i * 400);
+    }
+  }, 2000);
 
   let frame;
   function animate() {
@@ -1834,13 +1843,13 @@ function showPremiumWelcome(email) {
   }
   animate();
 
-  // Auto-remove after 3 seconds with fade
+  // Auto-remove after 5 seconds with fade
   setTimeout(() => {
     cancelAnimationFrame(frame);
     overlay.style.transition = 'opacity 0.5s ease';
     overlay.style.opacity = '0';
     setTimeout(() => overlay.remove(), 500);
-  }, 3000);
+  }, 5000);
 }
 
 function formatDate(isoStr) {
