@@ -2269,3 +2269,11 @@ function initAdminPanel() {
 window.showPricingModal = showPricingModal;
 window.adminLogin = adminLogin;
 window.adminConfirmMembership = adminConfirmMembership;
+
+// Back to top button
+(function() {
+  var btt = document.getElementById('backToTop');
+  if (!btt) return;
+  window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 300); });
+  btt.addEventListener('click', function(){ window.scrollTo({ top:0, behavior:'smooth' }); });
+})();

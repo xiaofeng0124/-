@@ -18,6 +18,9 @@
     .contact-card { margin-top: 32px; padding: 24px; background: var(--gray-50); border-radius: 12px; text-align: center; }
     .contact-card h3 { font-size: 16px; margin-bottom: 8px; }
     .contact-card p { font-size: 15px; margin-bottom: 12px; }
+    .back-to-top { position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;z-index:999; }
+    .back-to-top.visible { opacity:1;transform:translateY(0); }
+    .back-to-top:hover { background:#15803d; }
     .contact-card .email { font-size: 18px; font-weight: 700; color: var(--primary); text-decoration: none; }
     .contact-card .email:hover { text-decoration: underline; }
   </style>
@@ -87,7 +90,11 @@
       <p>&copy; 2026 SnappRice. Search, compare, save.</p>
     </div>
   </footer>
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
   <script>
+    var btt = document.getElementById('backToTop');
+    window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 300); });
+    btt.addEventListener('click', function(){ window.scrollTo({ top:0, behavior:'smooth' }); });
     document.getElementById('contactBtn')?.addEventListener('click', () => {
       window.location.href = '/';
     });
