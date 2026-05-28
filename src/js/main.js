@@ -1703,6 +1703,11 @@ async function checkMembership() {
     if (res.ok) membershipData = await res.json();
     updateUIForAuth();
     updatePremiumUI();
+    // Show premium welcome animation once per session
+    if (isPremium() && !window._welcomeShown) {
+      window._welcomeShown = true;
+      showPremiumWelcome(s.email);
+    }
   } catch { membershipData = null; }
 }
 
@@ -1724,6 +1729,114 @@ async function trackPhotoUsage() {
 
 function isPremium() {
   return membershipData?.tier === 'premium';
+}
+
+function showPremiumWelcome(email) {
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'premiumWelcome';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none';
+
+  // Canvas for fireworks
+  const canvas = document.createElement('canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.cssText = 'position:absolute;inset:0';
+  overlay.appendChild(canvas);
+
+  // Welcome text
+  const name = email.split('@')[0];
+  const text = document.createElement('div');
+  text.textContent = '✨ Welcome back, ' + name + '! ✨';
+  text.style.cssText = 'position:relative;font-size:36px;font-weight:800;color:#f59e0b;text-shadow:0 0 20px rgba(245,158,11,0.5),0 0 40px rgba(245,158,11,0.3);z-index:1;animation:premiumFadeIn 0.6s ease-out';
+  overlay.appendChild(text);
+
+  const sub = document.createElement('div');
+  sub.textContent = '⭐ Premium Member';
+  sub.style.cssText = 'position:relative;font-size:18px;font-weight:500;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);margin-top:8px;z-index:1;animation:premiumFadeIn 0.8s ease-out';
+  overlay.appendChild(sub);
+
+  document.body.appendChild(overlay);
+
+  // Add keyframes
+  if (!document.getElementById('premiumKeyframes')) {
+    const style = document.createElement('style');
+    style.id = 'premiumKeyframes';
+    style.textContent = '@keyframes premiumFadeIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}';
+    document.head.appendChild(style);
+  }
+
+  // Fireworks particles
+  const ctx = canvas.getContext('2d');
+  const particles = [];
+  const colors = ['#f59e0b','#fbbf24','#f97316','#ef4444','#ec4899','#8b5cf6','#3b82f6','#10b981','#14b8a6'];
+
+  function createBurst(x, y) {
+    const count = 40 + Math.floor(Math.random() * 40);
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.3;
+      const speed = 3 + Math.random() * 4;
+      particles.push({
+        x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+        life: 1, decay: 0.008 + Math.random() * 0.012, size: 2 + Math.random() * 3, color,
+        tail: [{ x, y }]
+      });
+    }
+  }
+
+  // Initial bursts across the screen
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => createBurst(
+      canvas.width * (0.15 + Math.random() * 0.7),
+      canvas.height * (0.15 + Math.random() * 0.6)
+    ), i * 200);
+  }
+
+  let frame;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx; p.y += p.vy;
+      p.vy += 0.04; // gravity
+      p.vx *= 0.99;
+      p.life -= p.decay;
+      if (p.life <= 0) { particles.splice(i, 1); continue; }
+      ctx.globalAlpha = p.life;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+      ctx.fill();
+      // Trail
+      p.tail.push({ x: p.x, y: p.y });
+      if (p.tail.length > 8) p.tail.shift();
+      for (let t = 1; t < p.tail.length; t++) {
+        ctx.globalAlpha = (t / p.tail.length) * p.life * 0.5;
+        ctx.beginPath();
+        ctx.arc(p.tail[t].x, p.tail[t].y, p.size * (t / p.tail.length) * p.life * 0.6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    // Random additional bursts
+    if (Math.random() < 0.08 && particles.length < 200) {
+      createBurst(
+        canvas.width * (0.1 + Math.random() * 0.8),
+        canvas.height * (0.1 + Math.random() * 0.7)
+      );
+    }
+    ctx.globalAlpha = 1;
+    frame = requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Auto-remove after 3 seconds with fade
+  setTimeout(() => {
+    cancelAnimationFrame(frame);
+    overlay.style.transition = 'opacity 0.5s ease';
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), 500);
+  }, 3000);
 }
 
 function formatDate(isoStr) {
