@@ -353,6 +353,7 @@ function renderAuthForm(tab) {
       <div class="auth-error" id="authError"></div>
       <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
       <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter your password"></div>
+      <div style="text-align:right;margin:-4px 0 8px"><a id="forgotPwLink" style="font-size:13px;color:var(--primary);cursor:pointer">Forgot password?</a></div>
       <div class="form-row">
         <label class="checkbox-label"><input type="checkbox" id="rememberPw"> Remember password</label>
         <label class="checkbox-label"><input type="checkbox" id="autoLogin"> Auto login</label>
@@ -363,6 +364,7 @@ function renderAuthForm(tab) {
     document.getElementById('loginSubmitBtn').addEventListener('click', handleLogin);
     document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
     document.getElementById('authSwitchToRegister').addEventListener('click', () => renderAuthForm('register'));
+    document.getElementById('forgotPwLink').addEventListener('click', showForgotPasswordForm);
 				// Restore saved login prefs
 				const prefs = loadLoginPrefs();
 				if (prefs.remember) {
@@ -504,6 +506,96 @@ async function resendCode(email, password) {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
   }).catch(() => {});
+}
+
+// ======== Forgot Password ========
+function showForgotPasswordForm() {
+  const container = document.getElementById('authFormContainer');
+  container.innerHTML = `
+    <div style="text-align:center;padding:8px 0">
+      <h2>Reset password</h2>
+      <p class="sub" style="font-size:14px;color:var(--gray-500);margin-bottom:16px">Enter your email and we'll send you a reset code</p>
+      <div class="auth-error" id="authError"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="resetEmailInput" placeholder="you@example.com"></div>
+      <button class="btn-primary" id="sendResetCodeBtn" style="width:100%">Send reset code</button>
+      <div class="auth-toggle" style="margin-top:12px"><a id="backToLoginLink" style="cursor:pointer">← Back to sign in</a></div>
+    </div>
+  `;
+  document.getElementById('sendResetCodeBtn').addEventListener('click', handleSendResetCode);
+  document.getElementById('resetEmailInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendResetCode(); });
+  document.getElementById('backToLoginLink').addEventListener('click', () => renderAuthForm('login'));
+  document.getElementById('resetEmailInput').focus();
+}
+
+async function handleSendResetCode() {
+  const email = document.getElementById('resetEmailInput').value.trim();
+  const err = document.getElementById('authError');
+  if (!email) { err.textContent = 'Please enter your email'; err.classList.add('show'); return; }
+  const btn = document.getElementById('sendResetCodeBtn');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  try {
+    const res = await fetch('/api/forgot-password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showResetPasswordForm(email);
+    } else {
+      btn.disabled = false; btn.textContent = 'Send reset code';
+      err.textContent = data.error || 'Failed to send'; err.classList.add('show');
+    }
+  } catch {
+    btn.disabled = false; btn.textContent = 'Send reset code';
+    err.textContent = 'Network error'; err.classList.add('show');
+  }
+}
+
+function showResetPasswordForm(email) {
+  const container = document.getElementById('authFormContainer');
+  container.innerHTML = `
+    <div style="text-align:center;padding:8px 0">
+      <div style="font-size:40px;margin-bottom:12px">✉️</div>
+      <h2>Check your email</h2>
+      <p class="sub" style="font-size:14px;color:var(--gray-500);margin-bottom:16px">We sent a reset code to <strong>${email}</strong></p>
+      <div class="auth-error" id="authError"></div>
+      <div class="form-group"><label>Reset code</label><input type="text" id="resetCodeInput" placeholder="000000" maxlength="6" style="font-size:20px;text-align:center;letter-spacing:4px;font-weight:700"></div>
+      <div class="form-group"><label>New password</label><input type="password" id="resetNewPassword" placeholder="At least 6 characters"></div>
+      <button class="btn-primary" id="resetPasswordBtn" style="width:100%">Reset password</button>
+      <div class="auth-toggle" style="margin-top:12px"><a id="backToLoginLink2" style="cursor:pointer">← Back to sign in</a></div>
+    </div>
+  `;
+  document.getElementById('resetPasswordBtn').addEventListener('click', () => handlePasswordReset(email));
+  document.getElementById('resetCodeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') handlePasswordReset(email); });
+  document.getElementById('backToLoginLink2').addEventListener('click', () => renderAuthForm('login'));
+  document.getElementById('resetCodeInput').focus();
+}
+
+async function handlePasswordReset(email) {
+  const code = document.getElementById('resetCodeInput').value.trim();
+  const password = document.getElementById('resetNewPassword').value;
+  const err = document.getElementById('authError');
+  if (!code || code.length !== 6) { err.textContent = 'Please enter the 6-digit reset code'; err.classList.add('show'); return; }
+  if (!password || password.length < 6) { err.textContent = 'Password must be at least 6 characters'; err.classList.add('show'); return; }
+  const btn = document.getElementById('resetPasswordBtn');
+  btn.disabled = true; btn.textContent = 'Resetting...';
+  try {
+    const res = await fetch('/api/reset-password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, code, password }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      alert('Password reset successfully! You can now sign in with your new password.');
+      renderAuthForm('login');
+    } else {
+      btn.disabled = false; btn.textContent = 'Reset password';
+      err.textContent = data.error || 'Failed to reset'; err.classList.add('show');
+    }
+  } catch {
+    btn.disabled = false; btn.textContent = 'Reset password';
+    err.textContent = 'Network error'; err.classList.add('show');
+  }
 }
 
 // ======== UI: Auth State ========
