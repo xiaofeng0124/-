@@ -1,0 +1,2 @@
+# Force HTTPS
+http://*:80 https://snapprice.co/:splat 301
