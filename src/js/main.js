@@ -381,13 +381,95 @@ function renderAuthForm(tab) {
       <div class="auth-divider"><span>or continue with email</span></div>
       <div class="auth-error" id="authError"></div>
       <div class="form-group"><label>Email</label><input type="email" id="regEmail" placeholder="you@example.com"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="regPassword" placeholder="At least 6 characters"></div>
-      <button class="btn-primary" id="registerSubmitBtn">Create Account</button>
+      <div class="form-group">
+        <label>Password</label>
+        <div style="position:relative">
+          <input type="password" id="regPassword" placeholder="At least 6 characters" style="padding-right:40px">
+          <span id="pwToggle" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Enter the numbers below</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span id="captchaDisplay" style="font-size:20px;font-weight:800;letter-spacing:4px;background:var(--gray-100);padding:8px 16px;border-radius:8px;font-family:monospace"></span>
+          <input type="text" id="captchaInput" placeholder="0000" maxlength="4" style="width:90px;text-align:center;font-size:18px;letter-spacing:3px;font-family:monospace">
+          <button id="refreshCaptcha" style="background:none;border:none;cursor:pointer;font-size:18px">🔄</button>
+        </div>
+      </div>
+      <div class="form-group" id="verifyCodeGroup" style="display:none">
+        <label>Verification code</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="regCodeInput" placeholder="000000" maxlength="6" style="flex:1;text-align:center;font-size:18px;letter-spacing:4px;font-weight:700;font-family:monospace">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-direction:column">
+        <button class="btn-primary" id="sendCodeBtn">Send verification code</button>
+        <button class="btn-primary" id="createAccountBtn" style="display:none">Create Account</button>
+      </div>
       <div class="auth-toggle">Already have an account? <a id="authSwitchToLogin">Sign in</a></div>
     `;
-    document.getElementById('registerSubmitBtn').addEventListener('click', handleRegister);
-    document.getElementById('regPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleRegister(); });
+    document.getElementById('sendCodeBtn').addEventListener('click', handleSendCode);
+    document.getElementById('createAccountBtn').addEventListener('click', handleRegister);
     document.getElementById('authSwitchToLogin').addEventListener('click', () => renderAuthForm('login'));
+    initRegisterCaptcha();
+    initPwToggle();
+  }
+}
+
+function initPwToggle() {
+  const toggle = document.getElementById('pwToggle');
+  const input = document.getElementById('regPassword');
+  if (!toggle || !input) return;
+  toggle.addEventListener('click', () => {
+    const isPw = input.type === 'password';
+    input.type = isPw ? 'text' : 'password';
+    toggle.textContent = isPw ? '🙈' : '👁️';
+  });
+}
+
+function initRegisterCaptcha() {
+  const display = document.getElementById('captchaDisplay');
+  const input = document.getElementById('captchaInput');
+  const refresh = document.getElementById('refreshCaptcha');
+  if (!display) return;
+  const code = String(Math.floor(1000 + Math.random() * 9000));
+  display.textContent = code;
+  display.dataset.code = code;
+  input.value = '';
+  refresh?.addEventListener('click', () => {
+    const newCode = String(Math.floor(1000 + Math.random() * 9000));
+    display.textContent = newCode;
+    display.dataset.code = newCode;
+    input.value = '';
+  });
+}
+
+function isCaptchaValid() {
+  const display = document.getElementById('captchaDisplay');
+  const input = document.getElementById('captchaInput');
+  return input?.value.trim() === display?.dataset.code;
+}
+
+async function handleSendCode() {
+  const email = document.getElementById('regEmail').value.trim();
+  const pw = document.getElementById('regPassword').value;
+  const err = document.getElementById('authError');
+  if (!email || !pw) { err.textContent = 'Please fill in all fields'; err.classList.add('show'); return; }
+  if (pw.length < 6) { err.textContent = 'Password must be at least 6 characters'; err.classList.add('show'); return; }
+  if (!isCaptchaValid()) { err.textContent = 'Please enter the correct code shown above'; err.classList.add('show'); return; }
+  const btn = document.getElementById('sendCodeBtn');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  const result = await register(email, pw);
+  btn.disabled = false; btn.textContent = 'Send verification code';
+  if (result.needVerify) {
+    document.getElementById('verifyCodeGroup').style.display = 'block';
+    document.getElementById('sendCodeBtn').style.display = 'none';
+    document.getElementById('createAccountBtn').style.display = 'block';
+    window._pendingEmail = email;
+    window._pendingPassword = pw;
+    err.classList.remove('show');
+  } else {
+    err.textContent = result.error || 'Failed to send verification code'; err.classList.add('show');
   }
 }
 
