@@ -21,10 +21,18 @@ export async function onRequest(context) {
       return new Response(JSON.stringify({ error: 'Invalid email or password' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
     }
 
+    const lower = email.toLowerCase();
     const session = crypto.randomUUID();
-    await env.USERS.put(`session:${session}`, email.toLowerCase(), { expirationTtl: 604800 });
+    await env.USERS.put(`session:${session}`, lower, { expirationTtl: 604800 });
 
-    return new Response(JSON.stringify({ ok: true, session, email: email.toLowerCase() }), {
+    // Ensure user is tracked in admin:users list
+    const userList = JSON.parse(await env.USERS.get('admin:users') || '[]');
+    if (!userList.includes(lower)) {
+      userList.push(lower);
+      await env.USERS.put('admin:users', JSON.stringify(userList));
+    }
+
+    return new Response(JSON.stringify({ ok: true, session, email: lower }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (e) {

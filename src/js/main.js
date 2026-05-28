@@ -483,6 +483,7 @@ function updateUIForAuth() {
           <a id="dropdownDashboard">📊 Dashboard</a>
           <a id="dropdownFavorites">❤️ Favorites</a>
           <a id="dropdownAlerts">🔔 Price Alerts</a>
+          <a id="dropdownAdmin">⚙️ Admin Panel</a>
           <div class="divider"></div>
           <button class="danger" id="logoutBtn">Sign Out</button>
         </div>
@@ -505,6 +506,7 @@ function updateUIForAuth() {
     document.getElementById('dropdownDashboard')?.addEventListener('click', showDashboard);
     document.getElementById('dropdownFavorites')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('favorites'); });
     document.getElementById('dropdownAlerts')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('alerts'); });
+    document.getElementById('dropdownAdmin')?.addEventListener('click', showAdmin);
     document.getElementById('logoutBtn')?.addEventListener('click', logout);
 				document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); toggleSearchHistory(); });
 				document.getElementById('historyClearBtn')?.addEventListener('click', () => { localStorage.removeItem('sr_history'); renderSearchHistory(); });
@@ -776,6 +778,17 @@ function saveSearchHistory(product) {
   });
   if (history.length > 20) history = history.slice(0, 20);
   localStorage.setItem('sr_history', JSON.stringify(history));
+
+  // Also save to server for admin panel
+  const s = getSession();
+  if (s) {
+    const query = product.query || product.name;
+    fetch('/api/user-search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${s.token}` },
+      body: JSON.stringify({ query: query.toLowerCase() }),
+    }).catch(() => {});
+  }
 }
 
 function renderSearchHistory() {
@@ -827,6 +840,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSortFilter();
   initModals();
   initPricingModal();
+  initAdminPanel();
 renderPopularProducts();
   updateUIForAuth();
   if (getSession()) syncUserData();
@@ -1494,3 +1508,274 @@ function canAddAlert() {
   return alertCount < (membershipData?.alertsLimit || 3);
 }
 
+// ======== Admin Panel ========
+let adminToken = sessionStorage.getItem('sr_admin_token') || null;
+let adminUsers = [];
+let adminSelectedEmail = null;
+
+function showAdmin() {
+  document.getElementById('resultsSection')?.classList.remove('active');
+  document.getElementById('dashboardSection')?.classList.remove('active');
+  document.getElementById('popularSection')?.classList.add('hidden');
+  if (adminToken) {
+    document.getElementById('adminSection').classList.add('active');
+    document.getElementById('adminContent').innerHTML = '<div style="text-align:center;padding:40px"><div class="loading-spinner"></div><p style="margin-top:12px">Loading users...</p></div>';
+    fetchAdminUsers();
+  } else {
+    document.getElementById('adminLoginModal').classList.add('active');
+    document.getElementById('adminPasswordInput').value = '';
+    document.getElementById('adminLoginError').classList.remove('show');
+  }
+}
+
+function hideAdmin() {
+  document.getElementById('adminSection').classList.remove('active');
+  document.getElementById('adminLoginModal').classList.remove('active');
+  document.getElementById('adminConfirmModal').classList.remove('active');
+  adminSelectedEmail = null;
+}
+
+async function adminLogin() {
+  const pw = document.getElementById('adminPasswordInput').value;
+  const err = document.getElementById('adminLoginError');
+  if (!pw) { err.textContent = 'Password required'; err.classList.add('show'); return; }
+  try {
+    const res = await fetch('/api/admin?action=login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      adminToken = data.token;
+      sessionStorage.setItem('sr_admin_token', data.token);
+      document.getElementById('adminLoginModal').classList.remove('active');
+      document.getElementById('adminSection').classList.add('active');
+      document.getElementById('adminContent').innerHTML = '<div style="text-align:center;padding:40px"><div class="loading-spinner"></div><p style="margin-top:12px">Loading users...</p></div>';
+      fetchAdminUsers();
+    } else {
+      err.textContent = data.error || 'Login failed';
+      err.classList.add('show');
+    }
+  } catch { err.textContent = 'Network error'; err.classList.add('show'); }
+}
+
+function adminLogout() {
+  adminToken = null;
+  sessionStorage.removeItem('sr_admin_token');
+  hideAdmin();
+  document.getElementById('popularSection')?.classList.remove('hidden');
+}
+
+async function fetchAdminUsers() {
+  const content = document.getElementById('adminContent');
+  try {
+    const res = await fetch('/api/admin?action=users', {
+      headers: { 'Authorization': `Bearer ${adminToken}` },
+    });
+    if (res.status === 401) { adminToken = null; sessionStorage.removeItem('sr_admin_token'); showAdmin(); return; }
+    const data = await res.json();
+    adminUsers = data.users || [];
+    renderAdminUserList();
+  } catch {
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--red)">Failed to load users. <button class="btn-ghost" onclick="fetchAdminUsers()">Retry</button></div>';
+  }
+}
+
+function renderAdminUserList() {
+  const content = document.getElementById('adminContent');
+  document.getElementById('adminStatus').textContent = `${adminUsers.length} users`;
+  if (!adminUsers.length) {
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-500)">No users registered yet.</div>';
+    return;
+  }
+  let html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:14px">' +
+    '<thead><tr style="background:var(--gray-100);text-align:left">' +
+    '<th style="padding:10px 12px">Email</th>' +
+    '<th style="padding:10px 12px">Registered</th>' +
+    '<th style="padding:10px 12px">Tier</th>' +
+    '<th style="padding:10px 12px">Membership Expiry</th>' +
+    '</tr></thead><tbody>';
+  for (const u of adminUsers) {
+    const regDate = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : '—';
+    const expDate = u.expiresAt ? new Date(u.expiresAt).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : '—';
+    const tierBadge = u.tier === 'premium'
+      ? '<span style="background:#fffbeb;color:#d97706;padding:2px 10px;border-radius:100px;font-size:12px;font-weight:700">⭐ Premium</span>'
+      : '<span style="color:var(--gray-500);font-size:13px">Free</span>';
+    html += '<tr class="admin-user-row" data-email="' + u.email + '" style="border-bottom:1px solid var(--gray-100);cursor:pointer">' +
+      '<td style="padding:10px 12px;color:var(--primary);font-weight:500">' + u.email + '</td>' +
+      '<td style="padding:10px 12px;color:var(--gray-500)">' + regDate + '</td>' +
+      '<td style="padding:10px 12px">' + tierBadge + '</td>' +
+      '<td style="padding:10px 12px;color:var(--gray-500)">' + expDate + '</td></tr>';
+  }
+  html += '</tbody></table></div>';
+  content.innerHTML = html;
+  content.querySelectorAll('.admin-user-row').forEach(row => {
+    row.addEventListener('click', () => {
+      adminSelectedEmail = row.dataset.email;
+      showAdminUserDetail(adminSelectedEmail);
+    });
+  });
+}
+
+async function showAdminUserDetail(email) {
+  const content = document.getElementById('adminContent');
+  content.innerHTML = '<div style="text-align:center;padding:40px"><div class="loading-spinner"></div></div>';
+  document.getElementById('adminStatus').textContent = email;
+  try {
+    const res = await fetch('/api/admin?action=user', {
+      headers: { 'Authorization': `Bearer ${adminToken}`, 'X-Admin-User-Email': email },
+    });
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    renderAdminUserDetail(data);
+  } catch {
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--red)">Failed to load user data.</div>';
+  }
+}
+
+function renderAdminUserDetail(data) {
+  const content = document.getElementById('adminContent');
+  const regDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : '—';
+  const expDate = data.membership.expiresAt ? new Date(data.membership.expiresAt).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : '—';
+  const isPremium = data.membership.tier === 'premium';
+
+  let html = '' +
+    '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
+      '<h3 style="font-size:20px;margin-bottom:4px">' + data.email + '</h3>' +
+      '<p style="font-size:13px;color:var(--gray-500)">Registered: ' + regDate + '</p>' +
+      '<p style="font-size:13px;color:var(--gray-500);margin-top:2px">Membership: ' + (isPremium ? '⭐ Premium · Expires ' + expDate : 'Free') + '</p>' +
+    '</div>' +
+
+    '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
+      '<h4 style="margin-bottom:12px;font-size:15px">Modify Membership</h4>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">' +
+        '<select id="adminMemberAction" style="padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
+          '<option value="add">Add time</option>' +
+          '<option value="set">Set from today</option>' +
+          '<option value="remove">Remove premium</option>' +
+        '</select>' +
+        '<input type="number" id="adminMemberAmount" value="1" min="1" style="width:70px;padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
+        '<select id="adminMemberUnit" style="padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
+          '<option value="days">Days</option>' +
+          '<option value="months">Months</option>' +
+          '<option value="years">Years</option>' +
+        '</select>' +
+        '<button class="btn-primary" id="adminMemberSubmitBtn" style="padding:8px 20px;font-size:13px">Apply</button>' +
+      '</div>' +
+      '<div id="adminMemberResult" style="margin-top:8px;font-size:13px"></div>' +
+    '</div>' +
+
+    '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
+      '<h4 style="margin-bottom:12px;font-size:15px">Favorites (' + data.favorites.length + ')</h4>' +
+      (data.favorites.length ? data.favorites.map(function(f) {
+        return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100)">' +
+          '<img src="' + (f.image || '') + '" alt="" style="width:36px;height:36px;object-fit:contain;border-radius:4px" onerror="this.style.display=\'none\'">' +
+          '<div style="flex:1"><div style="font-size:13px;font-weight:500">' + (f.name || f.productName || '') + '</div><div style="font-size:11px;color:var(--gray-400)">' + (f.store || '') + ' · $' + (f.price || f.targetPrice || 0) + '</div></div>' +
+        '</div>';
+      }).join('') : '<p style="font-size:13px;color:var(--gray-400)">No favorites</p>') +
+    '</div>' +
+
+    '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
+      '<h4 style="margin-bottom:12px;font-size:15px">Search History (' + data.searchHistory.length + ')</h4>' +
+      (data.searchHistory.length ? data.searchHistory.map(function(h) {
+        return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
+          '<span style="font-size:14px">🔍</span>' +
+          '<span style="font-size:13px">' + h.query + '</span>' +
+          '<span style="font-size:11px;color:var(--gray-400);margin-left:auto">' + timeAgo(h.time) + '</span>' +
+        '</div>';
+      }).join('') : '<p style="font-size:13px;color:var(--gray-400)">No search history</p>') +
+    '</div>';
+
+  content.innerHTML = html;
+
+  document.getElementById('adminMemberSubmitBtn').addEventListener('click', function() {
+    document.getElementById('adminConfirmModal').classList.add('active');
+    document.getElementById('adminConfirmInput').value = '';
+    document.getElementById('adminConfirmError').classList.remove('show');
+  });
+
+  // Show/hide amount/unit fields based on action
+  document.getElementById('adminMemberAction').addEventListener('change', function() {
+    const isRemove = this.value === 'remove';
+    document.getElementById('adminMemberAmount').style.display = isRemove ? 'none' : '';
+    document.getElementById('adminMemberUnit').style.display = isRemove ? 'none' : '';
+  });
+
+  // Store pending membership data for confirm handler
+  window._pendingMembershipEmail = data.email;
+}
+
+async function adminConfirmMembership() {
+  const pw = document.getElementById('adminConfirmInput').value;
+  const err = document.getElementById('adminConfirmError');
+  if (!pw) { err.textContent = 'Password required'; err.classList.add('show'); return; }
+
+  const email = window._pendingMembershipEmail;
+  const action = document.getElementById('adminMemberAction').value;
+  const amount = document.getElementById('adminMemberAmount').value || 1;
+  const unit = document.getElementById('adminMemberUnit').value;
+
+  try {
+    const res = await fetch('/api/admin?action=membership', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, adminPassword: pw, action, amount: parseInt(amount), unit }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      document.getElementById('adminConfirmModal').classList.remove('active');
+      const result = document.getElementById('adminMemberResult');
+      const newExp = data.membership.expiresAt
+        ? new Date(data.membership.expiresAt).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })
+        : '—';
+      result.innerHTML = data.membership.tier === 'free'
+        ? '<span style="color:var(--green)">✅ Premium removed</span>'
+        : '<span style="color:var(--green)">✅ Updated — expires ' + newExp + '</span>';
+    } else {
+      err.textContent = data.error || 'Failed';
+      err.classList.add('show');
+    }
+  } catch { err.textContent = 'Network error'; err.classList.add('show'); }
+}
+
+function initAdminPanel() {
+  // Admin login
+  document.getElementById('adminLoginBtn')?.addEventListener('click', adminLogin);
+  document.getElementById('adminPasswordInput')?.addEventListener('keydown', function(e) { if (e.key === 'Enter') adminLogin(); });
+  document.getElementById('adminLoginClose')?.addEventListener('click', function() {
+    document.getElementById('adminLoginModal').classList.remove('active');
+  });
+  document.getElementById('adminLoginModal')?.addEventListener('click', function(e) {
+    if (e.target === e.currentTarget) document.getElementById('adminLoginModal').classList.remove('active');
+  });
+
+  // Admin confirm
+  document.getElementById('adminConfirmBtn')?.addEventListener('click', adminConfirmMembership);
+  document.getElementById('adminConfirmInput')?.addEventListener('keydown', function(e) { if (e.key === 'Enter') adminConfirmMembership(); });
+  document.getElementById('adminConfirmClose')?.addEventListener('click', function() {
+    document.getElementById('adminConfirmModal').classList.remove('active');
+  });
+  document.getElementById('adminConfirmModal')?.addEventListener('click', function(e) {
+    if (e.target === e.currentTarget) document.getElementById('adminConfirmModal').classList.remove('active');
+  });
+
+  // Admin navigation
+  document.getElementById('adminBackBtn')?.addEventListener('click', function() {
+    if (adminSelectedEmail) {
+      adminSelectedEmail = null;
+      renderAdminUserList();
+      document.getElementById('adminStatus').textContent = adminUsers.length + ' users';
+    }
+  });
+  document.getElementById('adminLogoutBtn')?.addEventListener('click', adminLogout);
+
+  // Check for admin hash on load
+  if (window.location.hash === '#admin') {
+    window.location.hash = '';
+    showAdmin();
+  }
+}
+
+// Expose admin functions globally for onclick
+window.showPricingModal = showPricingModal;
+window.adminLogin = adminLogin;
+window.adminConfirmMembership = adminConfirmMembership;

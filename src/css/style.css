@@ -1362,6 +1362,9 @@ footer .disclosure {
 }
 .dashboard-section.active { display: block; }
 
+/* Admin panel */
+.admin-user-row:hover { background: #f8fafc; }
+
 .dashboard-header {
   display: flex;
   align-items: center;

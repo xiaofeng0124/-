@@ -16,19 +16,27 @@ export async function onRequest(context) {
       return new Response(JSON.stringify({ error: 'Invalid email format' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const existing = await env.USERS.get(`user:${email.toLowerCase()}`);
+    const lower = email.toLowerCase();
+    const existing = await env.USERS.get(`user:${lower}`);
     if (existing) {
       return new Response(JSON.stringify({ error: 'Email already registered' }), { status: 409, headers: { 'Content-Type': 'application/json' } });
     }
 
     const passwordHash = await hashPassword(password);
-    await env.USERS.put(`user:${email.toLowerCase()}`, JSON.stringify({
+    await env.USERS.put(`user:${lower}`, JSON.stringify({
       passwordHash,
       createdAt: new Date().toISOString(),
     }));
 
+    // Track user in admin:users list
+    const userList = JSON.parse(await env.USERS.get('admin:users') || '[]');
+    if (!userList.includes(lower)) {
+      userList.push(lower);
+      await env.USERS.put('admin:users', JSON.stringify(userList));
+    }
+
     const session = crypto.randomUUID();
-    await env.USERS.put(`session:${session}`, email.toLowerCase(), { expirationTtl: 604800 });
+    await env.USERS.put(`session:${session}`, lower, { expirationTtl: 604800 });
 
     return new Response(JSON.stringify({ ok: true, session, email: email.toLowerCase() }), {
       headers: { 'Content-Type': 'application/json' },
