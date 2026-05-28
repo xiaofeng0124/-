@@ -1,4 +1,4 @@
-﻿// ======== Mock Data ========
+﻿
 const MOCK_PRODUCTS = {
   'airpods pro': {
     name: 'Apple AirPods Pro (2nd Gen)',
@@ -172,7 +172,7 @@ const POPULAR_POOL = [
   { name: 'Asus ROG Ally Handheld', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTXL20yEu9G9Nvkat2MGonOS9tGWahAT3sf-6pgejPUPeKoo_0n-jBuFJlyqQ', price: 599.99 },
   { name: 'Fitbit Charge 6', img: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcS2hy_BL5hEfdHHuYAeoxUp6DEShenAkwz-CgoonRBLW6hS9UMuF_d5GqVYhgOgTV1gxY3QkVU', price: 139.95 },
   { name: 'Sony XM5 Headphones', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQMhBdy3y9VcJgaP_D2CKpd6wX76yAqFZZP5Majq-FJXvqzAwxvJvEwsMLOipRS0tlSNsyFyKE8p37vwjeLbLxshZWZnbuzjGT33Gv2Bmgi4-7CektwVxUE', price: 328.00 },
-  // Extra 20 products for Refresh rotation
+
   { name: 'Xbox Series X Console', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQoyYhc19rklTjG28pQh6W6C9FUdqbj7vKny5v_PFuCiMtE1J2YUzXmkMwfoOFdB2a7IdChoMwxCRlK8VUdsdlaT5zSIFWvBjXoFozM0DuFsD40Jj5LixlD', price: 499.99 },
   { name: 'Samsung Galaxy Buds 3 Pro', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTp3iA7X3YEyBNwn422Rp-VJ7NulHq6RVOS5QIGDZBIFxzi8o-OeoprG9MsIimAS_x2wFCCjxSiYqwQcl7S8jzhnAa7JuaP9Dh2cKOk-6pErxTQsc-ZX9PN', price: 249.99 },
   { name: 'Ninja Creami Ice Cream', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQftpAjaUetgjs08ViPeep_KipUkaXu00eZ8RP9Lc9giUQIeM52c-C9f1YEkkwxWaPMhEsmKpP-M9p-LYlTUPxdDMPh4HHyD5ZC0jvwxM8Z1phytmax3hiq', price: 199.99 },
@@ -216,7 +216,7 @@ const MOCK_COUPONS = {
   ]
 };
 
-// Generate mock price history
+
 function generatePriceHistory(basePrice, days = 90) {
   const data = [];
   const now = Date.now();
@@ -366,7 +366,7 @@ function renderAuthForm(tab) {
     document.getElementById('authSwitchToRegister').addEventListener('click', () => renderAuthForm('register'));
     document.getElementById('forgotPwLink').addEventListener('click', showForgotPasswordForm);
     initLoginPwToggle();
-				// Restore saved login prefs
+
 				const prefs = loadLoginPrefs();
 				if (prefs.remember) {
 				  document.getElementById('loginEmail').value = prefs.email || '';
@@ -533,7 +533,7 @@ async function handleRegister() {
     if (data.ok) {
       setSession(data.session, data.email);
       currentUser = getSession(); updateUIForAuth(); saveLoginPrefs(email, pw); checkMembership();
-      // Show success message instead of auto-closing
+
       const container = document.getElementById('authFormContainer');
       container.innerHTML = `
         <div style="text-align:center;padding:20px 8px">
@@ -623,7 +623,7 @@ async function resendCode(email, password) {
     if (seconds <= 0) { clearInterval(interval); link.style.display = 'inline'; timer.style.display = 'none'; }
     else timer.textContent = `Resend in ${seconds}s`;
   }, 1000);
-  // Silently re-trigger the code send
+
   fetch('/api/register', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -799,7 +799,7 @@ function updateUIForAuth() {
       e.stopPropagation();
       document.getElementById('userDropdown')?.classList.toggle('active');
     });
-    // One global click handler for closing dropdown
+
     if (!window._dropdownListener) {
       document.addEventListener('click', () => {
         const dd = document.getElementById('userDropdown');
@@ -950,7 +950,7 @@ async function searchProduct(name) {
     return;
   }
 
-  // Fallback to mock
+
   if (loading) loading.classList.remove('active');
   renderResults(query);
 }
@@ -967,7 +967,7 @@ function openPriceHistory(productName, storeName, currentPrice) {
   document.getElementById('historyStoreName').textContent = storeName;
   document.getElementById('historyCurrentPrice').textContent = `Current: $${currentPrice.toFixed(2)}`;
   document.getElementById('historyModal').classList.add('active');
-  // Free users default to 7 days, premium to 30
+
   const defaultDays = isPremium() ? 30 : 7;
   document.querySelectorAll('#historyControls button').forEach(b => {
     b.classList.toggle('active', parseInt(b.dataset.range) === defaultDays);
@@ -975,7 +975,19 @@ function openPriceHistory(productName, storeName, currentPrice) {
   renderPriceChart(defaultDays);
 }
 
-function renderPriceChart(days) {
+function loadChartJS() {
+  if (window._chartLoading) return window._chartLoading;
+  window._chartLoading = new Promise(function(resolve, reject) {
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
+    s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+  return window._chartLoading;
+}
+
+async function renderPriceChart(days) {
+  if (typeof Chart === 'undefined') { try { await loadChartJS(); } catch { return; } }
   const data = PRICE_HISTORY_CACHE[`${currentHistoryProduct}_${currentHistoryStore}`];
   if (!data) return;
   const sliced = data.slice(-days);
@@ -1085,7 +1097,7 @@ function saveSearchHistory(product) {
   if (history.length > 20) history = history.slice(0, 20);
   localStorage.setItem('sr_history', JSON.stringify(history));
 
-  // Also save to server for admin panel
+
   const s = getSession();
   if (s) {
     const query = product.query || product.name;
@@ -1152,7 +1164,7 @@ renderPopularProducts();
   if (getSession()) syncUserData();
   if (getSession()) checkMembership();
   tryAutoLogin();
-  // Search history
+
   document.getElementById('refreshPopularBtn')?.addEventListener('click', refreshPopular);
   document.getElementById('historyNavBtn')?.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -1172,7 +1184,7 @@ renderPopularProducts();
 
 function initModals() {
   document.getElementById('authModalClose')?.addEventListener('click', hideAuthModal);
-  // Only close on close button, not on backdrop click
+
   document.getElementById('historyModalClose')?.addEventListener('click', () => {
     document.getElementById('historyModal').classList.remove('active');
     if (priceChartInstance) { priceChartInstance.destroy(); priceChartInstance = null; }
@@ -1194,7 +1206,7 @@ function initModals() {
     const btn = e.target.closest('button');
     if (!btn) return;
     const days = parseInt(btn.dataset.range);
-    // Gate: free users can only see 7 days
+
     if (days > 7 && !isPremium()) {
       showToast('📈 Price history beyond 7 days is a Premium feature. Upgrade for full access!');
       showPricingModal();
@@ -1230,7 +1242,7 @@ function initSearch() {
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
     searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
-    // Remove readonly on first interaction to prevent browser autofill of saved accounts
+
     const unlock = () => { searchInput.removeAttribute('readonly'); searchInput.removeEventListener('focus', unlock); searchInput.removeEventListener('click', unlock); };
     searchInput.addEventListener('focus', unlock);
     searchInput.addEventListener('click', unlock);
@@ -1294,7 +1306,7 @@ function initVoiceSearch() {
       return;
     }
 
-    // Clean up previous instance if lingering
+
     if (recognition) {
       try { recognition.abort(); } catch {}
       recognition = null;
@@ -1311,12 +1323,12 @@ function initVoiceSearch() {
     recognition.continuous = false;
     recognition.interimResults = false;
 
-    // Safety timeout — auto-stop after 10s if browser hangs
+
     recordingTimer = setTimeout(() => {
       if (isRecording) { recognition?.stop(); }
     }, 10000);
 
-    // If onstart doesn't fire within 2s the API is broken
+
     startTimeout = setTimeout(() => {
       if (!isRecording) {
         recognition?.abort();
@@ -1383,7 +1395,7 @@ async function performSearch() {
   document.getElementById('sortSelect').value = 'featured';
   document.getElementById('storeFilter').value = 'all';
 
-  // Try real API first
+
   const apiProduct = await searchViaAPI(query);
   if (loading) loading.classList.remove('active');
 
@@ -1402,7 +1414,7 @@ async function performSearch() {
       </div>`;
     renderSortedStores(apiProduct.stores, 'featured');
   } else {
-    // Fall back to mock data
+
     setTimeout(() => { renderResults(query); }, 400);
   }
 }
@@ -1436,15 +1448,15 @@ async function searchViaAPI(query) {
 }
 
 function findProduct(query) {
-  // Direct match on product key
+
   for (const [key, product] of Object.entries(MOCK_PRODUCTS)) {
     if (key.includes(query) || query.includes(key)) return product;
   }
-  // Match product name (case-insensitive partial)
+
   for (const product of Object.values(MOCK_PRODUCTS)) {
     if (product.name.toLowerCase().includes(query)) return product;
   }
-  // Multi-language keyword match
+
   for (const [key, keywords] of Object.entries(LANG_KEYWORDS)) {
     if (keywords.some(kw => query.includes(kw) || kw.includes(query))) return MOCK_PRODUCTS[key];
   }
@@ -1500,8 +1512,8 @@ function renderSortedStores(stores, sortBy) {
     case 'price': stores.sort((a,b) => a.price - b.price); break;
     case 'price-desc': stores.sort((a,b) => b.price - a.price); break;
     case 'rating': stores.sort((a,b) => b.rating - a.rating); break;
-    case 'newest': break; // requires date data
-    case 'bestsellers': break; // requires sales data
+    case 'newest': break;
+    case 'bestsellers': break;
   }
   const bestPrice = Math.min(...stores.filter(s => s.price).map(s => s.price));
   const user = getSession();
@@ -1604,13 +1616,13 @@ function initPhotoUpload() {
     galleryInput.click();
   });
 
-  // Handle gallery pick
+
   galleryInput.addEventListener('change', (e) => {
     handleFiles(Array.from(e.target.files));
     e.target.value = '';
   });
 
-  // Drag & drop on search box
+
   document.body.addEventListener('dragover', (e) => { e.preventDefault(); searchBox?.style.setProperty('border-color', '#16a34a', 'important'); });
   document.body.addEventListener('dragleave', (e) => { if (!e.currentTarget.contains(e.relatedTarget)) searchBox?.style.removeProperty('border-color'); });
   document.body.addEventListener('drop', (e) => {
@@ -1707,7 +1719,7 @@ async function checkMembership() {
     if (res.ok) membershipData = await res.json();
     updateUIForAuth();
     updatePremiumUI();
-    // Show premium welcome animation on every login / page load
+
     if (isPremium()) {
       showPremiumWelcome(s.email);
     }
@@ -1735,19 +1747,19 @@ function isPremium() {
 }
 
 function showPremiumWelcome(email) {
-  // Create overlay
+
   const overlay = document.createElement('div');
   overlay.id = 'premiumWelcome';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none';
 
-  // Canvas for fireworks
+
   const canvas = document.createElement('canvas');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   canvas.style.cssText = 'position:absolute;inset:0';
   overlay.appendChild(canvas);
 
-  // Welcome text — positioned in the gap between search bar and results
+
   const name = email.split('@')[0];
   const textGroup = document.createElement('div');
   textGroup.style.cssText = 'position:absolute;left:50%;top:22vh;transform:translateX(-50%);z-index:1;text-align:center';
@@ -1764,7 +1776,7 @@ function showPremiumWelcome(email) {
 
   document.body.appendChild(overlay);
 
-  // Add keyframes
+
   if (!document.getElementById('premiumKeyframes')) {
     const style = document.createElement('style');
     style.id = 'premiumKeyframes';
@@ -1772,7 +1784,7 @@ function showPremiumWelcome(email) {
     document.head.appendChild(style);
   }
 
-  // Fireworks particles
+
   const ctx = canvas.getContext('2d');
   const particles = [];
   const colors = ['#FFD700','#FFC107','#FFB300','#FFA000','#FF8F00','#FF6F00','#FFD54F','#FFE082','#FFECB3','#FFFFFF'];
@@ -1791,14 +1803,14 @@ function showPremiumWelcome(email) {
     }
   }
 
-  // Initial bursts spread across 5 seconds
+
   for (let i = 0; i < 5; i++) {
     setTimeout(() => createBurst(
       canvas.width * (0.15 + Math.random() * 0.7),
       canvas.height * (0.15 + Math.random() * 0.6)
     ), i * 300);
   }
-  // Extra delayed bursts
+
   setTimeout(() => {
     for (let i = 0; i < 3; i++) {
       setTimeout(() => createBurst(
@@ -1814,7 +1826,7 @@ function showPremiumWelcome(email) {
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.x += p.vx; p.y += p.vy;
-      p.vy += 0.04; // gravity
+      p.vy += 0.04;
       p.vx *= 0.99;
       p.life -= p.decay;
       if (p.life <= 0) { particles.splice(i, 1); continue; }
@@ -1823,7 +1835,7 @@ function showPremiumWelcome(email) {
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
       ctx.fill();
-      // Trail
+
       p.tail.push({ x: p.x, y: p.y });
       if (p.tail.length > 8) p.tail.shift();
       for (let t = 1; t < p.tail.length; t++) {
@@ -1833,7 +1845,7 @@ function showPremiumWelcome(email) {
         ctx.fill();
       }
     }
-    // Random additional bursts
+
     if (Math.random() < 0.08 && particles.length < 200) {
       createBurst(
         canvas.width * (0.1 + Math.random() * 0.8),
@@ -1845,7 +1857,7 @@ function showPremiumWelcome(email) {
   }
   animate();
 
-  // Auto-remove after 4 seconds with fade
+
   setTimeout(() => {
     cancelAnimationFrame(frame);
     overlay.style.transition = 'opacity 0.5s ease';
@@ -1915,7 +1927,7 @@ function initPricingModal() {
 
 }
 
-// Gate: check if free user can upload photos
+
 function canUploadPhoto() {
   if (!currentUser) return true;
   if (isPremium()) return true;
@@ -1927,7 +1939,7 @@ function getPhotoRemaining() {
   return (membershipData?.photoLimit || 5) - (membershipData?.photoUsage || 0);
 }
 
-// Gate: check if free user can add more alerts
+
 function canAddAlert() {
   if (!currentUser) return true;
   if (isPremium()) return true;
@@ -2116,7 +2128,7 @@ function renderAdminUserDetail(data) {
     document.getElementById('adminConfirmError').classList.remove('show');
   });
 
-  // Store pending membership data for confirm handler
+
   window._pendingMembershipEmail = data.email;
 }
 
@@ -2152,7 +2164,7 @@ async function adminConfirmMembership() {
 }
 
 function initAdminPanel() {
-  // Admin login
+
   document.getElementById('adminLoginBtn')?.addEventListener('click', adminLogin);
   document.getElementById('adminPasswordInput')?.addEventListener('keydown', function(e) { if (e.key === 'Enter') adminLogin(); });
   document.getElementById('adminLoginClose')?.addEventListener('click', function() {
@@ -2162,7 +2174,7 @@ function initAdminPanel() {
     if (e.target === e.currentTarget) document.getElementById('adminLoginModal').classList.remove('active');
   });
 
-  // Admin confirm
+
   document.getElementById('adminConfirmBtn')?.addEventListener('click', adminConfirmMembership);
   document.getElementById('adminConfirmInput')?.addEventListener('keydown', function(e) { if (e.key === 'Enter') adminConfirmMembership(); });
   document.getElementById('adminConfirmClose')?.addEventListener('click', function() {
@@ -2172,7 +2184,7 @@ function initAdminPanel() {
     if (e.target === e.currentTarget) document.getElementById('adminConfirmModal').classList.remove('active');
   });
 
-  // Admin navigation
+
   document.getElementById('adminBackBtn')?.addEventListener('click', function() {
     if (adminSelectedEmail) {
       adminSelectedEmail = null;
@@ -2182,14 +2194,14 @@ function initAdminPanel() {
   });
   document.getElementById('adminLogoutBtn')?.addEventListener('click', adminLogout);
 
-  // Check for admin hash on load
+
   if (window.location.hash === '#admin') {
     window.location.hash = '';
     showAdmin();
   }
 }
 
-// Expose admin functions globally for onclick
+
 window.showPricingModal = showPricingModal;
 window.adminLogin = adminLogin;
 window.adminConfirmMembership = adminConfirmMembership;
