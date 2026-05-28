@@ -1159,6 +1159,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initModals();
   initPricingModal();
   initAdminPanel();
+  initContactForm();
 renderPopularProducts();
   updateUIForAuth();
   if (getSession()) syncUserData();
@@ -1925,6 +1926,69 @@ function initPricingModal() {
     showToast('💳 Payment coming soon — stay tuned!');
   });
 
+}
+
+function initContactForm() {
+  document.getElementById('contactBtn')?.addEventListener('click', () => {
+    document.getElementById('contactModal').classList.add('active');
+  });
+  document.getElementById('contactModalClose')?.addEventListener('click', () => {
+    document.getElementById('contactModal').classList.remove('active');
+  });
+  document.getElementById('contactModal')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) document.getElementById('contactModal').classList.remove('active');
+  });
+  document.getElementById('contactSubmitBtn')?.addEventListener('click', handleContactSubmit);
+}
+
+async function handleContactSubmit() {
+  const name = document.getElementById('contactName').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  const subject = document.getElementById('contactSubject').value.trim();
+  const message = document.getElementById('contactMessage').value.trim();
+  const err = document.getElementById('contactError');
+  const success = document.getElementById('contactSuccess');
+  err.classList.remove('show');
+  success.style.display = 'none';
+
+  if (!name || !email || !subject || !message) {
+    err.textContent = 'Please fill in all fields';
+    err.classList.add('show');
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    err.textContent = 'Please enter a valid email';
+    err.classList.add('show');
+    return;
+  }
+
+  const btn = document.getElementById('contactSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, subject, message }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      success.style.display = 'block';
+      document.getElementById('contactName').value = '';
+      document.getElementById('contactEmail').value = '';
+      document.getElementById('contactSubject').value = '';
+      document.getElementById('contactMessage').value = '';
+    } else {
+      err.textContent = data.error || 'Failed to send message';
+      err.classList.add('show');
+    }
+  } catch {
+    err.textContent = 'Network error. Please try again.';
+    err.classList.add('show');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Send Message';
 }
 
 

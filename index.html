@@ -133,8 +133,15 @@
 </main>
 
 <footer>
-  <p>&copy; 2026 SnappRice. Search, compare, save.</p>
-  <p class="disclosure">As an Amazon Associate we earn from qualifying purchases. Prices and availability may vary.</p>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <button class="btn-link" id="contactBtn">Contact Us</button>
+    </div>
+    <p>&copy; 2026 SnappRice. Search, compare, save.</p>
+    <p class="disclosure">As an Amazon Associate we earn from qualifying purchases. Prices and availability may vary.</p>
+  </div>
 </footer>
 
 <!-- Admin Login Overlay -->
@@ -298,6 +305,22 @@
       </div>
       <div class="alert-success" id="alertSuccess">We'll notify you when the price drops!</div>
     </div>
+  </div>
+</div>
+
+<!-- Contact Modal -->
+<div class="modal-overlay" id="contactModal">
+  <div class="modal" style="max-width:480px">
+    <button class="modal-close" id="contactModalClose">&times;</button>
+    <h2 style="margin-bottom:4px">Contact Us</h2>
+    <p class="sub" style="font-size:14px;color:var(--gray-500);margin-bottom:16px">We'd love to hear from you. Drop us a message and we'll get back to you.</p>
+    <div class="auth-error" id="contactError"></div>
+    <div class="auth-success" id="contactSuccess" style="display:none;background:var(--green-light);color:var(--green);padding:12px;border-radius:8px;font-size:14px;margin-bottom:12px">Thanks for reaching out! We'll get back to you soon.</div>
+    <div class="form-group"><label>Your Name</label><input type="text" id="contactName" placeholder="John Doe"></div>
+    <div class="form-group"><label>Your Email</label><input type="email" id="contactEmail" placeholder="you@example.com"></div>
+    <div class="form-group"><label>Subject</label><input type="text" id="contactSubject" placeholder="How can we help?"></div>
+    <div class="form-group"><label>Message</label><textarea id="contactMessage" rows="4" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:14px;outline:none;resize:vertical;font-family:inherit" placeholder="Your message..."></textarea></div>
+    <button class="btn-primary" id="contactSubmitBtn" style="width:100%">Send Message</button>
   </div>
 </div>
 
