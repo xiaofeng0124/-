@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — SnappRice</title>
+  <link rel="stylesheet" href="/src/css/style.css?v9">
+  <link rel="icon" href="/src/logo.png?v4">
+  <style>
+    .about-page { max-width: 720px; margin: 40px auto; padding: 0 20px 80px; }
+    .about-page h1 { font-size: 28px; margin-bottom: 8px; }
+    .about-page .subtitle { font-size: 15px; color: var(--gray-500); margin-bottom: 28px; }
+    .about-page h2 { font-size: 18px; margin-top: 28px; margin-bottom: 8px; }
+    .about-page p { font-size: 14px; color: var(--gray-700); line-height: 1.7; }
+    .about-page ul { padding-left: 20px; }
+    .about-page li { font-size: 14px; color: var(--gray-700); line-height: 1.7; margin-bottom: 4px; }
+    .about-page .highlight { color: var(--primary); font-weight: 600; }
+    .about-cta { margin-top: 32px; padding: 24px; background: var(--gray-50); border-radius: 12px; text-align: center; }
+    .about-cta p { font-size: 15px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <img src="/src/logo.png?v2" alt="SnappRice" style="width:56px;height:56px;border-radius:12px">
+        <span style="font-size:34px;font-weight:800;color:var(--dark);margin-left:8px">Snap</span>
+        <span style="font-size:34px;font-weight:800;color:#16a34a">Price</span>
+      </a>
+    </div>
+  </header>
+  <main>
+    <div class="about-page">
+      <h1>About SnappRice</h1>
+      <p class="subtitle">One search, every store. We help you find the best price — plain and simple.</p>
+
+      <h2>What We Do</h2>
+      <p>SnappRice is a <span class="highlight">free price comparison engine</span> that searches across Amazon, Walmart, eBay, Best Buy, Target, and more. Instead of checking each store one by one, you search once and see all the prices side by side. Whether you're shopping for electronics, home goods, fashion, or everyday essentials — we help you make the call.</p>
+
+      <h2>Why We Built It</h2>
+      <p>Online shopping should be straightforward. But with so many retailers, it's easy to overpay without knowing it. We built SnappRice to take the hassle out of price hunting — so you can shop with confidence, knowing you've seen what's out there.</p>
+
+      <h2>How It Works</h2>
+      <ul>
+        <li><strong>Search</strong> — type a product name, speak it, or upload a photo</li>
+        <li><strong>Compare</strong> — we pull prices from major retailers and show them in one clean view</li>
+        <li><strong>Save</strong> — click through to the best deal, set price alerts, or track price history</li>
+      </ul>
+
+      <h2>What Makes Us Different</h2>
+      <ul>
+        <li><span class="highlight">Unbiased results</span> — we surface prices from multiple retailers, not just the ones that pay us</li>
+        <li><span class="highlight">Price history</span> — see how a price has moved over time so you know if it's actually a good deal</li>
+        <li><span class="highlight">Price alerts</span> — set a target price and we'll notify you when it drops</li>
+        <li><span class="highlight">Photo search</span> — see something in the wild? Snap a picture and find it online</li>
+      </ul>
+
+      <h2>Transparency</h2>
+      <p>SnappRice is an independent comparison service. We participate in affiliate programs (including Amazon Associates), which means we may earn a small commission if you make a purchase through a link on our site. This comes at <strong>no extra cost to you</strong> — and it never influences which stores or products appear in your results.</p>
+
+      <h2>Behind the Name</h2>
+      <p>"SnappRice" comes from the idea of snapping up a good deal — quick, smart, and satisfying. Rice? Well, everyone loves a good grain of savings.</p>
+
+      <div class="about-cta">
+        <p><strong>Ready to find your best price?</strong></p>
+        <a href="/" style="display:inline-block;padding:10px 28px;background:var(--primary);color:#fff;border-radius:8px;font-size:15px;font-weight:600;text-decoration:none">Start searching</a>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="/about">About</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+        <button class="btn-link" id="contactBtn">Contact Us</button>
+      </div>
+      <p>&copy; 2026 SnappRice. Search, compare, save.</p>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('contactBtn')?.addEventListener('click', () => {
+      window.location.href = '/';
+      setTimeout(() => {
+        const btn = document.querySelector('#contactBtn') || document.querySelector('[id$=contactBtn]');
+        if (btn) btn.click();
+      }, 500);
+    });
+  </script>
+</body>
+</html>
