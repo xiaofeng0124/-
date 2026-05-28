@@ -37,7 +37,7 @@ export async function onRequest(context) {
     await env.USERS.put(`verify:${lower}`, JSON.stringify({ code, password, createdAt: Date.now() }), { expirationTtl: 600 });
 
     // Send email via Resend
-    const resendKey = env.RESEND_API_KEY;
+    const resendKey = await env.USERS.get('config:resend_key');
     if (!resendKey) {
       return new Response(JSON.stringify({ error: 'Email service not configured' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
