@@ -275,7 +275,10 @@ async function register(email, password) {
       body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
-    if (data.ok) { setSession(data.session, data.email); await syncUserData(); return { ok: true }; }
+    if (data.ok) {
+      if (data.needVerify) return { needVerify: true, email: data.email };
+      setSession(data.session, data.email); await syncUserData(); return { ok: true };
+    }
     return { ok: false, error: data.error };
   } catch { return { ok: false, error: 'Network error' }; }
 }
@@ -407,11 +410,92 @@ async function handleRegister() {
   const err = document.getElementById('authError');
   if (!email || !pw) { err.textContent = 'Please fill in all fields'; err.classList.add('show'); return; }
   const btn = document.getElementById('registerSubmitBtn');
-  btn.disabled = true; btn.textContent = 'Creating account...';
+  btn.disabled = true; btn.textContent = 'Sending verification...';
   const result = await register(email, pw);
   btn.disabled = false; btn.textContent = 'Create Account';
-  if (result.ok) { hideAuthModal(); currentUser = getSession(); updateUIForAuth(); saveLoginPrefs(email, pw); checkMembership(); }
-  else { err.textContent = result.error; err.classList.add('show'); }
+  if (result.needVerify) {
+    showVerifyForm(result.email, pw);
+  } else if (result.ok) {
+    hideAuthModal(); currentUser = getSession(); updateUIForAuth(); saveLoginPrefs(email, pw); checkMembership();
+  } else {
+    err.textContent = result.error; err.classList.add('show');
+  }
+}
+
+function showVerifyForm(email, password) {
+  const container = document.getElementById('authFormContainer');
+  container.innerHTML = `
+    <div style="text-align:center;padding:8px 0">
+      <div style="font-size:40px;margin-bottom:12px">✉️</div>
+      <h2>Check your email</h2>
+      <p class="sub" style="font-size:14px;color:var(--gray-500);margin-bottom:16px">We sent a verification code to <strong>${email}</strong></p>
+      <div class="auth-error" id="authError"></div>
+      <div class="form-group">
+        <label>Verification Code</label>
+        <input type="text" id="verifyCodeInput" placeholder="000000" maxlength="6" style="font-size:24px;letter-spacing:6px;text-align:center;font-weight:700">
+      </div>
+      <button class="btn-primary" id="verifyCodeBtn" style="width:100%">Verify Email</button>
+      <div style="margin-top:12px;font-size:13px;color:var(--gray-500)">
+        Didn't get it? <a id="resendCodeLink" style="color:var(--primary);cursor:pointer">Resend code</a>
+        <span id="resendTimer" style="display:none;color:var(--gray-400)"></span>
+      </div>
+    </div>
+  `;
+  document.getElementById('verifyCodeBtn').addEventListener('click', () => handleVerifyCode(email));
+  document.getElementById('verifyCodeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleVerifyCode(email); });
+  document.getElementById('verifyCodeInput').focus();
+  document.getElementById('resendCodeLink').addEventListener('click', () => resendCode(email, password));
+  window._pendingPassword = password;
+}
+
+async function handleVerifyCode(email) {
+  const code = document.getElementById('verifyCodeInput').value.trim();
+  const err = document.getElementById('authError');
+  if (!code || code.length !== 6) { err.textContent = 'Please enter the 6-digit verification code'; err.classList.add('show'); return; }
+  const btn = document.getElementById('verifyCodeBtn');
+  btn.disabled = true; btn.textContent = 'Verifying...';
+  try {
+    const res = await fetch('/api/verify-code', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, code }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      setSession(data.session, data.email);
+      currentUser = getSession();
+      await syncUserData();
+      hideAuthModal();
+      updateUIForAuth();
+      saveLoginPrefs(email, window._pendingPassword || '');
+      if (getSession()) checkMembership();
+      window._pendingPassword = null;
+    } else {
+      btn.disabled = false; btn.textContent = 'Verify Email';
+      err.textContent = data.error || 'Invalid code'; err.classList.add('show');
+    }
+  } catch {
+    btn.disabled = false; btn.textContent = 'Verify Email';
+    err.textContent = 'Network error'; err.classList.add('show');
+  }
+}
+
+async function resendCode(email, password) {
+  const link = document.getElementById('resendCodeLink');
+  const timer = document.getElementById('resendTimer');
+  link.style.display = 'none';
+  timer.style.display = 'inline';
+  let seconds = 30;
+  timer.textContent = `Resend in ${seconds}s`;
+  const interval = setInterval(() => {
+    seconds--;
+    if (seconds <= 0) { clearInterval(interval); link.style.display = 'inline'; timer.style.display = 'none'; }
+    else timer.textContent = `Resend in ${seconds}s`;
+  }, 1000);
+  // Silently re-trigger the code send
+  fetch('/api/register', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  }).catch(() => {});
 }
 
 // ======== UI: Auth State ========

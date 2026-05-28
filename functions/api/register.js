@@ -22,36 +22,46 @@ export async function onRequest(context) {
       return new Response(JSON.stringify({ error: 'Email already registered' }), { status: 409, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const passwordHash = await hashPassword(password);
-    await env.USERS.put(`user:${lower}`, JSON.stringify({
-      passwordHash,
-      createdAt: new Date().toISOString(),
-    }));
+    // Generate 6-digit verification code
+    const code = String(Math.floor(100000 + Math.random() * 900000));
 
-    // Track user in admin:users list
-    const userList = JSON.parse(await env.USERS.get('admin:users') || '[]');
-    if (!userList.includes(lower)) {
-      userList.push(lower);
-      await env.USERS.put('admin:users', JSON.stringify(userList));
+    // Store pending verification (10 min TTL)
+    await env.USERS.put(`verify:${lower}`, JSON.stringify({ code, password, createdAt: Date.now() }), { expirationTtl: 600 });
+
+    // Send email via Resend
+    const resendKey = env.RESEND_API_KEY;
+    if (!resendKey) {
+      return new Response(JSON.stringify({ error: 'Email service not configured' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const session = crypto.randomUUID();
-    await env.USERS.put(`session:${session}`, lower, { expirationTtl: 604800 });
+    const emailRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'SnappRice <noreply@snapprice.co>',
+        to: lower,
+        subject: 'Your SnappRice verification code',
+        html: `<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:480px;margin:0 auto;padding:32px 20px">
+          <h2 style="font-size:22px;margin-bottom:12px">Welcome to SnappRice!</h2>
+          <p style="font-size:15px;color:#64748b;margin-bottom:24px">Enter this code to verify your email address:</p>
+          <div style="font-size:36px;font-weight:800;letter-spacing:8px;text-align:center;padding:20px;background:#f8fafc;border-radius:12px;color:#0f172a">${code}</div>
+          <p style="font-size:13px;color:#94a3b8;margin-top:24px">This code expires in 10 minutes. If you didn't request this, you can ignore this email.</p>
+        </div>`,
+      }),
+    });
 
-    return new Response(JSON.stringify({ ok: true, session, email: email.toLowerCase() }), {
+    if (!emailRes.ok) {
+      const errText = await emailRes.text();
+      return new Response(JSON.stringify({ error: 'Failed to send verification email' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    return new Response(JSON.stringify({ ok: true, needVerify: true, email: lower }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (e) {
     return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
-}
-
-async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const key = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']);
-  const hash = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, key, 256);
-  const s = Array.from(new Uint8Array(salt)).map(b => b.toString(16).padStart(2, '0')).join('');
-  const h = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-  return s + ':' + h;
 }
