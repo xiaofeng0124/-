@@ -411,6 +411,8 @@ function renderAuthForm(tab) {
     `;
     document.getElementById('sendCodeBtn').addEventListener('click', handleSendCode);
     document.getElementById('createAccountBtn').addEventListener('click', handleRegister);
+    document.getElementById('regPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendCode(); });
+    document.getElementById('regCodeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleRegister(); });
     document.getElementById('authSwitchToLogin').addEventListener('click', () => renderAuthForm('login'));
     initRegisterCaptcha();
     initPwToggle();
@@ -447,13 +449,17 @@ function initRegisterCaptcha() {
   const code = String(Math.floor(1000 + Math.random() * 9000));
   display.textContent = code;
   display.dataset.code = code;
-  input.value = '';
-  refresh?.addEventListener('click', () => {
-    const newCode = String(Math.floor(1000 + Math.random() * 9000));
-    display.textContent = newCode;
-    display.dataset.code = newCode;
-    input.value = '';
-  });
+  if (input) input.value = '';
+  if (refresh) {
+    const clone = refresh.cloneNode(true);
+    refresh.parentNode.replaceChild(clone, refresh);
+    clone.addEventListener('click', () => {
+      const newCode = String(Math.floor(1000 + Math.random() * 9000));
+      display.textContent = newCode;
+      display.dataset.code = newCode;
+      if (input) input.value = '';
+    });
+  }
 }
 
 function isCaptchaValid() {
@@ -481,7 +487,15 @@ async function handleSendCode() {
     window._pendingPassword = pw;
     err.classList.remove('show');
   } else {
-    err.textContent = result.error || 'Failed to send verification code'; err.classList.add('show');
+    if (result.error === 'Daily registration limit reached. Please try again tomorrow.') {
+      btn.disabled = true;
+      btn.textContent = "🚫 Today's limit reached";
+      btn.style.background = 'var(--gray-400)';
+      btn.style.cursor = 'not-allowed';
+      document.getElementById('regEmail').disabled = true;
+      document.getElementById('regPassword').disabled = true;
+    }
+    err.textContent = result.error; err.classList.add('show');
   }
 }
 
@@ -513,12 +527,12 @@ async function handleRegister() {
     const res = await fetch('/api/verify-code', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, code, password: pw }),
+      body: JSON.stringify({ email, code }),
     });
     const data = await res.json();
-    if (data.ok || data.token) {
-      if (data.token) sessionStorage.setItem('session', data.token);
-      hideAuthModal(); currentUser = getSession(); updateUIForAuth(); saveLoginPrefs(email, pw); checkMembership();
+    if (data.ok) {
+      setSession(data.session, data.email);
+      currentUser = getSession(); hideAuthModal(); updateUIForAuth(); saveLoginPrefs(email, pw); checkMembership();
     } else {
       btn.disabled = false; btn.textContent = 'Create Account';
       err.textContent = data.error || 'Verification failed'; err.classList.add('show');
