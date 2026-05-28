@@ -483,7 +483,7 @@ function updateUIForAuth() {
           <a id="dropdownDashboard">📊 Dashboard</a>
           <a id="dropdownFavorites">❤️ Favorites</a>
           <a id="dropdownAlerts">🔔 Price Alerts</a>
-          <a id="dropdownAdmin">⚙️ Admin Panel</a>
+          ${user.email === '1067678960@qq.com' ? '<a id="dropdownAdmin">⚙️ Admin Panel</a>' : ''}
           <div class="divider"></div>
           <button class="danger" id="logoutBtn">Sign Out</button>
         </div>
