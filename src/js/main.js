@@ -1950,15 +1950,10 @@ function renderAdminUserDetail(data) {
       '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">' +
         '<select id="adminMemberAction" style="padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
           '<option value="add">Add time</option>' +
-          '<option value="set">Set from today</option>' +
-          '<option value="remove">Remove premium</option>' +
+          '<option value="remove">Remove time</option>' +
         '</select>' +
         '<input type="number" id="adminMemberAmount" value="1" min="1" style="width:70px;padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
-        '<select id="adminMemberUnit" style="padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
-          '<option value="days">Days</option>' +
-          '<option value="months">Months</option>' +
-          '<option value="years">Years</option>' +
-        '</select>' +
+        '<span style="font-size:13px;color:var(--gray-600);margin-right:4px">Days</span>' +
         '<button class="btn-primary" id="adminMemberSubmitBtn" style="padding:8px 20px;font-size:13px">Apply</button>' +
       '</div>' +
       '<div id="adminMemberResult" style="margin-top:8px;font-size:13px"></div>' +
@@ -1993,13 +1988,6 @@ function renderAdminUserDetail(data) {
     document.getElementById('adminConfirmError').classList.remove('show');
   });
 
-  // Show/hide amount/unit fields based on action
-  document.getElementById('adminMemberAction').addEventListener('change', function() {
-    const isRemove = this.value === 'remove';
-    document.getElementById('adminMemberAmount').style.display = isRemove ? 'none' : '';
-    document.getElementById('adminMemberUnit').style.display = isRemove ? 'none' : '';
-  });
-
   // Store pending membership data for confirm handler
   window._pendingMembershipEmail = data.email;
 }
@@ -2012,12 +2000,11 @@ async function adminConfirmMembership() {
   const email = window._pendingMembershipEmail;
   const action = document.getElementById('adminMemberAction').value;
   const amount = document.getElementById('adminMemberAmount').value || 1;
-  const unit = document.getElementById('adminMemberUnit').value;
 
   try {
     const res = await fetch('/api/admin?action=membership', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, adminPassword: pw, action, amount: parseInt(amount), unit }),
+      body: JSON.stringify({ email, adminPassword: pw, action, amount: parseInt(amount) }),
     });
     const data = await res.json();
     if (data.ok) {

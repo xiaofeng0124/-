@@ -129,29 +129,26 @@ async function handleMembershipUpdate(request, env) {
     const memberKey = `membership:${email}`;
     const memberData = JSON.parse(await env.USERS.get(memberKey) || '{"tier":"free","expiresAt":null,"trialUsed":false}');
 
+    memberData.tier = 'premium';
+    const now = new Date();
+    const currentExpiry = memberData.expiresAt ? new Date(memberData.expiresAt) : now;
+    let newExpiry = new Date(currentExpiry);
+
+    const units = parseInt(amount) || 0;
     if (action === 'remove') {
+      newExpiry.setDate(newExpiry.getDate() - units);
+    } else {
+      newExpiry.setDate(newExpiry.getDate() + units);
+    }
+
+    // If removing pushed expiry past now, set to free
+    if (newExpiry <= now) {
       memberData.tier = 'free';
       memberData.expiresAt = null;
     } else {
-      memberData.tier = 'premium';
-      const now = new Date();
-      const currentExpiry = memberData.expiresAt ? new Date(memberData.expiresAt) : now;
-
-      let newExpiry;
-      if (action === 'set') {
-        newExpiry = new Date(now);
-      } else {
-        newExpiry = new Date(currentExpiry);
-      }
-
-      const units = parseInt(amount) || 0;
-      if (unit === 'days') newExpiry.setDate(newExpiry.getDate() + units);
-      else if (unit === 'months') newExpiry.setMonth(newExpiry.getMonth() + units);
-      else if (unit === 'years') newExpiry.setFullYear(newExpiry.getFullYear() + units);
-
       memberData.expiresAt = newExpiry.toISOString();
-      if (!memberData.trialUsed) memberData.trialUsed = true;
     }
+    if (!memberData.trialUsed) memberData.trialUsed = true;
 
     await env.USERS.put(memberKey, JSON.stringify(memberData));
 
