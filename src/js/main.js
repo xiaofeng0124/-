@@ -418,6 +418,14 @@ async function handleRegister() {
   } else if (result.ok) {
     hideAuthModal(); currentUser = getSession(); updateUIForAuth(); saveLoginPrefs(email, pw); checkMembership();
   } else {
+    if (result.error === 'Daily registration limit reached. Please try again tomorrow.') {
+      btn.disabled = true;
+      btn.textContent = '🚫 Today\'s limit reached';
+      btn.style.background = 'var(--gray-400)';
+      btn.style.cursor = 'not-allowed';
+      document.getElementById('regEmail').disabled = true;
+      document.getElementById('regPassword').disabled = true;
+    }
     err.textContent = result.error; err.classList.add('show');
   }
 }

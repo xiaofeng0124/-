@@ -22,6 +22,14 @@ export async function onRequest(context) {
       return new Response(JSON.stringify({ error: 'Email already registered' }), { status: 409, headers: { 'Content-Type': 'application/json' } });
     }
 
+    // Check daily verification limit (Resend free tier: 100/day)
+    const today = new Date().toISOString().slice(0, 10);
+    const countKey = `verifycount:${today}`;
+    const todayCount = parseInt(await env.USERS.get(countKey) || '0');
+    if (todayCount >= 100) {
+      return new Response(JSON.stringify({ error: 'Daily registration limit reached. Please try again tomorrow.' }), { status: 429, headers: { 'Content-Type': 'application/json' } });
+    }
+
     // Generate 6-digit verification code
     const code = String(Math.floor(100000 + Math.random() * 900000));
 
@@ -57,6 +65,9 @@ export async function onRequest(context) {
       const errText = await emailRes.text();
       return new Response(JSON.stringify({ error: 'Failed to send verification email' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
+
+    // Increment daily counter
+    await env.USERS.put(countKey, String(todayCount + 1), { expirationTtl: 86400 });
 
     return new Response(JSON.stringify({ ok: true, needVerify: true, email: lower }), {
       headers: { 'Content-Type': 'application/json' },
