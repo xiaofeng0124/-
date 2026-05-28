@@ -1703,14 +1703,9 @@ async function checkMembership() {
     if (res.ok) membershipData = await res.json();
     updateUIForAuth();
     updatePremiumUI();
-    // Show premium welcome animation once per day
+    // Show premium welcome animation on every login / page load
     if (isPremium()) {
-      const today = new Date().toISOString().slice(0, 10);
-      const lastWelcome = localStorage.getItem('premiumWelcome');
-      if (lastWelcome !== today) {
-        localStorage.setItem('premiumWelcome', today);
-        showPremiumWelcome(s.email);
-      }
+      showPremiumWelcome(s.email);
     }
   } catch { membershipData = null; }
 }
