@@ -352,7 +352,7 @@ function renderAuthForm(tab) {
       <div class="auth-divider"><span>or continue with email</span></div>
       <div class="auth-error" id="authError"></div>
       <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter your password" style="padding-right:40px"><span class="pw-toggle" data-for="loginPassword" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span></div>
+      <div class="form-group"><label>Password</label><div style="position:relative"><input type="password" id="loginPassword" placeholder="Enter your password" style="padding-right:40px"><span class="pw-toggle" data-for="loginPassword" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span></div></div>
       <div style="text-align:right;margin:-4px 0 8px"><a id="forgotPwLink" style="font-size:13px;color:var(--primary);cursor:pointer">Forgot password?</a></div>
       <div class="form-row">
         <label class="checkbox-label"><input type="checkbox" id="rememberPw"> Remember password</label>
