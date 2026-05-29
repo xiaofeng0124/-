@@ -764,7 +764,21 @@ function updateUIForAuth() {
       ? `<div class="membership-expiry">⭐ Premium &middot; ${formatDate(membershipData.expiresAt)}</div>`
       : '';
     actions.innerHTML = `
-      ${premiumBtn}
+      <div class="desktop-header-actions">
+        ${premiumBtn}
+        <button class="btn-ghost desktop-only" id="dashboardBtn">📊 Dashboard</button>
+        <div class="history-wrap desktop-only">
+          <button class="btn-ghost" id="historyNavBtn">🕐 History</button>
+          <div class="history-dropdown" id="historyDropdown">
+            <div class="history-dropdown-header">
+              <span>Recent Searches</span>
+              <button id="historyClearBtn">Clear</button>
+            </div>
+            <div class="history-dropdown-list" id="historyList"></div>
+          </div>
+        </div>
+        <button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button>
+      </div>
       <div class="user-menu">
         <button class="user-menu-trigger" id="userMenuTrigger">
           <span class="user-avatar">${initial}</span>
@@ -784,15 +798,6 @@ function updateUIForAuth() {
           <button class="danger" id="logoutBtn">Sign Out</button>
         </div>
       </div>
-      <div class="history-wrap">
-        <div class="history-dropdown" id="historyDropdown">
-          <div class="history-dropdown-header">
-            <span>Recent Searches</span>
-            <button id="historyClearBtn">Clear</button>
-          </div>
-          <div class="history-dropdown-list" id="historyList"></div>
-        </div>
-      </div>
     `;
     document.getElementById('userMenuTrigger')?.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -807,6 +812,7 @@ function updateUIForAuth() {
       window._dropdownListener = true;
     }
     document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
+    document.getElementById('dashboardBtn')?.addEventListener('click', showDashboard);
     document.getElementById('dropdownDashboard')?.addEventListener('click', showDashboard);
     document.getElementById('dropdownFavorites')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('favorites'); });
     document.getElementById('dropdownAlerts')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('alerts'); });
@@ -814,6 +820,9 @@ function updateUIForAuth() {
     document.getElementById('dropdownCoupons')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
     document.getElementById('dropdownAdmin')?.addEventListener('click', showAdmin);
     document.getElementById('logoutBtn')?.addEventListener('click', logout);
+    document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); toggleSearchHistory(); });
+    document.getElementById('historyClearBtn')?.addEventListener('click', () => { localStorage.removeItem('sr_history'); renderSearchHistory(); });
+    document.getElementById('couponsNavBtn')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
   } else {
     actions.innerHTML = `
 						<div class="history-wrap">
