@@ -764,8 +764,8 @@ function updateUIForAuth() {
       ? `<div class="membership-expiry">⭐ Premium &middot; ${formatDate(membershipData.expiresAt)}</div>`
       : '';
     actions.innerHTML = `
-      <div class="desktop-header-actions">
         ${premiumBtn}
+      <div class="desktop-header-actions">
         <button class="btn-ghost desktop-only" id="dashboardBtn">📊 Dashboard</button>
         <div class="history-wrap desktop-only">
           <button class="btn-ghost" id="historyNavBtn">🕐 History</button>
@@ -788,7 +788,6 @@ function updateUIForAuth() {
           </span>
         </button>
         <div class="user-dropdown" id="userDropdown">
-          <a id="dropdownDashboard">📊 Dashboard</a>
           <a id="dropdownFavorites">❤️ Favorites</a>
           <a id="dropdownAlerts">🔔 Price Alerts</a>
           <a id="dropdownHistory">🕐 History</a>
@@ -813,8 +812,7 @@ function updateUIForAuth() {
     }
     document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
     document.getElementById('dashboardBtn')?.addEventListener('click', showDashboard);
-    document.getElementById('dropdownDashboard')?.addEventListener('click', showDashboard);
-    document.getElementById('dropdownFavorites')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('favorites'); });
+        document.getElementById('dropdownFavorites')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('favorites'); });
     document.getElementById('dropdownAlerts')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('alerts'); });
     document.getElementById('dropdownHistory')?.addEventListener('click', (e) => { e.stopPropagation(); toggleSearchHistory(); });
     document.getElementById('dropdownCoupons')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
@@ -825,7 +823,7 @@ function updateUIForAuth() {
     document.getElementById('couponsNavBtn')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
   } else {
     actions.innerHTML = `
-						<div class="history-wrap">
+						<div class="history-wrap desktop-only">
 							<button class="btn-ghost" id="historyNavBtn">🕐 History</button>
 							<div class="history-dropdown" id="historyDropdown">
 								<div class="history-dropdown-header">
@@ -835,7 +833,7 @@ function updateUIForAuth() {
 								<div class="history-dropdown-list" id="historyList"></div>
 							</div>
 						</div>
-						<button class="btn-ghost" id="couponsNavBtn">🎫 Coupons</button>
+						<button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button>
       <button class="btn-premium" id="pricingNavBtn">⭐ Go Premium</button>
       <button class="btn-outline" id="loginBtn">Sign In</button>
     `;
