@@ -761,22 +761,10 @@ function updateUIForAuth() {
     const premiumBtnText = membershipData && isPremium() ? '⭐ Premium' : '⭐ Go Premium';
     const premiumBtn = `<button class="btn-premium" id="pricingNavBtn">${premiumBtnText}</button>`;
     const expiryHtml = isPremium() && membershipData?.expiresAt
-      ? `<div class="membership-expiry">⭐ Premium &middot; Expires ${formatDate(membershipData.expiresAt)}</div>`
+      ? `<div class="membership-expiry">⭐ Premium &middot; ${formatDate(membershipData.expiresAt)}</div>`
       : '';
     actions.innerHTML = `
       ${premiumBtn}
-      <button class="btn-ghost" id="dashboardBtn">📊 Dashboard</button>
-      <div class="history-wrap">
-        <button class="btn-ghost" id="historyNavBtn">🕐 History</button>
-        <div class="history-dropdown" id="historyDropdown">
-          <div class="history-dropdown-header">
-            <span>Recent Searches</span>
-            <button id="historyClearBtn">Clear</button>
-          </div>
-          <div class="history-dropdown-list" id="historyList"></div>
-        </div>
-      </div>
-      <button class="btn-ghost" id="couponsNavBtn">🎫 Coupons</button>
       <div class="user-menu">
         <button class="user-menu-trigger" id="userMenuTrigger">
           <span class="user-avatar">${initial}</span>
@@ -789,9 +777,20 @@ function updateUIForAuth() {
           <a id="dropdownDashboard">📊 Dashboard</a>
           <a id="dropdownFavorites">❤️ Favorites</a>
           <a id="dropdownAlerts">🔔 Price Alerts</a>
+          <a id="dropdownHistory">🕐 History</a>
+          <a id="dropdownCoupons">🎫 Coupons</a>
           ${user.email === '1067678960@qq.com' ? '<a id="dropdownAdmin">⚙️ Admin Panel</a>' : ''}
           <div class="divider"></div>
           <button class="danger" id="logoutBtn">Sign Out</button>
+        </div>
+      </div>
+      <div class="history-wrap">
+        <div class="history-dropdown" id="historyDropdown">
+          <div class="history-dropdown-header">
+            <span>Recent Searches</span>
+            <button id="historyClearBtn">Clear</button>
+          </div>
+          <div class="history-dropdown-list" id="historyList"></div>
         </div>
       </div>
     `;
@@ -807,16 +806,14 @@ function updateUIForAuth() {
       });
       window._dropdownListener = true;
     }
-    document.getElementById('dashboardBtn')?.addEventListener('click', showDashboard);
     document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
     document.getElementById('dropdownDashboard')?.addEventListener('click', showDashboard);
     document.getElementById('dropdownFavorites')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('favorites'); });
     document.getElementById('dropdownAlerts')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('alerts'); });
+    document.getElementById('dropdownHistory')?.addEventListener('click', (e) => { e.stopPropagation(); toggleSearchHistory(); });
+    document.getElementById('dropdownCoupons')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
     document.getElementById('dropdownAdmin')?.addEventListener('click', showAdmin);
     document.getElementById('logoutBtn')?.addEventListener('click', logout);
-				document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); toggleSearchHistory(); });
-				document.getElementById('historyClearBtn')?.addEventListener('click', () => { localStorage.removeItem('sr_history'); renderSearchHistory(); });
-    document.getElementById('couponsNavBtn')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
   } else {
     actions.innerHTML = `
 						<div class="history-wrap">
