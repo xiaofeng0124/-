@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — SnappRice</title>
+  <link rel="stylesheet" href="/src/css/style.css?v10">
+  <link rel="icon" href="/src/logo.png?v4">
+  <style>
+    .blog-page { max-width: 760px; margin: 40px auto; padding: 0 20px 80px; }
+    .blog-page h1 { font-size: 28px; margin-bottom: 8px; }
+    .blog-page .subtitle { font-size: 15px; color: var(--gray-500); margin-bottom: 32px; }
+    .blog-card { display: block; padding: 20px 24px; margin-bottom: 16px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; text-decoration: none; transition: box-shadow .2s, border-color .2s; }
+    .blog-card:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(22,163,74,0.1); }
+    .blog-card h2 { font-size: 17px; color: var(--dark); margin-bottom: 6px; }
+    .blog-card .meta { font-size: 12px; color: var(--gray-400); margin-bottom: 8px; }
+    .blog-card p { font-size: 14px; color: var(--gray-600); line-height: 1.6; margin: 0; }
+    .blog-card .tag { display: inline-block; font-size: 11px; font-weight: 600; color: var(--primary); background: #f0fdf4; padding: 2px 10px; border-radius: 100px; margin-top: 8px; }
+    .back-to-top { position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;z-index:999; }
+    .back-to-top.visible { opacity:1;transform:translateY(0); }
+    .back-to-top:hover { background:#15803d; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <img src="/src/logo.png?v2" alt="SnappRice" style="width:56px;height:56px;border-radius:12px">
+        <span style="font-size:34px;font-weight:800;color:var(--dark);margin-left:8px">Snap</span>
+        <span style="font-size:34px;font-weight:800;color:#16a34a">Price</span>
+      </a>
+    </div>
+  </header>
+  <main>
+    <div class="blog-page">
+      <h1>SnappRice Blog</h1>
+      <p class="subtitle">Shopping tips, price comparison guides, and smart savings strategies.</p>
+
+      <a class="blog-card" href="/blog/amazon-vs-walmart-2026">
+        <h2>Amazon vs. Walmart: Which Store Offers Better Deals in 2026?</h2>
+        <div class="meta">May 29, 2026 · 4 min read</div>
+        <p>A side-by-side comparison of pricing, shipping, and product selection across Amazon and Walmart — so you know where to buy before you click.</p>
+        <span class="tag">Comparison</span>
+      </a>
+
+      <a class="blog-card" href="/blog/best-budget-electronics-2026">
+        <h2>Best Budget Electronics Under $50 in 2026</h2>
+        <div class="meta">May 29, 2026 · 5 min read</div>
+        <p>You don't need to spend a fortune for quality gadgets. We've rounded up the top-rated electronics under $50 across Amazon, Walmart, eBay, and Best Buy.</p>
+        <span class="tag">Shopping Guide</span>
+      </a>
+
+      <a class="blog-card" href="/blog/how-to-spot-fake-discounts">
+        <h2>How to Spot Fake Discounts When Shopping Online</h2>
+        <div class="meta">May 29, 2026 · 4 min read</div>
+        <p>Not every sale is a real deal. Learn the telltale signs of inflated original prices and fake markdowns — and how SnappRice helps you see the truth.</p>
+        <span class="tag">Consumer Tips</span>
+      </a>
+
+      <a class="blog-card" href="/blog/best-time-to-buy-seasonal-calendar">
+        <h2>The Best Time to Buy: Seasonal Shopping Calendar for 2026</h2>
+        <div class="meta">May 29, 2026 · 5 min read</div>
+        <p>Timing your purchases right can save you hundreds. From Prime Day to Black Friday, here's when to buy electronics, appliances, clothing, and more.</p>
+        <span class="tag">Seasonal</span>
+      </a>
+
+      <a class="blog-card" href="/blog/price-alert-strategies">
+        <h2>Price Alert Strategies: Never Overpay Again</h2>
+        <div class="meta">May 29, 2026 · 3 min read</div>
+        <p>Set smart price alerts and let SnappRice do the monitoring for you. Here's how to choose the right target price and catch the lowest dip.</p>
+        <span class="tag">Tips & Tricks</span>
+      </a>
+    </div>
+  </main>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="/about">About</a>
+        <a href="/blog">Blog</a>
+        <a href="/partnerships">Partnerships</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+        <button class="btn-link" id="contactBtn">Contact Us</button>
+      </div>
+      <p>&copy; 2026 SnappRice. Search, compare, save.</p>
+    </div>
+  </footer>
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+  <script>
+    var btt = document.getElementById('backToTop');
+    window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 300); });
+    btt.addEventListener('click', function(){ window.scrollTo({ top:0, behavior:'smooth' }); });
+  </script>
+</body>
+</html>
