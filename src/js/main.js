@@ -1719,8 +1719,6 @@ async function checkMembership() {
     const res = await fetch('/api/membership', { headers: { 'Authorization': `Bearer ${s.token}` } });
     if (res.ok) membershipData = await res.json();
     updateUIForAuth();
-    updatePremiumUI();
-
     if (isPremium()) {
       showPremiumWelcome(s.email);
     }
@@ -1870,22 +1868,6 @@ function showPremiumWelcome(email) {
 function formatDate(isoStr) {
   const d = new Date(isoStr);
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function updatePremiumUI() {
-  const existingBadge = document.getElementById('premiumBadge');
-  if (isPremium()) {
-    if (!existingBadge) {
-      const badge = document.createElement('span');
-      badge.id = 'premiumBadge';
-      badge.className = 'premium-badge';
-      badge.textContent = '⭐ PREMIUM';
-      const userMenu = document.querySelector('.user-menu');
-      if (userMenu) userMenu.parentNode.insertBefore(badge, userMenu);
-    }
-  } else {
-    if (existingBadge) existingBadge.remove();
-  }
 }
 
 function showPricingModal() {

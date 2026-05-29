@@ -1530,6 +1530,11 @@ header .logo { margin-left: 0; }
 header .logo img { width: 32px; height: 32px; }
 header .logo span { font-size: 18px !important; }
 header .logo { gap: 4px; }
+.header-actions { gap: 4px; margin-right: 8px; }
+.header-actions .btn-ghost { padding: 8px 8px; font-size: 12px; }
+.header-actions .btn-premium { padding: 6px 10px; font-size: 11px; }
+.user-menu-trigger { padding: 4px 6px; gap: 4px; }
+.user-menu-email { font-size: 11px; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .search-box { flex-wrap: wrap; }
 .search-box input { width: 100%; min-width: 0; }
 .search-actions { width: 100%; justify-content: flex-end; margin-top: 4px; }
@@ -1545,7 +1550,11 @@ header .logo { gap: 4px; }
 }
 
 @media (max-width: 480px) {
-.header-inner { padding: 0 10px; }
+.header-inner { padding: 0 6px; }
+.header-actions { gap: 2px; margin-right: 4px; }
+.header-actions .btn-ghost { padding: 6px 6px; font-size: 11px; }
+.header-actions .btn-premium { padding: 5px 8px; font-size: 10px; }
+.user-menu-email { max-width: 60px; }
 .search-actions { gap: 4px; }
 .search-actions .btn-camera,
 .search-actions .btn-voice { font-size: 18px; padding: 10px 12px; }
