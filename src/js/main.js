@@ -1426,26 +1426,51 @@ async function performSearch() {
 
 async function searchViaAPI(query) {
   try {
-    const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-    if (!res.ok) throw new Error('API returned ' + res.status);
-    const data = await res.json();
-    if (!data.results || data.results.length === 0) throw new Error('No results');
+    const [serpRes, ebayRes] = await Promise.all([
+      fetch(`/api/search?q=${encodeURIComponent(query)}`).catch(() => null),
+      fetch(`/api/ebay?q=${encodeURIComponent(query)}`).catch(() => null),
+    ]);
 
-    const r = data.results;
-    const virtualProduct = {
-      name: r[0].title || query.charAt(0).toUpperCase() + query.slice(1),
-      image: r[0].image || '',
-      stores: r.map(item => ({
-        store: item.store,
-        price: item.price,
-        rating: item.rating,
-        reviews: item.reviews,
-        shipDays: item.shipping && item.shipping.toLowerCase().includes('free') ? 3 : 5,
-        reputation: item.rating > 0 ? Math.round((item.rating / 5) * 100) : 85,
-        url: item.url || '#'
-      }))
-    };
-    return virtualProduct;
+    let allStores = [];
+    let productName = query.charAt(0).toUpperCase() + query.slice(1);
+    let productImage = '';
+
+    if (serpRes && serpRes.ok) {
+      const data = await serpRes.json();
+      if (data.results && data.results.length > 0) {
+        productName = data.results[0].title || productName;
+        productImage = data.results[0].image || '';
+        allStores = data.results.map(item => ({
+          store: item.store,
+          price: item.price,
+          rating: item.rating,
+          reviews: item.reviews,
+          shipDays: item.shipping && item.shipping.toLowerCase().includes('free') ? 3 : 5,
+          reputation: item.rating > 0 ? Math.round((item.rating / 5) * 100) : 85,
+          url: item.url || '#'
+        }));
+      }
+    }
+
+    if (ebayRes && ebayRes.ok) {
+      const ebayData = await ebayRes.json();
+      if (ebayData.results && ebayData.results.length > 0) {
+        allStores = allStores.concat(ebayData.results.map(item => ({
+          store: 'eBay',
+          price: item.price,
+          rating: item.rating,
+          reviews: item.reviews,
+          shipDays: 5,
+          reputation: item.rating > 0 ? Math.round((item.rating / 5) * 100) : 85,
+          url: item.url || '#'
+        })));
+        if (!productImage) productImage = ebayData.results[0].image || '';
+      }
+    }
+
+    if (allStores.length === 0) throw new Error('No results from any source');
+
+    return { name: productName, image: productImage, stores: allStores };
   } catch (e) {
     console.warn('API search failed, using mock:', e.message);
     return null;
