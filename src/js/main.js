@@ -2032,6 +2032,16 @@ function initContactForm() {
     if (e.target === e.currentTarget) document.getElementById('contactModal').classList.remove('active');
   });
   document.getElementById('contactSubmitBtn')?.addEventListener('click', handleContactSubmit);
+
+  // Auto-open contact modal when URL hash is #contact (e.g. from privacy page link)
+  if (location.hash === '#contact') {
+    document.getElementById('contactModal')?.classList.add('active');
+  }
+  window.addEventListener('hashchange', () => {
+    if (location.hash === '#contact') {
+      document.getElementById('contactModal')?.classList.add('active');
+    }
+  });
 }
 
 async function handleContactSubmit() {
