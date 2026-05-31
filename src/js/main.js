@@ -1937,6 +1937,29 @@ function initPricingModal() {
     showToast('💳 Payment coming soon — stay tuned!');
   });
 
+  // Mobile portrait: sync swipe dots with scroll position
+  const pg = document.querySelector('.pricing-grid');
+  const dots = document.querySelectorAll('.pricing-dots .dot');
+  if (pg && dots.length > 1) {
+    let ticking = false;
+    pg.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const cw = pg.querySelector('.pricing-card')?.offsetWidth || 1;
+          const idx = Math.round(pg.scrollLeft / (cw + 24));
+          dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    dots.forEach(d => {
+      d.addEventListener('click', () => {
+        const card = pg.querySelectorAll('.pricing-card')[parseInt(d.dataset.index)];
+        if (card) card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      });
+    });
+  }
 }
 
 function initContactForm() {
