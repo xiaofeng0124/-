@@ -857,6 +857,7 @@ function switchDashboardTab(tab) {
   document.querySelectorAll('.dashboard-tabs button').forEach(b => b.classList.remove('active'));
   document.querySelector(`.dashboard-tabs button[data-tab="${tab}"]`)?.classList.add('active');
   if (tab === 'favorites') renderDashboardFavorites();
+  else if (tab === 'history') renderDashboardHistory();
   else if (tab === 'alerts') renderDashboardAlerts();
   else if (tab === 'coupons') renderDashboardCoupons();
 }
@@ -868,15 +869,59 @@ function renderDashboardFavorites() {
     container.innerHTML = `<div class="dashboard-empty"><span>❤️</span><h3>No favorites yet</h3><p>Search for products and heart them to save here.</p></div>`;
     return;
   }
-  container.innerHTML = `<div class="price-grid">${favs.map(f => `
-    <div class="price-card">
-      <div class="store-info"><div class="store-logo" style="background:${STORE_CONFIG[f.store]?.bg||'#666'}">${f.store[0]}</div><span class="store-name">${f.store}</span></div>
-      <div style="flex:1;padding:0 12px"><strong style="font-size:14px">${f.productName}</strong><br><span style="font-size:13px;color:var(--gray-500)">$${f.price.toFixed(2)}</span></div>
-      <div class="dashboard-item-actions">
-        <button class="btn-sm btn-sm-primary" onclick="searchProduct('${f.productName.replace(/'/g, "\\'")}')">View</button>
-        <button class="btn-sm btn-sm-outline" onclick="removeFavAndRefresh('${f.productName.replace(/'/g, "\\'")}','${f.store}')">Remove</button>
+  container.innerHTML = `<div class="price-grid">${favs.map(f => {
+    const img = f.image || '';
+    return `<div class="price-card">
+      <div class="price-card-top">
+        <div class="store-info">
+          <div class="store-logo" style="background:${STORE_CONFIG[f.store]?.bg||'#666'}">${f.store[0]}</div>
+          <span class="store-name">${f.store}</span>
+        </div>
       </div>
-    </div>`).join('')}</div>`;
+      <div class="price-card-img">
+        <img src="${proxyImg(img)}" alt="${f.productName}" onerror="this.style.display='none'">
+      </div>
+      <div class="card-product-name" title="${f.productName}">${f.productName}</div>
+      <div class="price-card-middle">
+        <div class="price-amount">$${(f.price||0).toFixed(2)}</div>
+      </div>
+      <div class="price-card-bottom" style="grid-template-columns:1fr 1fr;gap:4px;display:grid">
+        <button class="buy-btn" onclick="searchProduct('${f.productName.replace(/'/g, "\\'")}')">View</button>
+        <button class="icon-btn heart-btn favorited" onclick="removeFavAndRefresh('${f.productName.replace(/'/g, "\\'")}','${f.store}')" title="Remove">✕</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderDashboardHistory() {
+  const container = document.getElementById('dashboardContent');
+  const clicked = getClickedProducts();
+  if (!clicked.length) {
+    container.innerHTML = `<div class="dashboard-empty"><span>🕐</span><h3>No browsing history yet</h3><p>Products you click "Buy Now" on will appear here.</p></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="price-grid">${clicked.map(c => {
+    const img = c.image || '';
+    return `<div class="price-card">
+      <div class="price-card-top">
+        <div class="store-info">
+          <div class="store-logo" style="background:${STORE_CONFIG[c.store]?.bg||'#666'}">${c.store[0]}</div>
+          <span class="store-name">${c.store}</span>
+        </div>
+        <span style="font-size:10px;color:var(--gray-400)">${timeAgo(c.time)}</span>
+      </div>
+      <div class="price-card-img">
+        <img src="${proxyImg(img)}" alt="${c.name}" onerror="this.style.display='none'">
+      </div>
+      <div class="card-product-name" title="${c.name}">${c.name}</div>
+      <div class="price-card-middle">
+        <div class="price-amount">$${(c.price||0).toFixed(2)}</div>
+      </div>
+      <div class="price-card-bottom" style="grid-template-columns:1fr;display:grid">
+        <button class="buy-btn" onclick="searchProduct('${c.name.replace(/'/g, "\\'")}')">View Again</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
 }
 
 function removeFavAndRefresh(productName, store) {
@@ -1111,6 +1156,20 @@ function saveSearchHistory(product) {
       body: JSON.stringify({ query: query.toLowerCase() }),
     }).catch(() => {});
   }
+}
+
+// ======== Clicked Products History (Buy Now tracking) ========
+function saveClickedProduct(name, store, price, image) {
+  if (!name) return;
+  let clicked = JSON.parse(localStorage.getItem('sr_clicked') || '[]');
+  clicked = clicked.filter(c => !(c.name === name && c.store === store));
+  clicked.unshift({ name, store, price, image: image || '', time: Date.now() });
+  if (clicked.length > 50) clicked = clicked.slice(0, 50);
+  localStorage.setItem('sr_clicked', JSON.stringify(clicked));
+}
+
+function getClickedProducts() {
+  return JSON.parse(localStorage.getItem('sr_clicked') || '[]');
 }
 
 function renderSearchHistory() {
@@ -1584,8 +1643,8 @@ function renderSortedStores(stores, sortBy) {
         </div>
 
         <div class="price-card-bottom">
-          <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn">Buy Now</a>
-          <button class="icon-btn heart-btn ${faved ? 'favorited' : ''}" onclick="toggleFavorite(event,'${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price})">${faved ? '❤️' : '🤍'}</button>
+          <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')">Buy Now</a>
+          <button class="icon-btn heart-btn ${faved ? 'favorited' : ''}" onclick="toggleFavorite(event,'${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')">${faved ? '❤️' : '🤍'}</button>
           <button class="icon-btn" onclick="openPriceHistory('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price})" title="Price history">📈</button>
         </div>
       </div>`;
@@ -1610,7 +1669,7 @@ function showCouponPopup(event, el, store) {
 }
 
 // ======== Favorites Toggle ========
-function toggleFavorite(event, productName, store, price) {
+function toggleFavorite(event, productName, store, price, image) {
   event.stopPropagation();
   if (!currentUser) { showAuthModal('login'); return; }
   const btn = event.currentTarget;
@@ -1619,7 +1678,7 @@ function toggleFavorite(event, productName, store, price) {
     btn.classList.remove('favorited');
     btn.textContent = '🤍';
   } else {
-    addFavorite({ productName, store, price });
+    addFavorite({ productName, store, price, image: image || '' });
     btn.classList.add('favorited');
     btn.textContent = '❤️';
   }
