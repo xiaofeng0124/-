@@ -802,6 +802,7 @@ animation: modalIn 0.25s ease;
 .modal-close {
 position: absolute;
 top: 14px; right: 18px;
+z-index: 1;
 background: none;
 border: none;
 font-size: 24px;
@@ -1583,6 +1584,10 @@ header .logo { gap: 4px; }
 .pricing-modal {
 max-width: 720px !important;
 padding: 0 !important;
+overflow: hidden;
+}
+
+.pricing-modal-scroll {
 max-height: 90vh;
 overflow-y: auto;
 }
