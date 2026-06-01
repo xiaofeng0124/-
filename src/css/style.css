@@ -1585,7 +1585,6 @@ max-width: 720px !important;
 padding: 0 !important;
 max-height: 90vh;
 overflow-y: auto;
-overflow-x: hidden;
 }
 
 .pricing-header {
@@ -1726,6 +1725,16 @@ font-weight: 700;
 padding: 4px 14px;
 border-radius: 100px;
 white-space: nowrap;
+}
+
+/* Desktop: prevent border-radius clipping on pricing cards */
+@media (min-width: 601px) {
+.pricing-card {
+overflow: hidden;
+}
+.pricing-card.recommended .pricing-badge {
+top: 0;
+}
 }
 
 .pricing-features {
