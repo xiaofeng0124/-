@@ -1727,13 +1727,10 @@ border-radius: 100px;
 white-space: nowrap;
 }
 
-/* Desktop: prevent border-radius clipping on pricing cards */
+/* Desktop: square corners on pricing cards */
 @media (min-width: 601px) {
 .pricing-card {
-overflow: hidden;
-}
-.pricing-card.recommended .pricing-badge {
-top: 0;
+border-radius: 0;
 }
 }
 
