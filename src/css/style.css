@@ -1783,6 +1783,8 @@ opacity: 0.6;
 cursor: default;
 }
 
+.pricing-card.mobile-only { display: none; }
+
 .pricing-dots { display: none; }
 
 .pricing-footer-note {
@@ -1843,6 +1845,9 @@ margin: 0 12px;
 }
 .pricing-card + .pricing-card {
 margin-left: 0;
+}
+.pricing-card.mobile-only {
+display: flex;
 }
 .pricing-dots {
 display: flex;

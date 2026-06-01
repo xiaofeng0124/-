@@ -1966,37 +1966,59 @@ function hidePricingModal() {
   document.getElementById('pricingModal').classList.remove('active');
 }
 
-function initPricingToggle() {
+function initPricingToggle(syncingRef) {
   document.querySelectorAll('.toggle-label').forEach(label => {
     label.addEventListener('click', () => {
+      if (syncingRef && syncingRef.current) return;
       document.querySelectorAll('.toggle-label').forEach(l => l.classList.remove('active'));
       label.classList.add('active');
       const period = label.dataset.period;
+
+      // Desktop/landscape: toggle premium card pricing
       const monthlyRow = document.querySelector('#premiumPriceBlock .price-row:first-child');
       const yearlyRow = document.getElementById('yearlyDeal');
-      if (period === 'year') {
-        monthlyRow.style.display = 'none';
-        yearlyRow.style.display = 'flex';
-      } else {
-        monthlyRow.style.display = 'flex';
-        yearlyRow.style.display = 'none';
+      if (monthlyRow && yearlyRow) {
+        if (period === 'year') {
+          monthlyRow.style.display = 'none';
+          yearlyRow.style.display = 'flex';
+        } else {
+          monthlyRow.style.display = 'flex';
+          yearlyRow.style.display = 'none';
+        }
+      }
+
+      // Mobile portrait: scroll to corresponding premium card
+      const isMobilePortrait = window.innerWidth <= 600 && window.innerHeight > window.innerWidth;
+      if (isMobilePortrait) {
+        const cards = document.querySelectorAll('.pricing-card');
+        const idx = period === 'year' ? 2 : 1;
+        if (cards[idx]) {
+          if (syncingRef) syncingRef.current = true;
+          cards[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          setTimeout(() => { if (syncingRef) syncingRef.current = false; }, 400);
+        }
       }
     });
   });
 }
 
 function initPricingModal() {
+  const _syncing = { current: false };
+
   document.getElementById('pricingModalClose')?.addEventListener('click', hidePricingModal);
   document.getElementById('pricingModal')?.addEventListener('click', (e) => {
     if (e.target === e.currentTarget) hidePricingModal();
   });
-  initPricingToggle();
+  initPricingToggle(_syncing);
 
   document.getElementById('upgradeBtn')?.addEventListener('click', () => {
     showToast('💳 Payment coming soon — stay tuned!');
   });
+  document.getElementById('upgradeBtnYearly')?.addEventListener('click', () => {
+    showToast('💳 Payment coming soon — stay tuned!');
+  });
 
-  // Mobile portrait: sync swipe dots with scroll position
+  // Mobile portrait: sync swipe dots + toggle with scroll position
   const pg = document.querySelector('.pricing-grid');
   const dots = document.querySelectorAll('.pricing-dots .dot');
   if (pg && dots.length > 1) {
@@ -2006,7 +2028,20 @@ function initPricingModal() {
         requestAnimationFrame(() => {
           const cw = pg.querySelector('.pricing-card')?.offsetWidth || 1;
           const idx = Math.round(pg.scrollLeft / (cw + 24));
+          // Update dots
           dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+          // Sync toggle on mobile portrait (only if not triggered by toggle click)
+          if (!_syncing.current && window.innerWidth <= 600 && window.innerHeight > window.innerWidth) {
+            const labels = document.querySelectorAll('.toggle-label');
+            if (idx === 1) {
+              labels.forEach(l => l.classList.toggle('active', l.dataset.period === 'month'));
+            } else if (idx === 2) {
+              labels.forEach(l => l.classList.toggle('active', l.dataset.period === 'year'));
+            } else if (idx === 0) {
+              // Free page: reset toggle to Monthly
+              labels.forEach(l => l.classList.toggle('active', l.dataset.period === 'month'));
+            }
+          }
           ticking = false;
         });
         ticking = true;
