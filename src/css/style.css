@@ -1659,6 +1659,7 @@ padding: 24px;
 display: flex;
 flex-direction: column;
 position: relative;
+background: #fff;
 transition: border-color 0.2s, box-shadow 0.2s;
 }
 .pricing-card.recommended {
