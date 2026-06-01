@@ -49,7 +49,7 @@ export async function onRequest(context) {
     // Call eBay Browse API
     const searchRes = await fetch(
       `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(query)}&limit=10`,
-      { headers: { Authorization: `Bearer ${token}`, 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US' } }
+      { headers: { Authorization: `Bearer ${token}`, 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US', 'X-EBAY-C-ENDUSERCTX': 'affiliateCampaignId=5339155328' } }
     );
 
     if (!searchRes.ok) {

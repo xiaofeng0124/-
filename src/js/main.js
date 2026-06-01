@@ -108,7 +108,7 @@ function getStoreUrl(store, productName, price) {
     case 'Walmart':
       return `https://www.walmart.com/search?q=${q}`;
     case 'eBay':
-      return `https://www.ebay.com/sch/i.html?_nkw=${q}&_sop=15`;
+      return `https://www.ebay.com/sch/i.html?_nkw=${q}&_sop=15&mkcid=1&mkrid=711-53200-19255-0&siteid=0&campid=5339155328&toolid=10001&mkevt=1`;
     case 'Best Buy':
       return `https://www.bestbuy.com/site/searchpage.jsp?st=${q}`;
     case 'Target':
