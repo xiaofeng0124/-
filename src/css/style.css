@@ -1585,6 +1585,7 @@ max-width: 720px !important;
 padding: 0 !important;
 max-height: 90vh;
 overflow-y: auto;
+overflow-x: hidden;
 }
 
 .pricing-header {
