@@ -37,13 +37,21 @@ SnappRice (snapprice.co) — 跨平台比价引擎。用户输入商品名或上
 - `userdata.js` — 读写用户收藏/降价提醒 (`userdata:{email}`)
 - `auth/google.js` / `auth/google/callback.js` — Google OAuth 登录
 
-### 数据流
+### 数据流（搜索架构）
 ```
-用户搜索 → /api/search?q=xxx
-  ├─ 成功 → SerpAPI 结果 → 渲染卡片
-  └─ 失败 → 匹配 MOCK_PRODUCTS → 渲染 mock
+用户搜索 → Promise.all([/api/search, /api/ebay])
+  ├─ /api/search (SerpAPI) → Amazon / Walmart / Best Buy / Target + 其他
+  │   └─ 过滤掉 eBay（由 eBay API 处理，避免重复 + 节省 SerpAPI 额度）
+  ├─ /api/ebay (eBay Browse API) → eBay 真实商品数据
+  │   └─ 5000次/天免费，链接带 ePN campid=5339155328
+  ├─ 两者都成功 → 合并渲染
+  ├─ 任一个失败 → 只显示成功的那个
+  └─ 全部失败 → 匹配 MOCK_PRODUCTS → 渲染 mock
 
-用户上传图片 → base64 → 存在内存 → 搜索时展示缩略图（AI 识别尚未接入）
+未来计划：平台自有API优先，剩余走SerpAPI
+  - ✅ eBay → eBay Browse API（已完成）
+  - ⏳ Amazon → Amazon API（待接入）
+  - ⏳ Walmart / Best Buy / Target → 待申请联盟API或继续走SerpAPI
 ```
 
 ### 用户系统
@@ -121,6 +129,10 @@ git push origin master
 
 6. **搜索匹配**: `findProduct()` 支持中英文多语言关键字匹配（`LANG_KEYWORDS` 字典）。
 
-7. **环境变量**: `SERPAPI_KEY`（必填）、`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`（可选，OAuth）。
+7. **环境变量**: 
+   - `SEARCH_ENGINE` — 搜索引擎（`serpapi` 或 `valueserp`，默认 `serpapi`）
+   - `SERPAPI_KEY` — SerpAPI 密钥（`SEARCH_ENGINE=serpapi` 时必填）
+   - `VALUESERP_KEY` — ValueSERP 密钥（`SEARCH_ENGINE=valueserp` 时必填）
+   - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`（可选，OAuth）。
 
 8. **价格历史**: 目前是模拟数据（`generatePriceHistory()` 基于随机游走），待接真实数据源。
