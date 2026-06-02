@@ -1,10 +1,10 @@
 // 多引擎自动降级搜索
-// 顺序: ValueSERP → SerpAPI → Serper
-// 额度用完自动标记停用，不再重试
+// 顺序: SerpAPI（花完已付额度）→ Serper（预付费，长期用）
+// 额度用完自动标记停用，24小时后重置
+// ValueSERP 待完善（接口格式不匹配），后续加上
 
-const ENGINES = ['valueserp', 'serpapi', 'serper'];
+const ENGINES = ['serpapi', 'serper'];
 const ENGINE_NAMES = {
-  valueserp: 'ValueSERP',
   serpapi: 'SerpAPI',
   serper: 'Serper'
 };
@@ -33,8 +33,7 @@ export async function onRequest(context) {
 
       try {
         // 尝试用当前引擎搜索
-        if (engine === 'valueserp') results = await searchValueSerp(query, env);
-        else if (engine === 'serpapi') results = await searchSerpApi(query, env);
+        if (engine === 'serpapi') results = await searchSerpApi(query, env);
         else if (engine === 'serper') results = await searchSerper(query, env);
 
         if (results.length > 0) {
@@ -75,46 +74,7 @@ async function cleanupExhaustedFlags(env) {
   } catch (_) {}
 }
 
-// ---- 各引擎实现 ----
-
-async function searchValueSerp(query, env) {
-  const rawKey = env.VALUESERP_KEY || (await env.USERS?.get('config:valueserp_key')) || '';
-  const apiKey = rawKey.charCodeAt(0) === 0xFEFF ? rawKey.slice(1) : rawKey;
-  if (!apiKey) throw new Error('ValueSERP 未配置');
-
-  const params = new URLSearchParams({
-    api_key: apiKey, q: query, tbm: 'shop', gl: 'us', hl: 'en', num: 20,
-  });
-
-  const response = await fetch(`https://api.valueserp.com/search?${params}`, {
-    headers: { Accept: 'application/json' },
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const data = await response.json();
-  if (data.error) throw new Error(data.error);
-
-  const allItems = [
-    ...(data.shopping_results || []),
-    ...(data.inline_shopping_results || [])
-  ];
-
-  return allItems
-    .filter(item => (item.extracted_price || item.price || 0) > 0)
-    .map((item) => ({
-      store: item.source || item.seller || item.store_name || 'Unknown',
-      price: item.extracted_price || item.price || 0,
-      rating: item.rating || 0,
-      reviews: typeof item.reviews === 'string'
-        ? parseInt(item.reviews.replace(/[^0-9]/g, '')) || 0
-        : item.reviews || 0,
-      title: item.title || '',
-      image: item.thumbnail || item.image || '',
-      url: item.link || item.url || '#',
-      shipping: item.delivery || item.shipping || null,
-    }));
-}
-
-async function searchSerpApi(query, env) {
+// ---- 引擎实现 ---- searchSerpApi(query, env) {
   const rawKey = env.SERPAPI_KEY || '';
   const apiKey = rawKey.charCodeAt(0) === 0xFEFF ? rawKey.slice(1) : rawKey;
   if (!apiKey) throw new Error('SerpAPI 未配置');
