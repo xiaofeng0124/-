@@ -11,19 +11,33 @@ export async function onRequest(context) {
   }
 
   try {
-    // 搜索引擎: serpapi / valueserp / serper，通过环境变量或KV config:search_engine 切换
-    const engine = (env.SEARCH_ENGINE || (await env.USERS?.get('config:search_engine')) || 'serpapi').toLowerCase();
+    // 多引擎自动降级: 先尝试 SerpAPI（花了钱的额度先用），失败则降级到 Serper
     let results = [];
+    let usedEngine = '';
 
-    if (engine === 'serper') {
-      results = await searchSerper(query, env);
-    } else if (engine === 'valueserp') {
-      results = await searchValueSerp(query, env);
-    } else {
+    // 1. 先试 SerpAPI
+    try {
       results = await searchSerpApi(query, env);
+      usedEngine = 'serpapi';
+    } catch (e) {
+      console.warn(`SerpAPI 失败，降级到 Serper: ${e.message}`);
     }
 
-    return new Response(JSON.stringify({ results, count: results.length }), {
+    // 2. SerpAPI 没结果或无配置，试试 Serper
+    if (results.length === 0) {
+      try {
+        results = await searchSerper(query, env);
+        usedEngine = 'serper';
+      } catch (e2) {
+        console.warn(`Serper 也失败了: ${e2.message}`);
+      }
+    }
+
+    if (results.length === 0) {
+      throw new Error('所有搜索引擎都无法获取数据');
+    }
+
+    return new Response(JSON.stringify({ results, count: results.length, engine: usedEngine }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
