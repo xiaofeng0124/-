@@ -1499,7 +1499,10 @@ async function searchViaAPI(query) {
       if (data.results && data.results.length > 0) {
         productName = data.results[0].title || productName;
         productImage = data.results[0].image || '';
-        allStores = data.results.map(item => ({
+        // 过滤掉eBay（由eBay API处理），避免重复+节省SerpAPI额度
+        allStores = data.results
+          .filter(item => item.store !== 'eBay')
+          .map(item => ({
           store: item.store,
           price: item.price,
           rating: item.rating,
