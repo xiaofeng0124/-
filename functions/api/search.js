@@ -78,7 +78,7 @@ async function cleanupExhaustedFlags(env) {
 // ---- 各引擎实现 ----
 
 async function searchValueSerp(query, env) {
-  const rawKey = env.VALUESERP_KEY || '';
+  const rawKey = env.VALUESERP_KEY || (await env.USERS?.get('config:valueserp_key')) || '';
   const apiKey = rawKey.charCodeAt(0) === 0xFEFF ? rawKey.slice(1) : rawKey;
   if (!apiKey) throw new Error('ValueSERP 未配置');
 
