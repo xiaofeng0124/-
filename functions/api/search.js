@@ -1,3 +1,14 @@
+// 多引擎自动降级搜索
+// 顺序: ValueSERP → SerpAPI → Serper
+// 额度用完自动标记停用，不再重试
+
+const ENGINES = ['valueserp', 'serpapi', 'serper'];
+const ENGINE_NAMES = {
+  valueserp: 'ValueSERP',
+  serpapi: 'SerpAPI',
+  serper: 'Serper'
+};
+
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
@@ -11,30 +22,38 @@ export async function onRequest(context) {
   }
 
   try {
-    // 多引擎自动降级: 先尝试 SerpAPI（花了钱的额度先用），失败则降级到 Serper
     let results = [];
     let usedEngine = '';
 
-    // 1. 先试 SerpAPI
-    try {
-      results = await searchSerpApi(query, env);
-      usedEngine = 'serpapi';
-    } catch (e) {
-      console.warn(`SerpAPI 失败，降级到 Serper: ${e.message}`);
-    }
+    for (const engine of ENGINES) {
+      // 检查这个引擎是否已被标记为额度用完
+      const exhaustedKey = `config:engine_exhausted:${engine}`;
+      const isExhausted = await env.USERS?.get(exhaustedKey);
+      if (isExhausted) continue;
 
-    // 2. SerpAPI 没结果或无配置，试试 Serper
-    if (results.length === 0) {
       try {
-        results = await searchSerper(query, env);
-        usedEngine = 'serper';
-      } catch (e2) {
-        console.warn(`Serper 也失败了: ${e2.message}`);
+        // 尝试用当前引擎搜索
+        if (engine === 'valueserp') results = await searchValueSerp(query, env);
+        else if (engine === 'serpapi') results = await searchSerpApi(query, env);
+        else if (engine === 'serper') results = await searchSerper(query, env);
+
+        if (results.length > 0) {
+          usedEngine = engine;
+          break; // 这个引擎有结果，就用它
+        }
+      } catch (e) {
+        // 标记这个引擎额度已用完，后续跳过
+        console.warn(`${ENGINE_NAMES[engine]} 失败: ${e.message}，标记为已用尽`);
+        try {
+          await env.USERS?.put(exhaustedKey, '1', { expirationTtl: 86400 }); // 24小时后自动重置
+        } catch (_) {}
       }
     }
 
     if (results.length === 0) {
-      throw new Error('所有搜索引擎都无法获取数据');
+      // 所有引擎都失效了，清理标记等 Serper 额度恢复
+      await cleanupExhaustedFlags(env);
+      throw new Error('所有搜索引擎额度已用尽，请充值');
     }
 
     return new Response(JSON.stringify({ results, count: results.length, engine: usedEngine }), {
@@ -48,86 +67,31 @@ export async function onRequest(context) {
   }
 }
 
-async function searchSerpApi(query, env) {
-  // Strip BOM if present (PowerShell piping issue)
-  const rawKey = env.SERPAPI_KEY || '';
-  const apiKey = rawKey.charCodeAt(0) === 0xFEFF ? rawKey.slice(1) : rawKey;
-
-  if (!apiKey) {
-    throw new Error('SERPAPI_KEY not configured');
-  }
-
-  const params = new URLSearchParams({
-    engine: 'google_shopping',
-    q: query,
-    api_key: apiKey,
-    num: 20,
-    currency: 'USD',
-  });
-
-  const response = await fetch(`https://serpapi.com/search?${params}`, {
-    headers: { Accept: 'application/json' },
-  });
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`SerpAPI请求失败: ${response.status} - ${errText}`);
-  }
-
-  const data = await response.json();
-
-  if (data.error) {
-    throw new Error(data.error);
-  }
-
-  return (data.shopping_results || [])
-    .filter(item => item.extracted_price > 0)
-    .map((item) => ({
-      store: item.source || item.seller || 'Unknown',
-      price: item.extracted_price || 0,
-      rating: item.rating || 0,
-      reviews:
-        typeof item.reviews === 'string'
-          ? parseInt(item.reviews.replace(/[^0-9]/g, '')) || 0
-          : item.reviews || 0,
-      title: item.title || '',
-      image: item.thumbnail || '',
-      url: item.link || '#',
-      shipping: item.delivery || null,
-    }));
+async function cleanupExhaustedFlags(env) {
+  try {
+    for (const engine of ENGINES) {
+      await env.USERS?.delete(`config:engine_exhausted:${engine}`);
+    }
+  } catch (_) {}
 }
+
+// ---- 各引擎实现 ----
 
 async function searchValueSerp(query, env) {
   const rawKey = env.VALUESERP_KEY || '';
   const apiKey = rawKey.charCodeAt(0) === 0xFEFF ? rawKey.slice(1) : rawKey;
-
-  if (!apiKey) {
-    throw new Error('VALUESERP_KEY not configured');
-  }
+  if (!apiKey) throw new Error('ValueSERP 未配置');
 
   const params = new URLSearchParams({
-    api_key: apiKey,
-    q: query,
-    tbm: 'shop',
-    gl: 'us',
-    hl: 'en',
-    num: 20,
+    api_key: apiKey, q: query, tbm: 'shop', gl: 'us', hl: 'en', num: 20,
   });
 
   const response = await fetch(`https://api.valueserp.com/search?${params}`, {
     headers: { Accept: 'application/json' },
   });
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`ValueSERP请求失败: ${response.status} - ${errText}`);
-  }
-
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const data = await response.json();
-
-  if (data.error) {
-    throw new Error(data.error);
-  }
+  if (data.error) throw new Error(data.error);
 
   const allItems = [
     ...(data.shopping_results || []),
@@ -140,10 +104,9 @@ async function searchValueSerp(query, env) {
       store: item.source || item.seller || item.store_name || 'Unknown',
       price: item.extracted_price || item.price || 0,
       rating: item.rating || 0,
-      reviews:
-        typeof item.reviews === 'string'
-          ? parseInt(item.reviews.replace(/[^0-9]/g, '')) || 0
-          : item.reviews || 0,
+      reviews: typeof item.reviews === 'string'
+        ? parseInt(item.reviews.replace(/[^0-9]/g, '')) || 0
+        : item.reviews || 0,
       title: item.title || '',
       image: item.thumbnail || item.image || '',
       url: item.link || item.url || '#',
@@ -151,46 +114,60 @@ async function searchValueSerp(query, env) {
     }));
 }
 
+async function searchSerpApi(query, env) {
+  const rawKey = env.SERPAPI_KEY || '';
+  const apiKey = rawKey.charCodeAt(0) === 0xFEFF ? rawKey.slice(1) : rawKey;
+  if (!apiKey) throw new Error('SerpAPI 未配置');
+
+  const params = new URLSearchParams({
+    engine: 'google_shopping', q: query, api_key: apiKey, num: 20, currency: 'USD',
+  });
+
+  const response = await fetch(`https://serpapi.com/search?${params}`, {
+    headers: { Accept: 'application/json' },
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const data = await response.json();
+  if (data.error) throw new Error(data.error);
+
+  return (data.shopping_results || [])
+    .filter(item => item.extracted_price > 0)
+    .map((item) => ({
+      store: item.source || item.seller || 'Unknown',
+      price: item.extracted_price || 0,
+      rating: item.rating || 0,
+      reviews: typeof item.reviews === 'string'
+        ? parseInt(item.reviews.replace(/[^0-9]/g, '')) || 0
+        : item.reviews || 0,
+      title: item.title || '',
+      image: item.thumbnail || '',
+      url: item.link || '#',
+      shipping: item.delivery || null,
+    }));
+}
+
 async function searchSerper(query, env) {
   const rawKey = env.SERPER_KEY || (await env.USERS?.get('config:serper_key')) || '';
   const apiKey = rawKey.charCodeAt(0) === 0xFEFF ? rawKey.slice(1) : rawKey;
-
-  if (!apiKey) {
-    throw new Error('SERPER_KEY not configured，请设置环境变量或KV config:serper_key');
-  }
+  if (!apiKey) throw new Error('Serper 未配置');
 
   const response = await fetch('https://google.serper.dev/shopping', {
     method: 'POST',
-    headers: {
-      'X-API-KEY': apiKey,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      q: query,
-      gl: 'us',
-      num: 20,
-    }),
+    headers: { 'X-API-KEY': apiKey, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ q: query, gl: 'us', num: 20 }),
   });
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Serper请求失败: ${response.status} - ${errText}`);
-  }
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
   const data = await response.json();
-
   const items = data.shopping || [];
 
   return items
     .filter(item => item.price)
     .map((item) => {
-      // 从 "$199.99" 格式提取数字
       const priceStr = (item.price || '').replace(/[^0-9.]/g, '');
-      const price = parseFloat(priceStr) || 0;
-
       return {
         store: item.source || item.seller || 'Unknown',
-        price: price,
+        price: parseFloat(priceStr) || 0,
         rating: item.rating || 0,
         reviews: item.reviews || parseInt(item.reviewCount) || 0,
         title: item.title || '',
