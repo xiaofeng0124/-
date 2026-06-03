@@ -1,77 +1,66 @@
 // 首页热门商品实时价格 API
-// 后端缓存（KV），所有用户共享，6小时自动刷新一次
+// 后端缓存（KV），所有用户共享，48小时自动刷新一次
+// 价格来源: Amazon (via Serper) + eBay (via eBay API)
 
-// 必须和前端 POPULAR_POOL 中的 name 完全一致，共60个
 const POPULAR_NAMES = [
-  'Apple AirPods Pro 2nd Gen',
-  'Sony PlayStation 5 Digital',
-  'Sony WH-1000XM5 Headphones',
-  'iPhone 15 Pro Max 256GB',
-  'Samsung 65" OLED 4K TV',
-  'MacBook Pro 14" M3 Pro',
-  'Nintendo Switch OLED Bundle',
-  'Google Pixel 8 Pro 128GB',
-  'Apple Watch Series 9 45mm',
-  'Bose QuietComfort Ultra',
-  'Samsung Galaxy S24 Ultra',
-  'iPad Air 11" M2 128GB',
-  'Amazon Echo Dot 5th Gen',
-  'Dyson V15 Detect Vacuum',
-  'Instant Pot Duo 7-in-1',
-  'Kindle Paperwhite 2024',
-  'Nintendo Pro Controller',
-  'Sony WF-1000XM5 Earbuds',
-  'Logitech MX Master 3S',
-  'Samsung Galaxy Tab S9 FE',
-  'Apple MagSafe Charger',
-  'JBL Flip 6 Speaker',
-  'Nespresso Vertuo Coffee',
-  'Ring Video Doorbell Pro 2',
-  'Canon EOS R50 Camera',
-  'LG C3 55" OLED TV',
-  'Roku Streaming Stick 4K',
-  'iRobot Roomba j7+',
-  'Anker Power Bank 20000mAh',
-  'Samsung 49" Curved Monitor',
-  'Apple AirTag 4 Pack',
-  'Sony A7 IV Camera',
-  'Dell XPS 15 Laptop',
-  'HP Envy 6055 Printer',
-  'Samsung Galaxy Watch 6',
-  'Beats Studio Pro',
-  'Meta Quest 3 128GB VR',
-  'Asus ROG Ally Handheld',
-  'Fitbit Charge 6',
-  'Sony XM5 Headphones',
-  'Xbox Series X Console',
-  'Samsung Galaxy Buds 3 Pro',
-  'Ninja Creami Ice Cream',
-  'Keurig K-Mini Coffee',
-  'Shark Navigator Vacuum',
-  'Weber Spirit Grill',
-  'Nike Air Max Sneakers',
-  'Apple Mac Mini M4',
-  'Bose SoundLink Speaker',
-  'GoPro Hero 13',
-  'DJI Mini 4 Pro Drone',
-  'Sonos Era 100 Speaker',
-  'KitchenAid Stand Mixer',
-  'Vitamix Blender',
-  'Breville Espresso',
-  'Lenovo ThinkPad X1',
-  'Microsoft Surface Pro',
-  'Adidas Ultraboost',
-  'Traeger Pellet Grill',
-  'Fujifilm Instax Camera',
+  // 📱 手机 & 平板 (10)
+  'Apple iPhone 16 Pro Max', 'Samsung Galaxy S25 Ultra', 'Google Pixel 9 Pro',
+  'Apple iPhone 16', 'Samsung Galaxy S25', 'OnePlus 13',
+  'iPad Pro M4 13"', 'iPad Air M3 11"', 'Samsung Galaxy Tab S10 Ultra',
+  'Amazon Fire Max 11',
+
+  // 💻 笔记本 & 电脑 (8)
+  'MacBook Air M4', 'MacBook Pro 16" M4 Pro', 'Dell XPS 16 Laptop',
+  'Samsung Galaxy Book 4', 'Lenovo ThinkPad X1 Carbon', 'Microsoft Surface Laptop 7',
+  'HP Spectre x360', 'ASUS Zenbook 14 OLED',
+
+  // 🎧 耳机 & 音频 (8)
+  'AirPods Pro 3', 'AirPods 4', 'Sony WH-1000XM6 Headphones',
+  'Bose QuietComfort Ultra Earbuds', 'Samsung Galaxy Buds 4 Pro',
+  'Sony WF-1000XM6 Earbuds', 'Beats Studio Pro', 'JBL Tune 770NC',
+
+  // ⌚ 手表 & 穿戴 (6)
+  'Apple Watch Ultra 3', 'Apple Watch Series 10', 'Samsung Galaxy Watch 7',
+  'Fitbit Charge 7', 'Garmin Fenix 8', 'Whoop 5.0 Band',
+
+  // 🎮 游戏 (8)
+  'PlayStation 5 Slim', 'Xbox Series X 2TB', 'Nintendo Switch 2',
+  'Meta Quest 3S 256GB', 'Steam Deck OLED 1TB', 'ASUS ROG Ally X',
+  'PS5 DualSense Edge', 'Nintendo Pro Controller',
+
+  // 📷 相机 & 影像 (6)
+  'Sony A7R V Camera', 'Canon EOS R6 Mark II', 'GoPro Hero 14',
+  'DJI Osmo Pocket 4', 'DJI Mini 4 Pro Drone', 'Instax Mini 99',
+
+  // 🏠 家居 & 厨房 (8)
+  'Instant Pot Duo Plus', 'KitchenAid Stand Mixer', 'Vitamix E310 Blender',
+  'Ninja Creami Deluxe', 'Keurig K-Elite Coffee', 'Breville Barista Express',
+  'Dyson V15 Detect', 'iRobot Roomba j9+',
+
+  // 👟 服装 & 鞋 (14)
+  'Nike Air Max 2025', 'Adidas Ultraboost Light', 'New Balance 990v6',
+  'Nike Air Force 1', 'Crocs Classic Clogs', 'UGG Classic Boots',
+  'Levi 501 Original Jeans', 'North Face Nuptse Jacket',
+  'Patagonia Better Sweater', 'Carhartt Detroit Jacket',
+  'Tommy Hilfiger Polo Shirt', 'Calvin Klein Cotton Boxers',
+  'Nike Dri-FIT T-Shirt', 'Champion Hoodie',
+
+  // 🎒 配饰 & 其他 (6)
+  'Ray-Ban Meta Wayfarer', 'Apple AirTag 4 Pack', 'Tile Mate 2025',
+  'Ridge Wallet Carbon', 'Herschel Backpack', 'Bellroy Tokyo Tote',
+
+  // 🏋️ 运动 & 健康 (6)
+  'Peloton Bike+', 'Bowflex Adjustable Dumbbells', 'Theragun Pro 6',
+  'Yeti Rambler 64oz', 'Oral-B iO Series 10', 'Philips Sonicare DiamondClean',
 ];
 
-const CACHE_TTL = 6 * 60 * 60; // 6小时（秒）
+const CACHE_TTL = 48 * 60 * 60; // 48小时（秒）
 
 export async function onRequest(context) {
   const { env } = context;
 
   try {
-    // 1. 先检查 KV 缓存
+    // 1. 检查 KV 缓存
     const cached = await env.USERS?.get('popular:prices', 'json');
     if (cached && cached.timestamp && (Date.now() / 1000 - cached.timestamp) < CACHE_TTL) {
       return new Response(JSON.stringify({ prices: cached.prices, cached: true }), {
@@ -79,7 +68,7 @@ export async function onRequest(context) {
       });
     }
 
-    // 2. 缓存过期，重新搜索
+    // 2. 缓存过期，重新搜索（只取 Amazon 和 eBay 价格）
     const priceMap = {};
     const batchSize = 5;
 
@@ -88,14 +77,18 @@ export async function onRequest(context) {
       const results = await Promise.allSettled(
         batch.map(async (name) => {
           const query = encodeURIComponent(name);
-          // 调自己的搜索 API（走 SerpAPI/Serper 降级链）
+          // 调搜索 API（Serper/SerpAPI），从中提取 Amazon 价格
           const res = await fetch(`https://snapprice.co/api/search?q=${query}`);
           if (!res.ok) return null;
           const data = await res.json();
           const items = data.results || [];
-          // 取第一个非 eBay 的有效价格
-          const best = items.find(r => r.price > 0 && r.store !== 'eBay') || items.find(r => r.price > 0);
+
+          // 优先 Amazon，其次 eBay
+          let best = items.find(r => r.price > 0 && r.store === 'Amazon');
+          if (!best) best = items.find(r => r.price > 0 && r.store === 'eBay');
+          if (!best) best = items.find(r => r.price > 0);
           if (!best) return null;
+
           return { name, price: best.price, store: best.store };
         })
       );

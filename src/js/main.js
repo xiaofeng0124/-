@@ -132,69 +132,87 @@ const LANG_KEYWORDS = {
 
 // ======== Popular Products Pool (60 items, refresh picks 40) ========
 const POPULAR_POOL = [
-  { name: 'Apple AirPods Pro 2nd Gen', img: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcT7g0hwJ1OevttWG6cNAuXBRXWmw_lSvxeslvctkt78vg5OFmesGjzAnTZ9affUAb8j22IyYQvHupKyZpoC2ir7PIcpra6-ilpj2GjKl7k', price: 169.99 },
-  { name: 'Sony PlayStation 5 Digital', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTc_0XEWN8zrXylA0fJLbV0xIjDnAVN-bzrrOL8WkhG-f-A_CzT4TyDW2lv3lfymq7Getjw3hPDsLLLeLS__4juY4BtZaCRMgD_CakHlOtefDCq4Utna_7Glg', price: 429.99 },
-  { name: 'Sony WH-1000XM5 Headphones', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQMhBdy3y9VcJgaP_D2CKpd6wX76yAqFZZP5Majq-FJXvqzAwxvJvEwsMLOipRS0tlSNsyFyKE8p37vwjeLbLxshZWZnbuzjGT33Gv2Bmgi4-7CektwVxUE', price: 299.99 },
-  { name: 'iPhone 15 Pro Max 256GB', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTWZOetxxII_InRmkerS2okIRJCYL_ss847xT_1fSpjvfAMTNLuBKgdqU3SJIjDMz5xGSNQ2Yn2trRKIwcaNUBqOnXhx60yTPFCU5Eee0BW', price: 1099.99 },
-  { name: 'Samsung 65" OLED 4K TV', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSt8QOsyozj2UmsLG2cGVWngs9zca4ljdtSiZs4tx5LX9q0jv6oQJE9VJTh3Dk7ZNecmeAhESmF5Cda6kPHlPPJzwcSb66SUqxYJKAyyBW9_pBqqfwBoCJx', price: 1599.99 },
-  { name: 'MacBook Pro 14" M3 Pro', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQCiLJDsw_5HaAzWN-qHzRtK2hSnkUFVBoWNm3PSEIoFOf50RsxQ9bqjAnjgo7zl7dNSd4hYndBwUpQL2NLeuyqWins3Cnn7yWl6KLIzYY7', price: 1949.00 },
-  { name: 'Nintendo Switch OLED Bundle', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSkxQ7-KEyowOYGrR-tgXnS-1TCeqK0I5oizsaii5klUwRDFvdsMh1Kei4H_jpfTuMkcmMdNX61UmS5uTg9KbNnJSoXUdPQBc8R_DVrxuC1z8C7YH7kmB5nJYg', price: 329.99 },
-  { name: 'Google Pixel 8 Pro 128GB', img: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTSzJRX6WF4Ou5SlNxroox4erFoeapqR6opV6PbhfBgKeScU_B6_TrAKk5GL2LFX-TavjIeD6j_8UBTxaiEg5V9nV3NXgXyn_9hrFr-BHl4cLaOM5X-HQbx', price: 729.99 },
-  { name: 'Apple Watch Series 9 45mm', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRMpZD4f3C0u8vn17sslkgzomrHMP2ETAoaeel69aeDBggwLOeVqPIunFaYjMS2kUNWFoGIkssuwlLmS97seczghz5Ydo2Onix6-VNPN0HM', price: 399.99 },
-  { name: 'Bose QuietComfort Ultra', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQ2DvrXVNtXFZZXEMkmdsL05Mk0x2bjorxu9coeqyKrGiDCIrDM8ygRhutNNwPrJOPSRaZsNzEh7RQ972uk0VIbv9pdN9h-D7DLtmw1hRAq6UWAbEhKlXZl', price: 349.99 },
-  { name: 'Samsung Galaxy S24 Ultra', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTZ38gURF6-zzMZiEF9UWG9FL294LF0o2WvKv6ExVndCX4g_GnFU-4ocMjF-lMFN3okf0wcVN08to-3RXvLmHe1PsSGIo3F', price: 1199.99 },
-  { name: 'iPad Air 11" M2 128GB', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQ-3rTH9q4j5LwZEp4FKqwiQ7t8Bpe-ByecC8HDmwmfUrn1JCbnc0HYiy8oTs9dt6T38bXEj0oca4m9c2qbpqlq5kvvJ2EyBtw9HIL0W_o', price: 599.99 },
-  { name: 'Amazon Echo Dot 5th Gen', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQUNdR6GdqJ3VLT_ikwEpm8BmmNu_GD7yGjLGBNf9Zv2974DRDVx4FH6N9s1WZfmYNJYT4OOeMEO169Ww8IdVUaconDCPEJrvYio9qfhKU', price: 49.99 },
-  { name: 'Dyson V15 Detect Vacuum', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQEoQogVaoFzBetyQTPJs8BGUMm0l9yora1g521Kyh5vIiCJG43vuxZY0yZbuq2MFu8zW6IroDSe6gargdTqSwU_KywjswdK0zcgWXz_8wTCX015YLjbPepOg', price: 649.99 },
-  { name: 'Instant Pot Duo 7-in-1', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTVCzIBVpyE-z_3EqtphP8E58H0dqEJZ24I1pHoNQffNAHfFA5mJbH19ASb3gJxecn6tqs02tzt4lcI4bfOSikpdDRKoaIs', price: 89.99 },
-  { name: 'Kindle Paperwhite 2024', img: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQVXiOsF8bGlr1nbemPV3mJdUG48Ld5dsepRiOe_avizZHKnLOcgX2b9GwOn2ULF6CCFi4C0qEkyvMtelqekx2ZPzGkGjhMN0hcnQM-lgM', price: 139.99 },
-  { name: 'Nintendo Pro Controller', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSUde1lYLJkOtkPHYPPopwurhE510Pk729uG2OPBYVgZpU7fhCkeb3M0h8s6sw-To7o2nDIsz3q', price: 74.99 },
-  { name: 'Sony WF-1000XM5 Earbuds', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRnYL0WYIAEd3PBsXzuSzVEg9abrbukZlXisBDLp2wsOPOauBJ-qY9papMUFyQOAzKl1KCuzilWF5J6llUK-OIwa54qAn3aEwEaFF7RbhM', price: 248.00 },
-  { name: 'Logitech MX Master 3S', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcR0RMJtRbGjtyaCyw_xU8dfo4gKBilkhx0K2amK9CMoDsW-az8', price: 99.99 },
-  { name: 'Samsung Galaxy Tab S9 FE', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTAi4Y_hbAd6Vgv3RK8x18j4K8XZAZMkthDINi_73UBqL5S4vMdXKm3d5Q-vVLzP7jo92N79yRX1uN8grpGpiyQvqDOXlGAIg', price: 449.99 },
-  { name: 'Apple MagSafe Charger', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSqG_KWAPNtRfQDoTY0WaletimcFKnbiNlDRRHuSTZJYHl97XpDblHI3JuXpGlbApCBdHKtbK5uS4uerCPgbszsS0DFCnrwsPBF7fsI4IX68Si934NjQOQ2EQ', price: 39.99 },
-  { name: 'JBL Flip 6 Speaker', img: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRxy3ZJzb67ED8TbAyPoCtcbF1rW-BWvQOS2B50E2HNq1GSYAE7GHxZdmHG-lNWDgCxm7E3UJ223Ov1bBvzw35T85mbUIkKjmyzHSN87D5I', price: 129.95 },
-  { name: 'Nespresso Vertuo Coffee', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRynLcSF7gYdH32Ns2379tKlqsGjdfy4sqwXfJ_ltU9qDXGfeqyVC-wFJm4Eic8vMGOpEby57S41Va6CrgUDx5x8aHgQ3Za213ez4Uah1-39e6odshZag1K', price: 179.99 },
-  { name: 'Ring Video Doorbell Pro 2', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQK9LCbKOpBKAlevmM0U1OWtNRSGLOxGAwV2cgvXEuTnPMoZDbJtMn-kaaDpIsq8gMrJ-tNZMkwU0XonUil5rW-5T4kcBSSLxE2FyVBnjY5riYlh6wH8q85tuhz', price: 169.99 },
-  { name: 'Canon EOS R50 Camera', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQPNPS9CjP4RTTBacCd0CgBCmw8tNHLdHeDTMCqUVrG3uNXQdaZmqAt0CbvOnLbwuacZqBh9Hi-Ft8NI0jL0zHfRzdyc83Zs2pEO0IVQEGJ', price: 679.00 },
-  { name: 'LG C3 55" OLED TV', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSRDezUMkD9M7D_26z-TpXSzD1l1w8H1NWgQD8c03YsnipfKVraPaWSmLY8SCgHFXovmNNzVqkawVKjnlzjmxs4yES2x6zUcDJVnygTK6G0tTcl3zWeMAgd', price: 1296.99 },
-  { name: 'Roku Streaming Stick 4K', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSh2w1xSNqAvw6jzIgKhIt5BPL5sHnMZdN5-BympmIgBtSD30M6S20Z3AqCFYy7kUaWqpI8MwretccniDvBnmlOg-xMCgM2fJzwGEycAVo4MkBKNr29HXbU', price: 39.99 },
-  { name: 'iRobot Roomba j7+', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRRxmzPaaIQvMyIUp_ZkF151A20FQQpJ_PLkIzfBqao4QRTY-Svn8qO8QCgCkr8Ehinhwou-l_4hWE7KjUbFB13-W4VPHUMZa4Vsak3Kj0', price: 599.99 },
-  { name: 'Anker Power Bank 20000mAh', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSuRjTMxC0Cqp8EiTUHAsqt90HO94PvAMAzN707Nqco1DJalIvHzANTwnJOUVbM9e1_STv8JHuAwKD8WBg6iVuH7htyjojoBzOFEqzZrC8', price: 52.99 },
-  { name: 'Samsung 49" Curved Monitor', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTjq-HubzZI1cQxdK3T5QMZoi-BuL2nGgWNhPx0gz7oFvPtxsyFqRwgDpk6qi9MtMB__9GM8__V9XLMVrHjrs7gXgVNVd27CFVb9YdG6cO2oU8D0NQ-5zGwCw', price: 879.99 },
-  { name: 'Apple AirTag 4 Pack', img: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcT13PBCaQrrpXc3WYorvULN5acqPsH2VhPP8OIus0Mnz8KBCAJENmFqJTLmruqM7Oi0oBl059g7h4YWVDCa5KUGMarlKEHkICYfK2sCIigRKt0vWenyVUFO', price: 89.99 },
-  { name: 'Sony A7 IV Camera', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcS760AVvjxyyyUvYgdloe6fXnvn3AZxJ9CF7KrTy2lNF70j-WH0BQdSh0saNZkm1fuKnEjJSPkRlev9L31mE1xnUuLGhPcZnvZgZKuloG8', price: 2398.00 },
-  { name: 'Dell XPS 15 Laptop', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTxVLfwWbJRbKMzK4G8k9GcaBSkoK8E5kplOHZBgifvgtQ1yRzVc2afviZ7ezApKjF3fd4ajJ_Z5uw7XUlTqVgxSZqsf48f86u5v56e1C_dgbgj-9ntU5DP', price: 1499.99 },
-  { name: 'HP Envy 6055 Printer', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRoL0jPCt35iGqlp1CiJ3VVwWssQTAxUAUKAxkydTyf06K7u3uHld6OEee6ESkACEyo2MV_zsHrag', price: 99.99 },
-  { name: 'Samsung Galaxy Watch 6', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSqjozioq0IvUhnMPlnwWuDYMGzY5jAT5AhtJUu_BuaJnA9ht7Yf2mWmvHP2T7Wao0muXtWAfM', price: 299.99 },
-  { name: 'Beats Studio Pro', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcT20mt5i1cudSt6_qgjfdquP0U_XOYe-0iTY2lshjObbAqhd511m87aLmo4hGa-kf2AmudCRj2Q67brmqQZfiAyX7dbaMNU1w', price: 349.99 },
-  { name: 'Meta Quest 3 128GB VR', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRbKk5V7-SgRS8J83p2js_B-3VplGuOZSHzFNLfN81LEh0U0IPEqkFEmO7IlXT-Dhmi2ySHmMd3AIH2J4u_1-aTwEwbR_-EkTRRxKC4rc4jR6-PaspO3qpAbA', price: 499.99 },
-  { name: 'Asus ROG Ally Handheld', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTXL20yEu9G9Nvkat2MGonOS9tGWahAT3sf-6pgejPUPeKoo_0n-jBuFJlyqQ', price: 599.99 },
-  { name: 'Fitbit Charge 6', img: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcS2hy_BL5hEfdHHuYAeoxUp6DEShenAkwz-CgoonRBLW6hS9UMuF_d5GqVYhgOgTV1gxY3QkVU', price: 139.95 },
-  { name: 'Sony XM5 Headphones', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQMhBdy3y9VcJgaP_D2CKpd6wX76yAqFZZP5Majq-FJXvqzAwxvJvEwsMLOipRS0tlSNsyFyKE8p37vwjeLbLxshZWZnbuzjGT33Gv2Bmgi4-7CektwVxUE', price: 328.00 },
-
-  { name: 'Xbox Series X Console', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQoyYhc19rklTjG28pQh6W6C9FUdqbj7vKny5v_PFuCiMtE1J2YUzXmkMwfoOFdB2a7IdChoMwxCRlK8VUdsdlaT5zSIFWvBjXoFozM0DuFsD40Jj5LixlD', price: 499.99 },
-  { name: 'Samsung Galaxy Buds 3 Pro', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTp3iA7X3YEyBNwn422Rp-VJ7NulHq6RVOS5QIGDZBIFxzi8o-OeoprG9MsIimAS_x2wFCCjxSiYqwQcl7S8jzhnAa7JuaP9Dh2cKOk-6pErxTQsc-ZX9PN', price: 249.99 },
-  { name: 'Ninja Creami Ice Cream', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQftpAjaUetgjs08ViPeep_KipUkaXu00eZ8RP9Lc9giUQIeM52c-C9f1YEkkwxWaPMhEsmKpP-M9p-LYlTUPxdDMPh4HHyD5ZC0jvwxM8Z1phytmax3hiq', price: 199.99 },
-  { name: 'Keurig K-Mini Coffee', img: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRWFoF3_kQV_evwAnb6kSWbGECFSp87Oi70uhmwwgjqW5v8GXbMB7wprbHDjS9GtvVwcYewz4LOvHG8-qDaJx7_ICzOFrQC', price: 89.99 },
-  { name: 'Shark Navigator Vacuum', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQtcMZbYMWRjJNilMECJPM5YU_4_1tDV2aq9NJkgAlCTPEJOgFgZ7XsCMXUdabqat2PjA3tyQhWciPFtRjUEQPXX2vLrvKqHOoxTzXkoLCmbaqgEgk-LfLc', price: 179.99 },
-  { name: 'Weber Spirit Grill', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSK0I0uzgDGRcWsiimfpEFryOK1PMUbH-MJoITKDoaaeL23OpVR2SKKdCu9s7zJ-gOw2_O_hihNVeRWEfgNLdjj6xX7gJMJfoViYodTKCNJVosM1JO44vDN', price: 449.00 },
-  { name: 'Nike Air Max Sneakers', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRb1bXOoZXkrDMWjr8CsSZ2J147Ft5AGoN60yqUBqREHxEuShKSgnxw6yuk5AtdsHlSBCFxOJFPAE81Dj4072sByVLXGr3Sy9ifjgBbWZHS', price: 129.99 },
-  { name: 'Apple Mac Mini M4', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcT-gx7ZpCb8GoJC6z-lskHU2otZk4LC2bYZwtfc0eZ0AkuwtBs1WLu5P-sghmobTv2SAMiJZ1H3zcQmvb60wjX1deY_JXtA0poGEPzRHrRgGhFqcdiM1S_TmA', price: 599.99 },
-  { name: 'Bose SoundLink Speaker', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSwXhY7AvFoHWRdHI6M2LNVuE_68WLjdaLWkxPRSjAknNL3ZRPurgIwhtTqrGE-pfcxD0hDGpEjDOa4jFGcGH73ABw2pjEpBpDW17LItN5E4K-7caZT82VJ', price: 129.00 },
-  { name: 'GoPro Hero 13', img: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQmPpIje6S415e0Ij8jrDkqCYPbnA33AcIA8EsO9O3EWM56mhsQxz7MRS1_MkRfVsijUnHEvGfNbyfhtAXF-3VEZG_Nd9vY_YUoofBUAdlJx2Zy7PCfIhuM', price: 399.99 },
-  { name: 'DJI Mini 4 Pro Drone', img: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSwfQfg-A3-opDCKz2hKoYlpEfr3oOPKt2UgbtuQ_demxoQRPAe8SdkuhPiz6lLZ0GhW_BAewtsB1Rk1B3A9IybsXdkJhN1', price: 759.00 },
-  { name: 'Sonos Era 100 Speaker', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSr5VD3KiP9MMOCxlzCAJ0WVMzczGi9r5rGexgfE4tE9VsQFy8y', price: 249.00 },
-  { name: 'KitchenAid Stand Mixer', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTUs8HmiPzr-is8xMVesGSp0t6BgxDd9OHObQROctddAYM7q2M', price: 449.99 },
-  { name: 'Vitamix Blender', img: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSPwGDEaNX4bHJUN8XTA_iVniLM6iPJJEaYCg5Fy591GlkChevO27F-GEF-AO_cDRlIIy33Ge06K6vSKorcNtAkvEa5FlKA', price: 349.95 },
-  { name: 'Breville Espresso', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTbLYHPWKOQdXEYLQkT6G4bT_NJAdqbPCm1e2HHNqKW0GeerrAXTdP--a6-iiGuK4tiC7uRMSNBSu6Wrn5Gh3Fje4ACGqLoFRjykZbSt8HQRswmpTP8H_Cc', price: 749.99 },
-  { name: 'Lenovo ThinkPad X1', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQUlULJeXsJeRCBqxhAJ83TZ_xhmA5ktNVclVuRLMly5t7tMkJsbVUbXR3hhIOcQKgzetbM7gPh2LhzG9BchuI7hq_ysRwp', price: 1599.99 },
-  { name: 'Microsoft Surface Pro', img: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSRR14j4az1TqdD_-XPanjKVsDve72R83tJKSnqdv9NNH6jiMu0x9avsUlMs16agq7NClETDh-Z1qc3nL6n1SLbodOjie9Y4xDpy1jjS2eU', price: 1199.99 },
-  { name: 'Adidas Ultraboost', img: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSWx8HMltsk1gNVovMosnmqDk-3EbQ9PIZA0dd3mrpAfRvhvc0p0UuCNgI5tHKHRQj82cMIm6QwUFgqmj9YZ4FMBJGcFSFRZ4j2Y32aulil_byywfwgUlw-zg', price: 159.99 },
-  { name: 'Traeger Pellet Grill', img: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTzeNVJHguSABrCcynTxVOGwpUimJJ2BCKUi5kThAnEYyHC07aHd-ImZ-FkuZHTIB0hMdmPgi7AOrNqxZ4DGAKrBGRV-YqP', price: 799.99 },
-  { name: 'Fujifilm Instax Camera', img: 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcREuk1jDc3PKBpaQXSRQs25Kf6PvJVwKaWuO597DrF1KNbPPAVdi-_cXAzclTQi7Do8JccGBAphjhKQWL6G9nP3dTLngrYFYg', price: 79.99 },
+  // ===== 馃摫 鎵嬫満 & 骞虫澘 (10) =====
+  { name: 'Apple iPhone 16 Pro Max', price: 1199 },
+  { name: 'Samsung Galaxy S25 Ultra', price: 1299 },
+  { name: 'Google Pixel 9 Pro', price: 899 },
+  { name: 'Apple iPhone 16', price: 799 },
+  { name: 'Samsung Galaxy S25', price: 799 },
+  { name: 'OnePlus 13', price: 799 },
+  { name: 'iPad Pro M4 13"', price: 1099 },
+  { name: 'iPad Air M3 11"', price: 599 },
+  { name: 'Samsung Galaxy Tab S10 Ultra', price: 999 },
+  { name: 'Amazon Fire Max 11', price: 249 },
+  // ===== 馃捇 绗旇鏈?& 鐢佃剳 (8) =====
+  { name: 'MacBook Air M4', price: 1099 },
+  { name: 'MacBook Pro 16" M4 Pro', price: 2499 },
+  { name: 'Dell XPS 16 Laptop', price: 1899 },
+  { name: 'Samsung Galaxy Book 4', price: 1299 },
+  { name: 'Lenovo ThinkPad X1 Carbon', price: 1649 },
+  { name: 'Microsoft Surface Laptop 7', price: 1299 },
+  { name: 'HP Spectre x360', price: 1399 },
+  { name: 'ASUS Zenbook 14 OLED', price: 1299 },
+  // ===== 馃帶 鑰虫満 & 闊抽 (8) =====
+  { name: 'AirPods Pro 3', price: 249 },
+  { name: 'AirPods 4', price: 129 },
+  { name: 'Sony WH-1000XM6 Headphones', price: 399 },
+  { name: 'Bose QuietComfort Ultra Earbuds', price: 279 },
+  { name: 'Samsung Galaxy Buds 4 Pro', price: 229 },
+  { name: 'Sony WF-1000XM6 Earbuds', price: 279 },
+  { name: 'Beats Studio Pro', price: 349 },
+  { name: 'JBL Tune 770NC', price: 129 },
+  // ===== 鈱?鎵嬭〃 & 绌挎埓 (5) =====
+  { name: 'Apple Watch Ultra 3', price: 799 },
+  { name: 'Apple Watch Series 10', price: 399 },
+  { name: 'Samsung Galaxy Watch 7', price: 299 },
+  { name: 'Fitbit Charge 7', price: 149 },
+  { name: 'Garmin Fenix 8', price: 899 },
+  // ===== 馃幃 娓告垙 (6) =====
+  { name: 'PlayStation 5 Slim', price: 449 },
+  { name: 'Xbox Series X 2TB', price: 499 },
+  { name: 'Nintendo Switch 2', price: 399 },
+  { name: 'Meta Quest 3S 256GB', price: 499 },
+  { name: 'Steam Deck OLED 1TB', price: 649 },
+  { name: 'ASUS ROG Ally X', price: 799 },
+  // ===== 馃憻 鏈嶈 & 闉?(14) =====
+  { name: 'Nike Air Max 2025', price: 189 },
+  { name: 'Adidas Ultraboost Light', price: 189 },
+  { name: 'New Balance 990v6', price: 199 },
+  { name: 'Nike Air Force 1', price: 119 },
+  { name: 'Crocs Classic Clogs', price: 49 },
+  { name: 'UGG Classic Boots', price: 149 },
+  { name: 'Levi 501 Original Jeans', price: 69 },
+  { name: 'North Face Nuptse Jacket', price: 269 },
+  { name: 'Patagonia Better Sweater', price: 139 },
+  { name: 'Carhartt Detroit Jacket', price: 179 },
+  { name: 'Tommy Hilfiger Polo Shirt', price: 79 },
+  { name: 'Calvin Klein Cotton Boxers', price: 39 },
+  { name: 'Nike Dri-FIT T-Shirt', price: 34 },
+  { name: 'Champion Hoodie', price: 59 },
+  // ===== 馃彔 瀹跺眳 & 鍘ㄦ埧 (8) =====
+  { name: 'Instant Pot Duo Plus', price: 89 },
+  { name: 'KitchenAid Stand Mixer', price: 449 },
+  { name: 'Vitamix E310 Blender', price: 349 },
+  { name: 'Ninja Creami Deluxe', price: 199 },
+  { name: 'Keurig K-Elite Coffee', price: 149 },
+  { name: 'Breville Barista Express', price: 749 },
+  { name: 'Dyson V15 Detect', price: 649 },
+  { name: 'iRobot Roomba j9+', price: 899 },
+  // ===== 馃弸锔?杩愬姩 & 鍋ュ悍 (6) =====
+  { name: 'Peloton Bike+', price: 1495 },
+  { name: 'Bowflex Adjustable Dumbbells', price: 349 },
+  { name: 'Theragun Pro 6', price: 599 },
+  { name: 'Yeti Rambler 64oz', price: 49 },
+  { name: 'Oral-B iO Series 10', price: 279 },
+  { name: 'Philips Sonicare DiamondClean', price: 229 },
+  // ===== 馃帓 閰嶉グ & 鍏朵粬 (6) =====
+  { name: 'Ray-Ban Meta Wayfarer', price: 299 },
+  { name: 'Apple AirTag 4 Pack', price: 89 },
+  { name: 'Tile Mate 2025', price: 29 },
+  { name: 'Ridge Wallet Carbon', price: 99 },
+  { name: 'Bellroy Tokyo Tote', price: 139 },
+  { name: 'Herschel Backpack', price: 59 },
 ];
-
 let currentPopular = [];
 
 const MOCK_COUPONS = {
@@ -1118,7 +1136,7 @@ function renderPopularProducts() {
     const real = localCache?.[p.name];
     return `
       <div class="popular-card" onclick="quickSearch('${q}')" data-popular="${p.name}">
-        <img class="popular-card-img" src="${proxyImg(p.img)}" alt="${p.name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
+        <img class="popular-card-img" src="${proxyImg(p.img || '')}" alt="${p.name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
         <div class="popular-card-name">${p.name}</div>
         ${real ? `<span class="popular-store">${real.store}</span>` : ''}
         <div class="popular-card-price">${real ? '$' + real.price.toFixed(2) : '—'}</div>
@@ -2460,3 +2478,4 @@ window.adminConfirmMembership = adminConfirmMembership;
   window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 300); });
   btt.addEventListener('click', function(){ window.scrollTo({ top:0, behavior:'smooth' }); });
 })();
+
