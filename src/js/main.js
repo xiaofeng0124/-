@@ -1083,6 +1083,9 @@ async function renderPriceChart(days) {
 }
 
 // ======== Popular Products ========
+const POPULAR_CACHE_KEY = 'sr_popular_cache';
+const POPULAR_CACHE_TTL = 6 * 60 * 60 * 1000; // 6小时缓存
+
 function shuffleArray(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -1096,19 +1099,101 @@ function pickPopularBatch() {
   currentPopular = shuffleArray(POPULAR_POOL).slice(0, 40);
 }
 
+function getCachedPopularPrices() {
+  try {
+    const cached = localStorage.getItem(POPULAR_CACHE_KEY);
+    if (!cached) return null;
+    const data = JSON.parse(cached);
+    if (Date.now() - data.timestamp > POPULAR_CACHE_TTL) return null;
+    return data.prices; // { "product name": { price, store, url } }
+  } catch { return null; }
+}
+
 function renderPopularProducts() {
   const grid = document.getElementById('popularGrid');
   if (!grid) return;
   if (currentPopular.length === 0) pickPopularBatch();
+
+  const cachedPrices = getCachedPopularPrices();
+
   grid.innerHTML = currentPopular.map(p => {
     const q = p.name.replace(/'/g, "\\'");
+    // 优先用缓存中的实时价格，没有则用 Mock 价格
+    const realPrice = cachedPrices?.[p.name];
+    const displayPrice = realPrice ? realPrice.price : p.price;
+    const storeTag = realPrice ? `<span class="popular-store">${realPrice.store}</span>` : '';
     return `
       <div class="popular-card" onclick="quickSearch('${q}')">
         <img class="popular-card-img" src="${proxyImg(p.img)}" alt="${p.name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
         <div class="popular-card-name">${p.name}</div>
-        <div class="popular-card-price">$${p.price.toFixed(2)}</div>
+        ${storeTag}
+        <div class="popular-card-price">$${displayPrice.toFixed(2)}</div>
       </div>`;
   }).join('');
+
+  // 后台异步刷新价格
+  refreshPopularPricesAsync();
+}
+
+async function refreshPopularPricesAsync() {
+  try {
+    const priceMap = {};
+    const batchSize = 6; // 每批搜6个，省额度
+    const names = currentPopular.map(p => p.name);
+
+    for (let i = 0; i < names.length; i += batchSize) {
+      const batch = names.slice(i, i + batchSize);
+      const results = await Promise.allSettled(
+        batch.map(async (name) => {
+          const res = await fetch(`/api/search?q=${encodeURIComponent(name)}&limit=3`);
+          if (!res.ok) return null;
+          const data = await res.json();
+          const items = data.results || [];
+          if (items.length === 0) return null;
+          // 取第一个有价格的商品
+          const best = items.find(r => r.price > 0 && r.store !== 'eBay') || items[0];
+          return { name, price: best.price || 0, store: best.store || '' };
+        })
+      );
+      results.forEach(r => {
+        if (r.status === 'fulfilled' && r.value && r.value.price > 0) {
+          priceMap[r.value.name] = { price: r.value.price, store: r.value.store };
+        }
+      });
+      // 每批更新一次显示
+      if (Object.keys(priceMap).length > 0) {
+        updatePopularPrices(priceMap);
+      }
+    }
+
+    // 缓存到 localStorage
+    if (Object.keys(priceMap).length > 0) {
+      const cache = { prices: priceMap, timestamp: Date.now() };
+      try { localStorage.setItem(POPULAR_CACHE_KEY, JSON.stringify(cache)); } catch {}
+    }
+  } catch (e) {
+    console.warn('实时价格刷新失败:', e);
+  }
+}
+
+function updatePopularPrices(priceMap) {
+  const cards = document.querySelectorAll('.popular-card');
+  cards.forEach(card => {
+    const nameEl = card.querySelector('.popular-card-name');
+    if (!nameEl) return;
+    const productName = nameEl.textContent || '';
+    const info = priceMap[productName];
+    if (!info) return;
+    const priceEl = card.querySelector('.popular-card-price');
+    if (priceEl) priceEl.textContent = `$${info.price.toFixed(2)}`;
+    let storeEl = card.querySelector('.popular-store');
+    if (!storeEl) {
+      storeEl = document.createElement('span');
+      storeEl.className = 'popular-store';
+      nameEl.after(storeEl);
+    }
+    storeEl.textContent = info.store;
+  });
 }
 
 function refreshPopular() {
@@ -1119,17 +1204,14 @@ function refreshPopular() {
   const grid = document.getElementById('popularGrid');
   if (grid) grid.style.opacity = '0.3';
   pickPopularBatch();
+  // 清除旧缓存
+  try { localStorage.removeItem(POPULAR_CACHE_KEY); } catch {}
+  renderPopularProducts();
   setTimeout(() => {
-    renderPopularProducts();
     if (grid) grid.style.opacity = '1';
     btn.disabled = false;
     btn.textContent = 'Refresh';
   }, 300);
-}
-
-function quickSearch(query) {
-  document.getElementById('searchInput').value = query;
-  performSearch();
 }
 
 // ======== Search History ========
