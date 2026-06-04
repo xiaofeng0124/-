@@ -36,7 +36,7 @@ const POPULAR_NAMES = [
   'Vitamin D3 Supplement', 'Organic Protein Powder', 'Cat Food Dispenser',
 ];
 
-const CACHE_KEY = 'popular:final';
+const CACHE_KEY = 'popular:final2';
 const CACHE_TTL = 30 * 24 * 60 * 60; // 30天
 const BATCH = 30; // 每次搜30个
 
@@ -67,11 +67,17 @@ export async function onRequest(context) {
       if (!res.ok) return null;
       const data = await res.json();
       const items = data.results || [];
-      let best = items.find(r => r.price > 0 && r.store === 'Amazon');
-      if (!best) best = items.find(r => r.price > 0 && r.store === 'eBay');
-      if (!best) best = items.find(r => r.price > 0);
+      let best = items.find(r => r.price > 0 && r.store === 'Amazon')
+              || items.find(r => r.price > 0 && r.store === 'eBay')
+              || items.find(r => r.price > 0);
       if (!best) return null;
-      return { name, price: best.price, store: best.store, image: best.image || '' };
+      // 优先选真实URL图片（不要base64）
+      let imgItem = best;
+      if (best.image && best.image.startsWith('data:')) {
+        const withUrl = items.find(r => r.price > 0 && r.image && !r.image.startsWith('data:'));
+        if (withUrl) imgItem = withUrl;
+      }
+      return { name, price: imgItem.price, store: imgItem.store, image: imgItem.image || '' };
     })
   );
   results.forEach(r => {
