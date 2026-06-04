@@ -74,7 +74,8 @@ async function cleanupExhaustedFlags(env) {
   } catch (_) {}
 }
 
-// ---- 引擎实现 ---- searchSerpApi(query, env) {
+// ---- 引擎实现 ----
+async function searchSerpApi(query, env) {
   const rawKey = env.SERPAPI_KEY || '';
   const apiKey = rawKey.charCodeAt(0) === 0xFEFF ? rawKey.slice(1) : rawKey;
   if (!apiKey) throw new Error('SerpAPI 未配置');
