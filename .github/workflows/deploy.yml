@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: npm install -g wrangler
-      - run: wrangler pages deploy . --branch master --project-name snapprice
+      - run: npx wrangler pages deploy . --branch master --project-name snapprice
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: eb5577c835cc05e93bf3b1650db73a9e
+          NODE_OPTIONS: --openssl-legacy-provider
