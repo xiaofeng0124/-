@@ -37,7 +37,7 @@ const POPULAR_NAMES = [
 ];
 
 const CACHE_KEY = 'popular:final';
-const CACHE_TTL = 48 * 60 * 60;
+const CACHE_TTL = 30 * 24 * 60 * 60; // 30天
 const BATCH = 30; // 每次搜30个
 
 export async function onRequest(context) {
