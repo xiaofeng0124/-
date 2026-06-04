@@ -1141,7 +1141,7 @@ function renderPopularProducts() {
         <img class="popular-card-img" src="${proxyImg(imgUrl)}" alt="${safeName}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
         <div class="popular-card-name">${p.name}</div>
         ${real ? `<span class="popular-store">${real.store}</span>` : ''}
-        <div class="popular-card-price">${real ? '$' + real.price.toFixed(2) : '—'}</div>
+        <div class="popular-card-price" data-mock="${p.price}">${real ? '$' + real.price.toFixed(2) : '$' + p.price.toFixed(2)}</div>
       </div>`;
   }).join('');
 
@@ -1154,7 +1154,7 @@ async function fetchPopularPrices() {
     const res = await fetch('/api/popular-prices');
     if (!res.ok) return;
     const data = await res.json();
-    if (!data.prices || Object.keys(data.prices).length === 0) return;
+    if (!data.prices || Object.keys(data.prices).length === 0) { if (typeof retries === 'number' && retries < 6) setTimeout(() => fetchPopularPrices(retries+1), 10000); return; }
 
     // 本地缓存一份（减少重复请求）
     try { localStorage.setItem(POPULAR_CACHE_KEY, JSON.stringify({ p: data.prices, t: Date.now() })); } catch {}
