@@ -95,7 +95,7 @@ export async function onRequest(context) {
       );
       results.forEach(r => {
         if (r.status === 'fulfilled' && r.value) {
-          priceMap[r.value.name] = { price: r.value.price, store: r.value.store };
+          priceMap[r.value.name] = { price: r.value.price, store: r.value.store, image: r.value.image || '' };
         }
       });
     }
