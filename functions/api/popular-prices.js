@@ -1,6 +1,5 @@
-// 首页热门商品实时价格 API
-// 后端缓存（KV），所有用户共享，48小时自动刷新
-// 稳定50个商品，确保每个都有图有价
+// 首页热门商品实时价格 API - 后台渐进式刷新
+// 每次请求只搜一部分，用 waitUntil 在后台慢慢搜完所有80个
 
 const POPULAR_NAMES = [
   'Apple iPhone 16 Pro Max', 'Samsung Galaxy S25 Ultra', 'Google Pixel 9 Pro',
@@ -18,35 +17,72 @@ const POPULAR_NAMES = [
   'Apple AirTag 4 Pack',
   'Women Summer Dress', 'Women Yoga Leggings', 'Women Denim Jacket',
   'Cashmere Sweater Women', 'Silk Blouse Women', 'High Waist Leggings',
-  'Women Winter Coat', 'Floral Maxi Dress',
-  'Vitamix Blender', 'Breville Espresso Machine',
-  'LED Strip Lights', 'Canvas Wall Art Set',
+  'Women Winter Coat', 'Floral Maxi Dress', 'Women Running Shoes', 'Fleece Pullover',
+  'Vitamix Blender', 'Breville Espresso Machine', 'iRobot Roomba Vacuum',
+  'Air Fryer Oven', 'Le Creuset Dutch Oven',
+  'LED Strip Lights', 'Canvas Wall Art Set', 'Artificial Plants Decor',
   'Throw Pillow Covers Set', 'Scented Candles Gift Set',
-  'Standing Desk Adjustable', 'Office Ergonomic Chair',
-  'Men Casual Shirt', 'Men Winter Jacket',
+  'Standing Desk Adjustable', 'Office Ergonomic Chair', 'Bookshelf 5 Tier',
+  'Storage Cabinet', 'Floor Lamp Modern',
+  'Samsung 65 Inch OLED TV', 'Portable Air Conditioner', 'Smart Air Purifier',
+  'Robot Vacuum Mop Combo', 'Mini Dehumidifier',
+  'Men Casual Shirt', 'Men Winter Jacket', 'Men Running Sneakers',
+  'Men Slim Jeans', 'Men Leather Watch',
+  'Camping Tent 4 Person', 'Hiking Backpack 40L', 'Insulated Water Bottle',
+  'Portable Camping Hammock', 'Outdoor Propane Grill',
+  'Wireless Phone Charger', 'Smart WiFi Light Bulb', 'Electric Kettle Stainless',
+  'Yoga Mat Non Slip', 'Resistance Bands Set', 'Car Phone Mount',
+  'Vitamin D3 Supplement', 'Organic Protein Powder', 'Cat Food Dispenser',
 ];
 
+const CACHE_KEY = 'popular:80';
 const CACHE_TTL = 48 * 60 * 60;
 
 export async function onRequest(context) {
-  const { env } = context;
-  const cacheKey = 'popular:prices_final';
+  const { env, waitUntil } = context;
 
+  // 1. 有完整缓存 → 直接返回
   try {
-    const cached = await env.USERS?.get(cacheKey, 'json');
-    if (cached && cached.timestamp && (Date.now() / 1000 - cached.timestamp) < CACHE_TTL) {
-      return new Response(JSON.stringify({ prices: cached.prices, cached: true }), {
+    const cache = await env.USERS?.get(CACHE_KEY, 'json');
+    if (cache && cache.done && cache.timestamp && (Date.now() / 1000 - cache.timestamp) < CACHE_TTL) {
+      return new Response(JSON.stringify({ prices: cache.prices, cached: true }), {
         headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' },
       });
     }
   } catch {}
 
-  // 实时搜索50个商品
-  const priceMap = {};
-  const batchSize = 25;
+  // 2. 后台继续处理未完成的商品
+  waitUntil(processRemaining(CACHE_KEY, env));
 
-  for (let i = 0; i < POPULAR_NAMES.length; i += batchSize) {
-    const batch = POPULAR_NAMES.slice(i, i + batchSize);
+  // 3. 返回当前已有的数据（可能部分或空）
+  try {
+    const cache = await env.USERS?.get(CACHE_KEY, 'json');
+    const prices = (cache && cache.prices) || {};
+    return new Response(JSON.stringify({ prices, cached: true }), {
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' },
+    });
+  } catch {}
+  return new Response(JSON.stringify({ prices: {} }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+async function processRemaining(CACHE_KEY, env) {
+  try {
+    // 读取当前进度
+    const cache = await env.USERS?.get(CACHE_KEY, 'json');
+    const prices = (cache && cache.prices) || {};
+    const doneSet = new Set(Object.keys(prices));
+    const remaining = POPULAR_NAMES.filter(n => !doneSet.has(n));
+
+    if (remaining.length === 0) {
+      // 全部搜完了，标记完成
+      await env.USERS?.put(CACHE_KEY, JSON.stringify({ prices, done: true, timestamp: Math.floor(Date.now() / 1000) }), { expirationTtl: CACHE_TTL + 3600 });
+      return;
+    }
+
+    // 一次处理最多 30 个（约10秒）
+    const batch = remaining.slice(0, 30);
     const results = await Promise.allSettled(
       batch.map(async (name) => {
         const query = encodeURIComponent(name);
@@ -63,16 +99,16 @@ export async function onRequest(context) {
     );
     results.forEach(r => {
       if (r.status === 'fulfilled' && r.value) {
-        priceMap[r.value.name] = { price: r.value.price, store: r.value.store, image: r.value.image || '' };
+        prices[r.value.name] = { price: r.value.price, store: r.value.store, image: r.value.image || '' };
       }
     });
-  }
 
-  try {
-    await env.USERS?.put(cacheKey, JSON.stringify({ prices: priceMap, timestamp: Math.floor(Date.now() / 1000) }), { expirationTtl: CACHE_TTL + 3600 });
-  } catch {}
+    // 存回 KV（标记未完成）
+    await env.USERS?.put(CACHE_KEY, JSON.stringify({ prices, done: false, timestamp: Math.floor(Date.now() / 1000) }), { expirationTtl: CACHE_TTL + 3600 });
 
-  return new Response(JSON.stringify({ prices: priceMap, cached: false }), {
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' },
-  });
+    // 如果还有剩，递归处理下一批（waitUntil 支持异步链）
+    if (remaining.length > 30) {
+      await processRemaining(CACHE_KEY, env);
+    }
+  } catch (_) {}
 }
