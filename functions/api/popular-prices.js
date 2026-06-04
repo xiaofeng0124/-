@@ -36,8 +36,9 @@ export async function onRequest(context) {
       });
     }
 
-    // 2. 缂撳瓨杩囨湡锛岄噸鏂版悳绱紙鍙彇 Amazon 鍜?eBay 浠锋牸锛?    const priceMap = {};
-    // 鐢ㄩ珮骞跺彂纭繚30绉掕秴鏃跺唴鎼滃畬80涓晢鍝?    // 姣忔壒鎼?0涓紝4鎵瑰畬鎴愶紝姣忔壒绾?-5绉?    const batchSize = 20;
+    // 2. 缓存过期，重新搜索
+    const priceMap = {};
+    const batchSize = 20;
 
     for (let i = 0; i < POPULAR_NAMES.length; i += batchSize) {
       const batch = POPULAR_NAMES.slice(i, i + batchSize);
