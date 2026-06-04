@@ -1103,11 +1103,12 @@ function renderPopularProducts() {
 
   grid.innerHTML = currentPopular.map(p => {
     const q = p.name.replace(/'/g, "\\'");
+    const safeName = p.name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     const real = localCache?.[p.name];
     const imgUrl = real?.image || p.img || '';
     return `
-      <div class="popular-card" onclick="quickSearch('${q}')" data-popular="${p.name}">
-        <img class="popular-card-img" src="${proxyImg(imgUrl)}" alt="${p.name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
+      <div class="popular-card" onclick="quickSearch('${q}')" data-popular="${safeName}">
+        <img class="popular-card-img" src="${proxyImg(imgUrl)}" alt="${safeName}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
         <div class="popular-card-name">${p.name}</div>
         ${real ? `<span class="popular-store">${real.store}</span>` : ''}
         <div class="popular-card-price">${real ? '$' + real.price.toFixed(2) : '—'}</div>
@@ -1130,7 +1131,7 @@ async function fetchPopularPrices() {
 
     // 更新 DOM
     Object.entries(data.prices).forEach(([name, info]) => {
-      const escapedName = name.replace(/[!"#$%&'()*+,.\/:;<=>?@[\]^`{|}~]/g, '\\$&');
+      const escapedName = name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
       const card = document.querySelector(`.popular-card[data-popular="${escapedName}"]`);
       if (!card) return;
       const priceEl = card.querySelector('.popular-card-price');
