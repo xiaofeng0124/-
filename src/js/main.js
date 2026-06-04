@@ -1102,7 +1102,7 @@ function renderPopularProducts() {
   const localCache = getLocalPriceCache();
 
   grid.innerHTML = currentPopular.map(p => {
-    const q = p.name.replace(/'/g, "\\'");
+    const q = p.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
     const safeName = p.name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     const real = localCache?.[p.name];
     const imgUrl = real?.image || p.img || '';
