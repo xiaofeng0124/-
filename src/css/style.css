@@ -220,6 +220,10 @@ color: var(--gray-400);
 display: block;
 margin-bottom: 2px;
 }
+.popular-card.selected {
+border: 2px solid var(--primary);
+box-shadow: 0 0 8px rgba(22, 163, 74, 0.3);
+}
 .popular-card-stores {
 font-size: 11px;
 color: var(--gray-400);

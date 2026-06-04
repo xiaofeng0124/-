@@ -1107,7 +1107,7 @@ function renderPopularProducts() {
     const real = localCache?.[p.name];
     const imgUrl = real?.image || p.img || '';
     return `
-      <div class="popular-card" onclick="quickSearch('${q}')" data-popular="${safeName}">
+      <div class="popular-card" onclick="quickSearch('${q}','${safeName}')" data-popular="${safeName}">
         <img class="popular-card-img" src="${proxyImg(imgUrl)}" alt="${safeName}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
         <div class="popular-card-name">${p.name}</div>
         ${real ? `<span class="popular-store">${real.store}</span>` : ''}
@@ -1170,6 +1170,20 @@ function refreshPopular() {
     btn.disabled = false;
     btn.textContent = 'Refresh';
   }, 300);
+}
+
+function quickSearch(query, safeName) {
+  const input = document.getElementById('searchInput');
+  if (input) input.value = query;
+  // 清除其他卡片的高亮
+  document.querySelectorAll('.popular-card.selected').forEach(c => c.classList.remove('selected'));
+  // 高亮当前点击的卡片
+  if (safeName) {
+    const card = document.querySelector(`.popular-card[data-popular="${safeName}"]`);
+    if (card) card.classList.add('selected');
+  }
+  // 聚焦输入框但不自动搜索，用户可修改后点搜索按钮
+  if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
 }
 
 // ======== Search History ========
