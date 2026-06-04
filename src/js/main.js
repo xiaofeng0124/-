@@ -832,11 +832,11 @@ function updateUIForAuth() {
     document.getElementById('dashboardBtn')?.addEventListener('click', showDashboard);
         document.getElementById('dropdownFavorites')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('favorites'); });
     document.getElementById('dropdownAlerts')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('alerts'); });
-    document.getElementById('dropdownHistory')?.addEventListener('click', (e) => { e.stopPropagation(); toggleSearchHistory(); });
+    document.getElementById('dropdownHistory')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
     document.getElementById('dropdownCoupons')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
     document.getElementById('dropdownAdmin')?.addEventListener('click', showAdmin);
     document.getElementById('logoutBtn')?.addEventListener('click', logout);
-    document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); toggleSearchHistory(); });
+    document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
     document.getElementById('historyClearBtn')?.addEventListener('click', () => { localStorage.removeItem('sr_history'); renderSearchHistory(); });
     document.getElementById('couponsNavBtn')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
   } else {
@@ -858,7 +858,7 @@ function updateUIForAuth() {
     document.getElementById('loginBtn')?.addEventListener('click', () => showAuthModal('login'));
     document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
     document.getElementById('couponsNavBtn')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
-				document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); toggleSearchHistory(); });
+				document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
   }
 }
 
@@ -1316,6 +1316,7 @@ renderPopularProducts();
   document.getElementById('refreshPopularBtn')?.addEventListener('click', refreshPopular);
   document.getElementById('historyNavBtn')?.addEventListener('click', (e) => {
     e.stopPropagation();
+    if (!getSession()) { showAuthModal('login'); return; }
     toggleSearchHistory();
   });
   document.getElementById('historyClearBtn')?.addEventListener('click', () => {
