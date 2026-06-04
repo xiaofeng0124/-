@@ -61,7 +61,7 @@ export async function onRequest(context) {
 
   try {
     // 1. 检查 KV 缓存
-    const cacheKey = 'popular:prices_v2';
+    const cacheKey = 'popular:prices_v3';
     const cached = await env.USERS?.get(cacheKey, 'json');
     if (cached && cached.timestamp && (Date.now() / 1000 - cached.timestamp) < CACHE_TTL) {
       return new Response(JSON.stringify({ prices: cached.prices, cached: true }), {
