@@ -4,7 +4,7 @@
 const POPULAR_NAMES = [
   'Apple iPhone 16 Pro Max', 'Samsung Galaxy S25 Ultra', 'Google Pixel 9 Pro',
   'Apple iPhone 16', 'Samsung Galaxy S25',
-  'MacBook Air M4', 'MacBook Pro 16" M4 Pro',
+  'MacBook Air M4', 'Apple iPhone 17',
   'AirPods Pro 3', 'AirPods 4', 'Sony WH-1000XM6 Headphones',
   'Apple Watch Ultra 3', 'Apple Watch Series 10',
   'PlayStation 5 Slim', 'Xbox Series X 2TB', 'Nintendo Switch 2',
@@ -35,7 +35,7 @@ const POPULAR_NAMES = [
   'Vitamin D3 Supplement', 'Organic Protein Powder', 'Cat Food Dispenser',
 ];
 
-const CACHE_KEY = 'popular:80';
+const CACHE_KEY = 'popular:81';
 const CACHE_TTL = 48 * 60 * 60;
 
 export async function onRequest(context) {
