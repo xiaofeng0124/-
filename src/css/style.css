@@ -1615,16 +1615,22 @@ color: var(--gray-500);
 font-size: 15px;
 }
 
+.pricing-toggle-wrap {
+display: flex;
+flex-direction: column;
+align-items: center;
+margin: 0 auto 28px;
+gap: 12px;
+}
 .pricing-toggle {
 display: flex;
 align-items: center;
-justify-content: center;
 gap: 0;
 background: var(--gray-100);
 border-radius: 100px;
 padding: 4px;
 width: fit-content;
-margin: 0 auto 28px;
+position: relative;
 }
 .toggle-label {
 padding: 10px 28px;
@@ -1635,6 +1641,8 @@ color: var(--gray-500);
 cursor: pointer;
 transition: all 0.2s;
 user-select: none;
+position: relative;
+z-index: 2;
 }
 .toggle-label[data-period="year"] {
 font-size: 18px;
@@ -1645,17 +1653,59 @@ background: var(--white);
 color: var(--dark);
 box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-.toggle-badge {
-background: linear-gradient(135deg, #16a34a, #15803d);
-color: white;
-font-size: 14px;
-font-weight: 900;
-padding: 5px 12px;
+.toggle-slider {
+width: 32px;
+height: 20px;
+background: var(--primary);
 border-radius: 100px;
-margin-left: 8px;
+position: relative;
+cursor: pointer;
+transition: all 0.3s;
+margin: 0 4px;
+flex-shrink: 0;
+}
+.toggle-slider .toggle-knob {
+width: 16px;
+height: 16px;
+background: white;
+border-radius: 50%;
+position: absolute;
+top: 2px;
+left: 2px;
+transition: all 0.3s;
+box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-slider.active .toggle-knob {
+left: 14px;
+}
+.toggle-badge-popular {
+background: linear-gradient(135deg, #f97316, #ea580c);
+color: white;
+font-size: 11px;
+font-weight: 800;
+padding: 3px 8px;
+border-radius: 100px;
+margin-left: 6px;
 vertical-align: middle;
-box-shadow: 0 3px 8px rgba(22,163,74,0.35);
-letter-spacing: 0.3px;
+box-shadow: 0 2px 6px rgba(249,115,22,0.3);
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+.toggle-save-badge {
+font-size: 14px;
+font-weight: 700;
+color: var(--primary);
+background: var(--primary-light);
+padding: 6px 18px;
+border-radius: 100px;
+display: inline-flex;
+align-items: center;
+gap: 4px;
+}
+.toggle-save-badge .save-amount {
+font-size: 18px;
+font-weight: 900;
+color: #16a34a;
 }
 
 .pricing-grid {
