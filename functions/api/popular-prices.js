@@ -61,7 +61,8 @@ export async function onRequest(context) {
 
   try {
     // 1. 检查 KV 缓存
-    const cached = await env.USERS?.get('popular:prices', 'json');
+    const cacheKey = 'popular:prices_v2';
+    const cached = await env.USERS?.get(cacheKey, 'json');
     if (cached && cached.timestamp && (Date.now() / 1000 - cached.timestamp) < CACHE_TTL) {
       return new Response(JSON.stringify({ prices: cached.prices, cached: true }), {
         headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' },
@@ -102,7 +103,7 @@ export async function onRequest(context) {
     // 3. 存入 KV 缓存
     const cacheData = { prices: priceMap, timestamp: Math.floor(Date.now() / 1000) };
     try {
-      await env.USERS?.put('popular:prices', JSON.stringify(cacheData), { expirationTtl: CACHE_TTL + 3600 });
+      await env.USERS?.put(cacheKey, JSON.stringify(cacheData), { expirationTtl: CACHE_TTL + 3600 });
     } catch {}
 
     return new Response(JSON.stringify({ prices: priceMap, cached: false }), {
