@@ -3,23 +3,34 @@
 
 const POPULAR_NAMES = [
   'Apple iPhone 16 Pro Max', 'Samsung Galaxy S25 Ultra', 'Google Pixel 9 Pro',
-  'Apple iPhone 16', 'Samsung Galaxy S25', 'OnePlus 13',
-  'iPad Pro M4 13"', 'iPad Air M3 11"',
-  'MacBook Air M4', 'MacBook Pro 16" M4 Pro', 'Dell XPS 16 Laptop',
-  'Lenovo ThinkPad X1 Carbon', 'ASUS Zenbook 14 OLED', 'Microsoft Surface Laptop 7',
+  'Apple iPhone 16', 'Samsung Galaxy S25',
+  'MacBook Air M4', 'MacBook Pro 16" M4 Pro',
   'AirPods Pro 3', 'AirPods 4', 'Sony WH-1000XM6 Headphones',
-  'Bose QuietComfort Ultra Earbuds', 'Samsung Galaxy Buds 4 Pro', 'Beats Studio Pro',
-  'Apple Watch Ultra 3', 'Apple Watch Series 10', 'Samsung Galaxy Watch 7', 'Fitbit Charge 7',
+  'Apple Watch Ultra 3', 'Apple Watch Series 10',
   'PlayStation 5 Slim', 'Xbox Series X 2TB', 'Nintendo Switch 2',
-  'Meta Quest 3S 256GB', 'Steam Deck OLED 1TB',
   'Nike Air Max 2025', 'Adidas Ultraboost Light', 'New Balance 990v6',
   'Nike Air Force 1', 'Crocs Classic Clogs', 'UGG Classic Boots',
-  'Levi 501 Original Jeans', 'North Face Nuptse Jacket',
-  'Patagonia Better Sweater', 'Champion Hoodie',
+  'Levi 501 Original Jeans', 'Champion Hoodie',
   'Instant Pot Duo Plus', 'KitchenAid Stand Mixer', 'Dyson V15 Detect',
   'Ninja Creami Deluxe', 'Keurig K-Elite Coffee',
-  'Peloton Bike+', 'Bowflex Adjustable Dumbbells', 'Theragun Pro 6', 'Yeti Rambler 64oz',
-  'Apple AirTag 4 Pack', 'Ray-Ban Meta Wayfarer',
+  'Peloton Bike+', 'Bowflex Adjustable Dumbbells',
+  'Apple AirTag 4 Pack',
+  // 女装 +10
+  'Women Summer Dress', 'Women Yoga Leggings', 'Women Denim Jacket',
+  'Cashmere Sweater Women', 'Silk Blouse Women', 'High Waist Leggings',
+  'Women Winter Coat', 'Floral Maxi Dress', 'Women Running Shoes', 'Fleece Pullover',
+  // 家居 & 厨房 +5
+  'Vitamix Blender', 'Breville Espresso Machine', 'iRobot Roomba Vacuum',
+  'Air Fryer Oven', 'Le Creuset Dutch Oven',
+  // 装饰 +5
+  'LED Strip Lights', 'Canvas Wall Art Set', 'Artificial Plants Decor',
+  'Throw Pillow Covers Set', 'Scented Candles Gift Set',
+  // 家具 +5
+  'Standing Desk Adjustable', 'Office Ergonomic Chair', 'Bookshelf 5 Tier',
+  'Storage Cabinet', 'Floor Lamp Modern',
+  // 家电 +5
+  'Samsung 65 Inch OLED TV', 'Portable Air Conditioner', 'Smart Air Purifier',
+  'Robot Vacuum Mop Combo', 'Mini Dehumidifier',
 ];
 
 const CACHE_TTL = 48 * 60 * 60; // 48灏忔椂锛堢锛?
@@ -28,7 +39,7 @@ export async function onRequest(context) {
 
   try {
     // 1. 妫€鏌?KV 缂撳瓨
-    const cacheKey = 'popular:prices_v5';
+    const cacheKey = 'popular:prices_v6';
     const cached = await env.USERS?.get(cacheKey, 'json');
     if (cached && cached.timestamp && (Date.now() / 1000 - cached.timestamp) < CACHE_TTL) {
       return new Response(JSON.stringify({ prices: cached.prices, cached: true }), {
