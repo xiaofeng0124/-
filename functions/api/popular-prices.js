@@ -61,7 +61,7 @@ export async function onRequest(context) {
 
   try {
     // 1. 检查 KV 缓存
-    const cacheKey = 'popular:prices_v3';
+    const cacheKey = 'popular:prices_v4';
     const cached = await env.USERS?.get(cacheKey, 'json');
     if (cached && cached.timestamp && (Date.now() / 1000 - cached.timestamp) < CACHE_TTL) {
       return new Response(JSON.stringify({ prices: cached.prices, cached: true }), {
@@ -71,7 +71,9 @@ export async function onRequest(context) {
 
     // 2. 缓存过期，重新搜索（只取 Amazon 和 eBay 价格）
     const priceMap = {};
-    const batchSize = 5;
+    // 用高并发确保30秒超时内搜完80个商品
+    // 每批搜20个，4批完成，每批约3-5秒
+    const batchSize = 20;
 
     for (let i = 0; i < POPULAR_NAMES.length; i += batchSize) {
       const batch = POPULAR_NAMES.slice(i, i + batchSize);
