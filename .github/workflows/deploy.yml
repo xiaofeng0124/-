@@ -13,7 +13,5 @@ jobs:
       - name: Deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: |
-          set +e
-          npx wrangler pages deploy . --branch master --project-name snapprice 2>&1
-          echo "EXIT_CODE=$?"
+          CLOUDFLARE_ACCOUNT_ID: eb5577c835cc05e93bf3b1650db73a9e
+        run: npx wrangler pages deploy . --branch master --project-name snapprice 2>&1

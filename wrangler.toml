@@ -1,7 +1,6 @@
 name = "snapprice"
 compatibility_date = "2025-04-01"
 pages_build_output_dir = "."
-account_id = "eb5577c835cc05e93bf3b1650db73a9e"
 
 [[kv_namespaces]]
 binding = "USERS"
