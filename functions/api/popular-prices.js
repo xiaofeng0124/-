@@ -31,6 +31,16 @@ const POPULAR_NAMES = [
   // 家电 +5
   'Samsung 65 Inch OLED TV', 'Portable Air Conditioner', 'Smart Air Purifier',
   'Robot Vacuum Mop Combo', 'Mini Dehumidifier',
+  // 男装 +5
+  'Men Casual Shirt', 'Men Winter Jacket', 'Men Running Sneakers',
+  'Men Slim Jeans', 'Men Leather Watch',
+  // 户外 +5
+  'Camping Tent 4 Person', 'Hiking Backpack 40L', 'Insulated Water Bottle',
+  'Portable Camping Hammock', 'Outdoor Propane Grill',
+  // 其他杂货 +9
+  'Wireless Phone Charger', 'Smart WiFi Light Bulb', 'Electric Kettle Stainless',
+  'Yoga Mat Non Slip', 'Resistance Bands Set', 'Car Phone Mount',
+  'Vitamin D3 Supplement', 'Organic Protein Powder', 'Cat Food Dispenser',
 ];
 
 const CACHE_TTL = 48 * 60 * 60; // 48灏忔椂锛堢锛?
@@ -39,7 +49,7 @@ export async function onRequest(context) {
 
   try {
     // 1. 妫€鏌?KV 缂撳瓨
-    const cacheKey = 'popular:prices_v6';
+    const cacheKey = 'popular:prices_v7';
     const cached = await env.USERS?.get(cacheKey, 'json');
     if (cached && cached.timestamp && (Date.now() / 1000 - cached.timestamp) < CACHE_TTL) {
       return new Response(JSON.stringify({ prices: cached.prices, cached: true }), {
@@ -49,7 +59,7 @@ export async function onRequest(context) {
 
     // 2. 缓存过期，重新搜索
     const priceMap = {};
-    const batchSize = 20;
+    const batchSize = 30;
 
     for (let i = 0; i < POPULAR_NAMES.length; i += batchSize) {
       const batch = POPULAR_NAMES.slice(i, i + batchSize);
