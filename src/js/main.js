@@ -2061,8 +2061,6 @@ function initPricingToggle(syncingRef) {
       document.querySelectorAll('.toggle-label').forEach(l => l.classList.remove('active'));
       label.classList.add('active');
       const period = label.dataset.period;
-      const slider = document.querySelector('.toggle-slider');
-      if (slider) slider.classList.toggle('active', period === 'year');
 
       // Desktop/landscape: toggle premium card pricing
       const monthlyRow = document.querySelector('#premiumPriceBlock .price-row:first-child');
