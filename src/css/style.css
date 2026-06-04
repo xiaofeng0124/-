@@ -1524,12 +1524,13 @@ transition: background 0.2s;
 
 @media (max-width: 720px) {
 .price-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.popular-grid { grid-template-columns: repeat(3, 1fr); }
+.popular-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 600px) {
 .hero h1 { font-size: 24px; }
 .price-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.popular-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 480px) {
