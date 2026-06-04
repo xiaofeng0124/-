@@ -28,7 +28,7 @@ export async function onRequest(context) {
 
   try {
     // 1. 妫€鏌?KV 缂撳瓨
-    const cacheKey = 'popular:prices_v4';
+    const cacheKey = 'popular:prices_v5';
     const cached = await env.USERS?.get(cacheKey, 'json');
     if (cached && cached.timestamp && (Date.now() / 1000 - cached.timestamp) < CACHE_TTL) {
       return new Response(JSON.stringify({ prices: cached.prices, cached: true }), {

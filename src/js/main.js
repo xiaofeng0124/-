@@ -132,7 +132,6 @@ const LANG_KEYWORDS = {
 
 // ======== Popular Products Pool (60 items, refresh picks 40) ========
 const POPULAR_POOL = [
-  // ===== 馃摫 鎵嬫満 & 骞虫澘 (10) =====
   { name: 'Apple iPhone 16 Pro Max', price: 1199 },
   { name: 'Samsung Galaxy S25 Ultra', price: 1299 },
   { name: 'Google Pixel 9 Pro', price: 899 },
@@ -141,40 +140,27 @@ const POPULAR_POOL = [
   { name: 'OnePlus 13', price: 799 },
   { name: 'iPad Pro M4 13"', price: 1099 },
   { name: 'iPad Air M3 11"', price: 599 },
-  { name: 'Samsung Galaxy Tab S10 Ultra', price: 999 },
-  { name: 'Amazon Fire Max 11', price: 249 },
-  // ===== 馃捇 绗旇鏈?& 鐢佃剳 (8) =====
   { name: 'MacBook Air M4', price: 1099 },
   { name: 'MacBook Pro 16" M4 Pro', price: 2499 },
   { name: 'Dell XPS 16 Laptop', price: 1899 },
-  { name: 'Samsung Galaxy Book 4', price: 1299 },
   { name: 'Lenovo ThinkPad X1 Carbon', price: 1649 },
-  { name: 'Microsoft Surface Laptop 7', price: 1299 },
-  { name: 'HP Spectre x360', price: 1399 },
   { name: 'ASUS Zenbook 14 OLED', price: 1299 },
-  // ===== 馃帶 鑰虫満 & 闊抽 (8) =====
+  { name: 'Microsoft Surface Laptop 7', price: 1299 },
   { name: 'AirPods Pro 3', price: 249 },
   { name: 'AirPods 4', price: 129 },
   { name: 'Sony WH-1000XM6 Headphones', price: 399 },
   { name: 'Bose QuietComfort Ultra Earbuds', price: 279 },
   { name: 'Samsung Galaxy Buds 4 Pro', price: 229 },
-  { name: 'Sony WF-1000XM6 Earbuds', price: 279 },
   { name: 'Beats Studio Pro', price: 349 },
-  { name: 'JBL Tune 770NC', price: 129 },
-  // ===== 鈱?鎵嬭〃 & 绌挎埓 (5) =====
   { name: 'Apple Watch Ultra 3', price: 799 },
   { name: 'Apple Watch Series 10', price: 399 },
   { name: 'Samsung Galaxy Watch 7', price: 299 },
   { name: 'Fitbit Charge 7', price: 149 },
-  { name: 'Garmin Fenix 8', price: 899 },
-  // ===== 馃幃 娓告垙 (6) =====
   { name: 'PlayStation 5 Slim', price: 449 },
   { name: 'Xbox Series X 2TB', price: 499 },
   { name: 'Nintendo Switch 2', price: 399 },
   { name: 'Meta Quest 3S 256GB', price: 499 },
   { name: 'Steam Deck OLED 1TB', price: 649 },
-  { name: 'ASUS ROG Ally X', price: 799 },
-  // ===== 馃憻 鏈嶈 & 闉?(14) =====
   { name: 'Nike Air Max 2025', price: 189 },
   { name: 'Adidas Ultraboost Light', price: 189 },
   { name: 'New Balance 990v6', price: 199 },
@@ -184,34 +170,18 @@ const POPULAR_POOL = [
   { name: 'Levi 501 Original Jeans', price: 69 },
   { name: 'North Face Nuptse Jacket', price: 269 },
   { name: 'Patagonia Better Sweater', price: 139 },
-  { name: 'Carhartt Detroit Jacket', price: 179 },
-  { name: 'Tommy Hilfiger Polo Shirt', price: 79 },
-  { name: 'Calvin Klein Cotton Boxers', price: 39 },
-  { name: 'Nike Dri-FIT T-Shirt', price: 34 },
   { name: 'Champion Hoodie', price: 59 },
-  // ===== 馃彔 瀹跺眳 & 鍘ㄦ埧 (8) =====
   { name: 'Instant Pot Duo Plus', price: 89 },
   { name: 'KitchenAid Stand Mixer', price: 449 },
-  { name: 'Vitamix E310 Blender', price: 349 },
+  { name: 'Dyson V15 Detect', price: 649 },
   { name: 'Ninja Creami Deluxe', price: 199 },
   { name: 'Keurig K-Elite Coffee', price: 149 },
-  { name: 'Breville Barista Express', price: 749 },
-  { name: 'Dyson V15 Detect', price: 649 },
-  { name: 'iRobot Roomba j9+', price: 899 },
-  // ===== 馃弸锔?杩愬姩 & 鍋ュ悍 (6) =====
   { name: 'Peloton Bike+', price: 1495 },
   { name: 'Bowflex Adjustable Dumbbells', price: 349 },
   { name: 'Theragun Pro 6', price: 599 },
   { name: 'Yeti Rambler 64oz', price: 49 },
-  { name: 'Oral-B iO Series 10', price: 279 },
-  { name: 'Philips Sonicare DiamondClean', price: 229 },
-  // ===== 馃帓 閰嶉グ & 鍏朵粬 (6) =====
-  { name: 'Ray-Ban Meta Wayfarer', price: 299 },
   { name: 'Apple AirTag 4 Pack', price: 89 },
-  { name: 'Tile Mate 2025', price: 29 },
-  { name: 'Ridge Wallet Carbon', price: 99 },
-  { name: 'Bellroy Tokyo Tote', price: 139 },
-  { name: 'Herschel Backpack', price: 59 },
+  { name: 'Ray-Ban Meta Wayfarer', price: 299 },
 ];
 let currentPopular = [];
 
@@ -2487,4 +2457,5 @@ window.adminConfirmMembership = adminConfirmMembership;
   window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 300); });
   btt.addEventListener('click', function(){ window.scrollTo({ top:0, behavior:'smooth' }); });
 })();
+
 
