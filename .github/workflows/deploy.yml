@@ -10,13 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: npm install -g wrangler@4.94.0
-      - name: Check Auth
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: npx wrangler whoami 2>&1 || true
       - name: Deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: npx wrangler pages deploy . --branch master --project-name snapprice 2>&1 || true
-      - name: Show Deploy Result
-        run: echo "Workflow completed - check logs above"
+        run: |
+          set +e
+          npx wrangler pages deploy . --branch master --project-name snapprice 2>&1
+          echo "EXIT_CODE=$?"
