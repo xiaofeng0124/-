@@ -1134,9 +1134,10 @@ function renderPopularProducts() {
   grid.innerHTML = currentPopular.map(p => {
     const q = p.name.replace(/'/g, "\\'");
     const real = localCache?.[p.name];
+    const imgUrl = real?.image || p.img || '';
     return `
       <div class="popular-card" onclick="quickSearch('${q}')" data-popular="${p.name}">
-        <img class="popular-card-img" src="${proxyImg(p.img || '')}" alt="${p.name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
+        <img class="popular-card-img" src="${proxyImg(imgUrl)}" alt="${p.name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
         <div class="popular-card-name">${p.name}</div>
         ${real ? `<span class="popular-store">${real.store}</span>` : ''}
         <div class="popular-card-price">${real ? '$' + real.price.toFixed(2) : '—'}</div>
@@ -1171,6 +1172,14 @@ async function fetchPopularPrices() {
         card.querySelector('.popular-card-name')?.after(storeEl);
       }
       storeEl.textContent = info.store;
+      // 更新图片（如果有真实商品图）
+      if (info.image) {
+        const imgEl = card.querySelector('.popular-card-img');
+        if (imgEl) {
+          imgEl.src = proxyImg(info.image);
+          imgEl.classList.remove('img-failed');
+        }
+      }
     });
   } catch (e) { console.warn('获取实时价格失败:', e); }
 }

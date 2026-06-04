@@ -89,7 +89,7 @@ export async function onRequest(context) {
           if (!best) best = items.find(r => r.price > 0);
           if (!best) return null;
 
-          return { name, price: best.price, store: best.store };
+          return { name, price: best.price, store: best.store, image: best.image || '' };
         })
       );
       results.forEach(r => {
