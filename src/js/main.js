@@ -1101,7 +1101,7 @@ async function renderPriceChart(days) {
 }
 
 // ======== Popular Products 实时价格 ========
-const POPULAR_CACHE_KEY = 'sr_popular_cache_v2';
+const POPULAR_CACHE_KEY = 'sr_popular_cache_v3';
 const POPULAR_CACHE_TTL = 6 * 60 * 60 * 1000; // 6小时
 
 function shuffleArray(arr) {
