@@ -1034,6 +1034,7 @@ function openPriceHistory(productName, storeName, currentPrice) {
   document.getElementById('historyStoreName').textContent = storeName;
   document.getElementById('historyCurrentPrice').textContent = `Current: $${currentPrice.toFixed(2)}`;
   document.getElementById('historyModal').classList.add('active');
+  updateAlertRemaining();
 
   const defaultDays = isPremium() ? 30 : 7;
   document.querySelectorAll('#historyControls button').forEach(b => {
@@ -1371,12 +1372,13 @@ function initModals() {
     if (!val || val <= 0) { input.style.borderColor = '#ef4444'; setTimeout(() => input.style.borderColor = '', 800); return; }
     if (!currentUser) { document.getElementById('historyModal').classList.remove('active'); showAuthModal('login'); return; }
     if (!canAddAlert()) {
-      showToast(`🔔 Free limit: ${membershipData?.alertsLimit || 3} alerts. Upgrade for unlimited!`);
+      showToast(`🔔 Free limit: ${membershipData?.alertsLimit || 6} alerts. Upgrade for unlimited!`);
       hidePricingModal();
       showPricingModal();
       return;
     }
     addAlert({ productName: currentHistoryProduct, store: currentHistoryStore, targetPrice: val, currentPrice: parseFloat(document.getElementById('historyCurrentPrice').textContent.replace(/[^0-9.]/g,'')) });
+    updateAlertRemaining();
     const success = document.getElementById('alertSuccess');
     success.classList.add('show');
     input.value = '';
@@ -2234,7 +2236,19 @@ function canAddAlert() {
   if (!currentUser) return true;
   if (isPremium()) return true;
   const alertCount = localUserData?.alerts?.length || 0;
-  return alertCount < (membershipData?.alertsLimit || 3);
+  return alertCount < (membershipData?.alertsLimit || 6);
+}
+function updateAlertRemaining() {
+  const el = document.getElementById('alertRemaining');
+  if (!el) return;
+  if (!currentUser || isPremium()) { el.textContent = ''; return; }
+  const remaining = (membershipData?.alertsLimit || 6) - (localUserData?.alerts?.length || 0);
+  el.textContent = `${remaining} of 6 left`;
+  el.style.display = remaining <= 0 ? 'none' : '';
+}
+function getAlertRemaining() {
+  if (!currentUser || isPremium()) return 999;
+  return (membershipData?.alertsLimit || 6) - (localUserData?.alerts?.length || 0);
 }
 
 // ======== Admin Panel ========

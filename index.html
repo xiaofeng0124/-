@@ -16,7 +16,7 @@
   </script>
   <link rel="stylesheet" href="src/css/style.css?v12">
   <link rel="icon" href="src/logo.png?v4">
-  <script defer src="src/js/main.js?v49"></script>
+  <script defer src="src/js/main.js?v51"></script>
 </head>
 <body>
 
@@ -226,9 +226,9 @@
         </div>
         <ul class="pricing-features">
           <li class="yes">Text &amp; voice search &mdash; unlimited</li>
-          <li class="yes">Photo search &mdash; <strong>5 / month</strong></li>
+          <li class="yes">Photo search &mdash; <strong>5 searches / month</strong></li>
           <li class="yes">Price history charts</li>
-          <li class="yes">Price alerts &mdash; <strong>3 max</strong></li>
+          <li class="yes">Price alerts &mdash; <strong>6 total</strong></li>
           <li class="yes">Coupons &amp; deals</li>
           <li class="no">Price predictions</li>
           <li class="no">Multi-product comparison</li>
@@ -352,6 +352,7 @@
       <div class="alert-form">
         <input type="number" id="alertTargetPrice" placeholder="Target price ($)" min="1" step="0.01">
         <button id="alertSetBtn">Alert me</button>
+        <span id="alertRemaining" class="alert-remaining"></span>
       </div>
       <div class="alert-success" id="alertSuccess">We'll notify you when the price drops!</div>
     </div>

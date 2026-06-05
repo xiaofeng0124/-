@@ -45,7 +45,7 @@ export async function onRequest(context) {
         photoLimit: 5,
         photoLimitMax: 6,
         alertsUsed: (alerts.alerts || []).length,
-        alertsLimit: memberData.tier === 'premium' ? 999 : 3,
+        alertsLimit: memberData.tier === 'premium' ? 999 : 6,
       }), {
         headers: { 'Content-Type': 'application/json' },
       });
