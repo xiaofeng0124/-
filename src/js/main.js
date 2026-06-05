@@ -2385,23 +2385,135 @@ function renderAdminUserDetail(data) {
 
     '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
       '<h4 style="margin-bottom:12px;font-size:15px">Favorites (' + data.favorites.length + ')</h4>' +
-      (data.favorites.length ? '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px">' + data.favorites.map(function(f) {
-        const q = (f.name || f.productName || '').replace(/'/g, "\\\\'");
-        const img = f.image || '';
-        return '<div style="background:var(--gray-50);border-radius:8px;padding:8px;text-align:center">' +
-          '<img src="' + proxyImg(img) + '" alt="" style="width:100%;height:80px;object-fit:contain;border-radius:4px;margin-bottom:6px" onerror="this.style.display=\'none\'">' +
-          '<div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (f.name || f.productName || '') + '</div>' +
-          '<div style="font-size:12px;font-weight:700;color:var(--primary)">$' + (f.price || f.targetPrice || 0) + '</div>' +
+      (data.favorites.length ? data.favorites.map(function(f) {
+        return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100)">' +
+          '<img src="' + (f.image || '') + '" alt="" style="width:36px;height:36px;object-fit:contain;border-radius:4px" onerror="this.style.display=\'none\'">' +
+          '<div style="flex:1"><div style="font-size:13px;font-weight:500">' + (f.name || f.productName || '') + '</div><div style="font-size:11px;color:var(--gray-400)">' + (f.store || '') + ' · $' + (f.price || f.targetPrice || 0) + '</div></div>' +
         '</div>';
-      }).join('') + '</div>' : '<p style="font-size:13px;color:var(--gray-400)">No favorites</p>') +
+      }).join('') : '<p style="font-size:13px;color:var(--gray-400)">No favorites</p>') +
     '</div>' +
 
     '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
       '<h4 style="margin-bottom:12px;font-size:15px">Search History (' + data.searchHistory.length + ')</h4>' +
-      (data.searchHistory.length ? '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px">' + data.searchHistory.map(function(h) {
-        return '<div style="background:var(--gray-50);border-radius:8px;padding:12px;text-align:center">' +
-          '<div style="font-size:20px;margin-bottom:4px">🔍</div>' +
-          '<div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + h.query + '</div>' +
-          '<div style="font-size:10px;color:var(--gray-400);margin-top:2px">' + timeAgo(h.time) + '</div>' +
+      (data.searchHistory.length ? data.searchHistory.map(function(h) {
+        return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
+          '<span style="font-size:14px">🔍</span>' +
+          '<span style="font-size:13px">' + h.query + '</span>' +
+          '<span style="font-size:11px;color:var(--gray-400);margin-left:auto">' + timeAgo(h.time) + '</span>' +
         '</div>';
-      }).join('') + '</div>' : '<p style="font-size:13px;color:var(--gray-400)">No search history</p>')
+      }).join('') : '<p style="font-size:13px;color:var(--gray-400)">No search history</p>') +
+    '</div>' +
+
+    '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
+      '<h4 style="margin-bottom:12px;font-size:15px">Price Alerts (' + data.alerts.length + ')</h4>' +
+      (data.alerts.length ? data.alerts.map(function(a) {
+        const st = a.triggered ? '🔔 Triggered' : '⏳ Waiting';
+        return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
+          '<span style="font-size:14px">🔔</span>' +
+          '<div style="flex:1;font-size:13px">' + (a.productName || '') + ' @ ' + (a.store || '') + '</div>' +
+          '<span style="font-size:12px;font-weight:600">$' + (a.targetPrice || 0) + '</span>' +
+          '<span style="font-size:11px;color:var(--gray-400)">' + st + '</span>' +
+        '</div>';
+      }).join('') : '<p style="font-size:13px;color:var(--gray-400)">No alerts set</p>') +
+    '</div>';
+
+  content.innerHTML = html;
+
+  document.getElementById('adminMemberSubmitBtn').addEventListener('click', function() {
+    document.getElementById('adminConfirmModal').classList.add('active');
+    document.getElementById('adminConfirmInput').value = '';
+    document.getElementById('adminConfirmError').classList.remove('show');
+  });
+
+
+  window._pendingMembershipEmail = data.email;
+}
+
+async function adminConfirmMembership() {
+  const pw = document.getElementById('adminConfirmInput').value;
+  const err = document.getElementById('adminConfirmError');
+  if (!pw) { err.textContent = 'Password required'; err.classList.add('show'); return; }
+
+  const email = window._pendingMembershipEmail;
+  const action = document.getElementById('adminMemberAction').value;
+  const amount = document.getElementById('adminMemberAmount').value || 1;
+
+  try {
+    const res = await fetch('/api/admin?action=membership', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, adminPassword: pw, action, amount: parseInt(amount) }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      document.getElementById('adminConfirmModal').classList.remove('active');
+      const result = document.getElementById('adminMemberResult');
+      const newExp = data.membership.expiresAt
+        ? new Date(data.membership.expiresAt).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })
+        : '—';
+      result.innerHTML = data.membership.tier === 'free'
+        ? '<span style="color:var(--green)">✅ Premium removed</span>'
+        : '<span style="color:var(--green)">✅ Updated — expires ' + newExp + '</span>';
+    } else {
+      err.textContent = data.error || 'Failed';
+      err.classList.add('show');
+    }
+  } catch { err.textContent = 'Network error'; err.classList.add('show'); }
+}
+
+function initAdminPanel() {
+
+  document.getElementById('adminLoginBtn')?.addEventListener('click', adminLogin);
+  document.getElementById('adminPasswordInput')?.addEventListener('keydown', function(e) { if (e.key === 'Enter') adminLogin(); });
+  document.getElementById('adminLoginClose')?.addEventListener('click', function() {
+    document.getElementById('adminLoginModal').classList.remove('active');
+  });
+  document.getElementById('adminLoginModal')?.addEventListener('click', function(e) {
+    if (e.target === e.currentTarget) document.getElementById('adminLoginModal').classList.remove('active');
+  });
+
+
+  document.getElementById('adminConfirmBtn')?.addEventListener('click', adminConfirmMembership);
+  document.getElementById('adminConfirmInput')?.addEventListener('keydown', function(e) { if (e.key === 'Enter') adminConfirmMembership(); });
+  document.getElementById('adminConfirmClose')?.addEventListener('click', function() {
+    document.getElementById('adminConfirmModal').classList.remove('active');
+  });
+  document.getElementById('adminConfirmModal')?.addEventListener('click', function(e) {
+    if (e.target === e.currentTarget) document.getElementById('adminConfirmModal').classList.remove('active');
+  });
+
+
+  document.getElementById('adminBackBtn')?.addEventListener('click', function() {
+    if (adminSelectedEmail) {
+      adminSelectedEmail = null;
+      renderAdminUserList();
+      document.getElementById('adminStatus').textContent = adminUsers.length + ' users';
+    }
+  });
+  document.getElementById('adminLogoutBtn')?.addEventListener('click', adminLogout);
+
+
+  if (window.location.hash === '#admin') {
+    window.location.hash = '';
+    showAdmin();
+  }
+}
+
+
+window.showPricingModal = showPricingModal;
+window.adminLogin = adminLogin;
+window.adminConfirmMembership = adminConfirmMembership;
+
+// Back to top button
+(function() {
+  var btt = document.getElementById('backToTop');
+  if (!btt) return;
+  window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 300); });
+  btt.addEventListener('click', function(){ window.scrollTo({ top:0, behavior:'smooth' }); });
+})();
+
+
+
+
+
+
+
