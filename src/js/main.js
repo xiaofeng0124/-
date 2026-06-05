@@ -887,26 +887,14 @@ function renderDashboardFavorites() {
     container.innerHTML = `<div class="dashboard-empty"><span>❤️</span><h3>No favorites yet</h3><p>Search for products and heart them to save here.</p></div>`;
     return;
   }
-  container.innerHTML = `<div class="price-grid">${favs.map(f => {
+  container.innerHTML = `<div class="popular-grid">${favs.map(f => {
     const img = f.image || '';
-    return `<div class="price-card">
-      <div class="price-card-top">
-        <div class="store-info">
-          <div class="store-logo" style="background:${STORE_CONFIG[f.store]?.bg||'#666'}">${f.store[0]}</div>
-          <span class="store-name">${f.store}</span>
-        </div>
-      </div>
-      <div class="price-card-img">
-        <img src="${proxyImg(img)}" alt="${f.productName}" onerror="this.style.display='none'">
-      </div>
-      <div class="card-product-name" title="${f.productName}">${f.productName}</div>
-      <div class="price-card-middle">
-        <div class="price-amount">$${(f.price||0).toFixed(2)}</div>
-      </div>
-      <div class="price-card-bottom" style="grid-template-columns:1fr 1fr;gap:4px;display:grid">
-        <button class="buy-btn" onclick="searchProduct('${f.productName.replace(/'/g, "\\'")}')">View</button>
-        <button class="icon-btn heart-btn favorited" onclick="removeFavAndRefresh('${f.productName.replace(/'/g, "\\'")}','${f.store}')" title="Remove">✕</button>
-      </div>
+    const q = (f.productName || '').replace(/'/g, "\\'");
+    return `<div class="popular-card" onclick="searchProduct('${q}')">
+      <img class="popular-card-img" src="${proxyImg(img)}" alt="${f.productName}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
+      <div class="popular-card-name">${f.productName}</div>
+      <div class="popular-card-price">$${(f.price||0).toFixed(2)}</div>
+      <span style="font-size:10px;color:var(--gray-400)">${f.store}</span>
     </div>`;
   }).join('')}</div>`;
 }
@@ -918,26 +906,14 @@ function renderDashboardHistory() {
     container.innerHTML = `<div class="dashboard-empty"><span>🕐</span><h3>No browsing history yet</h3><p>Products you click "Buy Now" on will appear here.</p></div>`;
     return;
   }
-  container.innerHTML = `<div class="price-grid">${clicked.map(c => {
+  container.innerHTML = `<div class="popular-grid">${clicked.map(c => {
     const img = c.image || '';
-    return `<div class="price-card">
-      <div class="price-card-top">
-        <div class="store-info">
-          <div class="store-logo" style="background:${STORE_CONFIG[c.store]?.bg||'#666'}">${c.store[0]}</div>
-          <span class="store-name">${c.store}</span>
-        </div>
-        <span style="font-size:10px;color:var(--gray-400)">${timeAgo(c.time)}</span>
-      </div>
-      <div class="price-card-img">
-        <img src="${proxyImg(img)}" alt="${c.name}" onerror="this.style.display='none'">
-      </div>
-      <div class="card-product-name" title="${c.name}">${c.name}</div>
-      <div class="price-card-middle">
-        <div class="price-amount">$${(c.price||0).toFixed(2)}</div>
-      </div>
-      <div class="price-card-bottom" style="grid-template-columns:1fr;display:grid">
-        <button class="buy-btn" onclick="searchProduct('${c.name.replace(/'/g, "\\'")}')">View Again</button>
-      </div>
+    const q = (c.name || '').replace(/'/g, "\\'");
+    return `<div class="popular-card" onclick="searchProduct('${q}')">
+      <img class="popular-card-img" src="${proxyImg(img)}" alt="${c.name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
+      <div class="popular-card-name">${c.name}</div>
+      <div class="popular-card-price">$${(c.price||0).toFixed(2)}</div>
+      <div style="font-size:10px;color:var(--gray-400)">${c.store} · ${timeAgo(c.time)}</div>
     </div>`;
   }).join('')}</div>`;
 }
