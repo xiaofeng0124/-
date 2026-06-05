@@ -1298,9 +1298,45 @@ function toggleSearchHistory() {
   if (dd.classList.contains('active')) renderSearchHistory();
 }
 
+// ======== 剪贴板检测（一键搜索） ========
+function initClipboardDetect() {
+  // 检查过就不再重复检查
+  if (sessionStorage.getItem('clipboard_checked')) return;
+  try {
+    navigator.clipboard.readText().then(text => {
+      if (!text || text.length < 3 || text.length > 200) return;
+      // 忽略纯链接、邮箱、数字等
+      if (/^https?:\/\//i.test(text) || /^[\d\s\-+()]+$/.test(text) || /@/.test(text)) return;
+      sessionStorage.setItem('clipboard_checked', '1');
+      // 显示提示条
+      const bar = document.createElement('div');
+      bar.className = 'clipboard-bar';
+      bar.innerHTML = `
+        <span>📋 Detected: "<strong>${text.replace(/</g, '&lt;').slice(0, 60)}</strong>"</span>
+        <div class="clipboard-actions">
+          <button class="btn-search clipboard-btn" id="clipboardSearchBtn">🔍 Search &amp; Compare</button>
+          <button class="clipboard-close" id="clipboardCloseBtn">✕</button>
+        </div>
+      `;
+      document.body.prepend(bar);
+      // 点击搜索
+      document.getElementById('clipboardSearchBtn').addEventListener('click', () => {
+        document.getElementById('searchInput').value = text;
+        bar.remove();
+        performSearch();
+      });
+      // 关闭
+      document.getElementById('clipboardCloseBtn').addEventListener('click', () => bar.remove());
+      // 5 秒后自动消失
+      setTimeout(() => { if (bar.parentNode) bar.remove(); }, 8000);
+    }).catch(() => {}); // 无权限或剪贴板空，忽略
+  } catch {}
+}
+
 // ======== Init ========
 document.addEventListener('DOMContentLoaded', () => {
   initSearch();
+  initClipboardDetect();
   initPhotoUpload();
   initSortFilter();
   initModals();
