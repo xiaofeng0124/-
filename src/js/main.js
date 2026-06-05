@@ -1680,42 +1680,19 @@ function renderSortedStores(stores, sortBy) {
   grid.innerHTML = stores.map(s => {
     const isBest = s.price === bestPrice;
     const buyUrl = getStoreUrl(s.store, currentProduct.name, s.price);
-    const stars = '★'.repeat(Math.floor(s.rating)) + (s.rating % 1 >= 0.5 ? '½' : '');
-    const coupons = MOCK_COUPONS[s.store] || [];
     const faved = user ? isFavorited(currentProduct.name, s.store) : false;
+    const storeColor = STORE_CONFIG[s.store]?.bg || '#666';
 
     return `
-      <div class="price-card ${isBest ? 'best-deal' : ''}">
-        <div class="price-card-top">
-          <div class="store-info">
-            <div class="store-logo" style="background:${STORE_CONFIG[s.store]?.bg || '#666'}">${s.store[0]}</div>
-            <span class="store-name">${s.store}</span>
-          </div>
-          ${coupons.length ? `<span class="card-coupon-badge" onclick="showCouponPopup(event,this,'${s.store}')">🎫 ${coupons.length}</span>` : ''}
-        </div>
-
-        <div class="price-card-img">
-          <img src="${proxyImg(currentProduct.image)}" alt="${currentProduct.name}" onerror="this.style.display='none'">
-        </div>
-
-        <div class="card-product-name" title="${currentProduct.name}">${currentProduct.name}</div>
-
-        <div class="price-card-middle">
-          ${isBest ? '<div class="badge-best">Best Price</div>' : ''}
-          <div class="price-amount ${isBest ? 'best-price' : ''}">$${s.price.toFixed(2)}</div>
-        </div>
-
-        <div class="card-meta">
-          <span class="meta-item"><span class="star">${stars}</span> ${s.rating.toFixed(1)}</span>
-          <span class="meta-item"><span class="ship">🚚</span> ${s.shipDays === 1 ? 'Same day' : s.shipDays + 'd'}</span>
-          <span class="meta-item"><span class="reputation">✓</span> ${s.reputation}%</span>
-          <span class="meta-item">${(s.reviews/1000).toFixed(0)}k reviews</span>
-        </div>
-
-        <div class="price-card-bottom">
-          <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')">Buy Now</a>
-          <button class="icon-btn heart-btn ${faved ? 'favorited' : ''}" onclick="toggleFavorite(event,'${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')">${faved ? '❤️' : '🤍'}</button>
-          <button class="icon-btn" onclick="openPriceHistory('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')" title="Price history">📈</button>
+      <div class="popular-card" style="text-align:left;padding:10px">
+        <img class="popular-card-img" src="${proxyImg(currentProduct.image)}" alt="${currentProduct.name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
+        <div style="font-size:10px;color:var(--gray-400);margin-bottom:2px">${s.store}</div>
+        <div class="popular-card-name" style="-webkit-line-clamp:1">${currentProduct.name}</div>
+        <div class="popular-card-price">$${s.price.toFixed(2)} ${isBest ? '<span style="font-size:10px;color:#16a34a;font-weight:600">Best</span>' : ''}</div>
+        <div style="display:flex;gap:4px;margin-top:4px">
+          <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" style="flex:1;font-size:11px;padding:4px" onclick="saveClickedProduct('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')">Buy Now</a>
+          <button class="icon-btn heart-btn ${faved ? 'favorited' : ''}" style="width:28px;height:28px;font-size:13px" onclick="toggleFavorite(event,'${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')">${faved ? '❤️' : '🤍'}</button>
+          <button class="icon-btn" style="width:28px;height:28px;font-size:13px" onclick="openPriceHistory('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')" title="Price history">📈</button>
         </div>
       </div>`;
   }).join('');
