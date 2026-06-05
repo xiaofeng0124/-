@@ -1552,6 +1552,7 @@ async function performSearch() {
 
   if (apiProduct) {
     currentProduct = apiProduct;
+    saveSearchHistory(apiProduct);
     results.classList.add('active');
     const header = document.getElementById('productHeader');
     const thumbs = uploadedPhotos.length > 0
@@ -2422,6 +2423,19 @@ function renderAdminUserDetail(data) {
           '<span style="font-size:11px;color:var(--gray-400);margin-left:auto">' + timeAgo(h.time) + '</span>' +
         '</div>';
       }).join('') : '<p style="font-size:13px;color:var(--gray-400)">No search history</p>') +
+    '</div>' +
+
+    '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
+      '<h4 style="margin-bottom:12px;font-size:15px">Price Alerts (' + data.alerts.length + ')</h4>' +
+      (data.alerts.length ? data.alerts.map(function(a) {
+        const st = a.triggered ? '🔔 Triggered' : '⏳ Waiting';
+        return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
+          '<span style="font-size:14px">🔔</span>' +
+          '<div style="flex:1;font-size:13px">' + (a.productName || '') + ' @ ' + (a.store || '') + '</div>' +
+          '<span style="font-size:12px;font-weight:600">$' + (a.targetPrice || 0) + '</span>' +
+          '<span style="font-size:11px;color:var(--gray-400)">' + st + '</span>' +
+        '</div>';
+      }).join('') : '<p style="font-size:13px;color:var(--gray-400)">No alerts set</p>') +
     '</div>';
 
   content.innerHTML = html;
