@@ -256,6 +256,7 @@ let currentUser = null;
 let priceChartInstance = null;
 let currentHistoryProduct = null;
 let currentHistoryStore = null;
+let currentHistoryImage = '';
 
 // ======== Auth (Server-side via Cloudflare Workers + KV) ========
 let localUserData = null;
@@ -932,6 +933,7 @@ function renderDashboardAlerts() {
   }
   container.innerHTML = alerts.map(a => `
     <div class="dashboard-item">
+      ${a.image ? '<img src="' + proxyImg(a.image) + '" alt="" style="width:40px;height:40px;object-fit:contain;border-radius:6px;flex-shrink:0" onerror="this.style.display=\'none\'">' : ''}
       <div class="dashboard-item-info">
         <h4>${a.productName}</h4>
         <p>${a.store} — Target: <strong>$${a.targetPrice.toFixed(2)}</strong> &nbsp;·&nbsp; Current: $${a.currentPrice.toFixed(2)}</p>
@@ -999,13 +1001,14 @@ async function searchProduct(name) {
 }
 
 // ======== Price History ========
-function openPriceHistory(productName, storeName, currentPrice) {
+function openPriceHistory(productName, storeName, currentPrice, productImage) {
   const cacheKey = `${productName}_${storeName}`;
   if (!PRICE_HISTORY_CACHE[cacheKey]) {
     PRICE_HISTORY_CACHE[cacheKey] = generatePriceHistory(currentPrice, 90);
   }
   currentHistoryProduct = productName;
   currentHistoryStore = storeName;
+  currentHistoryImage = productImage || '';
   document.getElementById('historyProductName').textContent = productName;
   document.getElementById('historyStoreName').textContent = storeName;
   document.getElementById('historyCurrentPrice').textContent = `Current: $${currentPrice.toFixed(2)}`;
@@ -1353,7 +1356,7 @@ function initModals() {
       showPricingModal();
       return;
     }
-    addAlert({ productName: currentHistoryProduct, store: currentHistoryStore, targetPrice: val, currentPrice: parseFloat(document.getElementById('historyCurrentPrice').textContent.replace(/[^0-9.]/g,'')) });
+    addAlert({ productName: currentHistoryProduct, store: currentHistoryStore, targetPrice: val, currentPrice: parseFloat(document.getElementById('historyCurrentPrice').textContent.replace(/[^0-9.]/g,'')), image: currentHistoryImage });
     updateAlertRemaining();
     const success = document.getElementById('alertSuccess');
     success.classList.add('show');
@@ -1712,7 +1715,7 @@ function renderSortedStores(stores, sortBy) {
         <div class="price-card-bottom">
           <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')">Buy Now</a>
           <button class="icon-btn heart-btn ${faved ? 'favorited' : ''}" onclick="toggleFavorite(event,'${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')">${faved ? '❤️' : '🤍'}</button>
-          <button class="icon-btn" onclick="openPriceHistory('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price})" title="Price history">📈</button>
+          <button class="icon-btn" onclick="openPriceHistory('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')" title="Price history">📈</button>
         </div>
       </div>`;
   }).join('');
