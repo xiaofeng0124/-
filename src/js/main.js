@@ -1762,6 +1762,7 @@ function showCouponPopup(event, el, store) {
 // ======== Favorites Toggle ========
 function toggleFavorite(event, productName, store, price, image) {
   event.stopPropagation();
+  if (!currentUser) { showAuthModal('login'); return; }
   const btn = event.currentTarget;
   if (isFavorited(productName, store)) {
     removeFavorite(productName, store);
