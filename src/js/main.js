@@ -797,7 +797,6 @@ function updateUIForAuth() {
           </div>
         </div>
         <button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button>
-        <button class="btn-ghost desktop-only" id="favoritesBtn">❤️ Favorites</button>
       </div>
       <div class="user-menu">
         <button class="user-menu-trigger" id="userMenuTrigger">
