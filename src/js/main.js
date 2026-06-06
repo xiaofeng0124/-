@@ -797,6 +797,7 @@ function updateUIForAuth() {
           </div>
         </div>
         <button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button>
+        <button class="btn-ghost desktop-only" id="favoritesBtn">❤️ Favorites</button>
       </div>
       <div class="user-menu">
         <button class="user-menu-trigger" id="userMenuTrigger">
@@ -831,7 +832,7 @@ function updateUIForAuth() {
       window._dropdownListener = true;
     }
     document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
-    document.getElementById('favoritesBtn')?.addEventListener('click', () => { window.location.href = '/account'; });
+    document.getElementById('favoritesBtn')?.addEventListener('click', () => { if (!getSession()) { showAuthModal('login'); return; } window.location.href = '/account'; });
         document.getElementById('dropdownFavorites')?.addEventListener('click', () => { window.location.href = '/account'; });
     document.getElementById('dropdownAlerts')?.addEventListener('click', () => { window.location.href = '/account'; });
     document.getElementById('dropdownHistory')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
@@ -854,11 +855,13 @@ function updateUIForAuth() {
 							</div>
 						</div>
 						<button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button>
+      <button class="btn-ghost desktop-only" id="favoritesBtn2">❤️ Favorites</button>
       <button class="btn-premium" id="pricingNavBtn">⭐ Go Premium</button>
       <button class="btn-outline" id="loginBtn">Sign In</button>
     `;
     document.getElementById('loginBtn')?.addEventListener('click', () => showAuthModal('login'));
     document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
+    document.getElementById('favoritesBtn2')?.addEventListener('click', () => { if (!getSession()) { showAuthModal('login'); return; } window.location.href = '/account'; });
     document.getElementById('couponsNavBtn')?.addEventListener('click', () => { window.location.href = '/account'; });
 				document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
   }
