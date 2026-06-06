@@ -785,7 +785,7 @@ function updateUIForAuth() {
     actions.innerHTML = `
         ${premiumBtn}
       <div class="desktop-header-actions">
-        <button class="btn-ghost desktop-only" id="dashboardBtn">📊 Dashboard</button>
+        <button class="btn-ghost desktop-only" id="favoritesBtn">❤️ Favorites</button>
         <div class="history-wrap desktop-only">
           <button class="btn-ghost" id="historyNavBtn">🕐 History</button>
           <div class="history-dropdown" id="historyDropdown">
@@ -831,7 +831,7 @@ function updateUIForAuth() {
       window._dropdownListener = true;
     }
     document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
-    document.getElementById('dashboardBtn')?.addEventListener('click', () => { window.location.href = '/account'; });
+    document.getElementById('favoritesBtn')?.addEventListener('click', () => { window.location.href = '/account'; });
         document.getElementById('dropdownFavorites')?.addEventListener('click', () => { window.location.href = '/account'; });
     document.getElementById('dropdownAlerts')?.addEventListener('click', () => { window.location.href = '/account'; });
     document.getElementById('dropdownHistory')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
