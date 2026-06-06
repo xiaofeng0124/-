@@ -1904,6 +1904,11 @@ function isPremium() {
 }
 
 function showPremiumWelcome(email) {
+  // 一天只显示一次
+  const today = new Date().toDateString();
+  const lastShown = localStorage.getItem('sr_premium_welcome');
+  if (lastShown === today) return;
+  localStorage.setItem('sr_premium_welcome', today);
 
   const overlay = document.createElement('div');
   overlay.id = 'premiumWelcome';
