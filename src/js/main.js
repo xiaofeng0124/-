@@ -807,6 +807,7 @@ function updateUIForAuth() {
           </span>
         </button>
         <div class="user-dropdown" id="userDropdown">
+          <a href="/account" style="text-decoration:none;display:block">👤 My Account</a>
           <a id="dropdownFavorites">❤️ Favorites</a>
           <a id="dropdownAlerts">🔔 Price Alerts</a>
           <a id="dropdownHistory">🕐 History</a>
@@ -830,16 +831,16 @@ function updateUIForAuth() {
       window._dropdownListener = true;
     }
     document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
-    document.getElementById('dashboardBtn')?.addEventListener('click', showDashboard);
-        document.getElementById('dropdownFavorites')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('favorites'); });
-    document.getElementById('dropdownAlerts')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('alerts'); });
+    document.getElementById('dashboardBtn')?.addEventListener('click', () => { window.location.href = '/account'; });
+        document.getElementById('dropdownFavorites')?.addEventListener('click', () => { window.location.href = '/account'; });
+    document.getElementById('dropdownAlerts')?.addEventListener('click', () => { window.location.href = '/account'; });
     document.getElementById('dropdownHistory')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
-    document.getElementById('dropdownCoupons')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
+    document.getElementById('dropdownCoupons')?.addEventListener('click', () => { window.location.href = '/account'; });
     document.getElementById('dropdownAdmin')?.addEventListener('click', showAdmin);
     document.getElementById('logoutBtn')?.addEventListener('click', logout);
     document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
     document.getElementById('historyClearBtn')?.addEventListener('click', () => { localStorage.removeItem('sr_history'); renderSearchHistory(); });
-    document.getElementById('couponsNavBtn')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
+    document.getElementById('couponsNavBtn')?.addEventListener('click', () => { window.location.href = '/account'; });
   } else {
     actions.innerHTML = `
 						<div class="history-wrap desktop-only">
@@ -858,7 +859,7 @@ function updateUIForAuth() {
     `;
     document.getElementById('loginBtn')?.addEventListener('click', () => showAuthModal('login'));
     document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
-    document.getElementById('couponsNavBtn')?.addEventListener('click', () => { showDashboard(); switchDashboardTab('coupons'); });
+    document.getElementById('couponsNavBtn')?.addEventListener('click', () => { window.location.href = '/account'; });
 				document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
   }
 }
@@ -1280,6 +1281,29 @@ function toggleSearchHistory() {
 
 // ======== Init ========
 document.addEventListener('DOMContentLoaded', () => {
+  const isAccountPage = window.location.pathname.includes('/account');
+
+  if (isAccountPage) {
+    // 账户页：隐藏搜索区域，直接显示仪表盘
+    document.getElementById('popularSection')?.classList.add('hidden');
+    document.querySelector('.hero')?.classList.add('hidden');
+    document.querySelector('.main-section')?.classList.add('hidden');
+    initModals();
+    initPricingModal();
+    initAdminPanel();
+    initContactForm();
+    updateUIForAuth();
+    if (getSession()) syncUserData();
+    if (getSession()) checkMembership();
+    tryAutoLogin();
+    // 等登录状态加载后显示仪表盘
+    setTimeout(() => {
+      if (getSession()) showDashboard();
+      else { document.getElementById('dashboardSection').style.display = 'none'; showAuthModal('login'); }
+    }, 300);
+    return;
+  }
+
   initSearch();
   initPhotoUpload();
   initSortFilter();
@@ -1325,8 +1349,7 @@ function initModals() {
     }
   });
   document.getElementById('dashboardCloseBtn')?.addEventListener('click', () => {
-    document.getElementById('dashboardSection').classList.remove('active');
-    document.getElementById('popularSection')?.classList.remove('hidden');
+    window.location.href = '/';
   });
   document.querySelectorAll('.dashboard-tabs button').forEach(btn => {
     btn.addEventListener('click', () => switchDashboardTab(btn.dataset.tab));
@@ -2460,11 +2483,7 @@ function initAdminPanel() {
 
 
   document.getElementById('adminBackBtn')?.addEventListener('click', function() {
-    if (adminSelectedEmail) {
-      adminSelectedEmail = null;
-      renderAdminUserList();
-      document.getElementById('adminStatus').textContent = adminUsers.length + ' users';
-    }
+    window.location.href = '/account';
   });
   document.getElementById('adminLogoutBtn')?.addEventListener('click', adminLogout);
 

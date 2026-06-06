@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account — SnappRice</title>
+  <meta name="description" content="Manage your SnappRice account, favorites, price alerts and more.">
+  <meta name="robots" content="noindex, nofollow">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X0Z970RE0J"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-X0Z970RE0J');
+  </script>
+  <link rel="stylesheet" href="src/css/style.css?v12">
+  <link rel="icon" href="src/logo.png?v4">
+  <script defer src="src/js/main.js?v58"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <img src="src/logo.png?v2" alt="SnappRice" style="width:56px;height:56px;border-radius:12px">
+      <span style="font-size:34px;font-weight:800;color:var(--dark);margin-left:8px">Snap</span>
+      <span style="font-size:34px;font-weight:800;color:#16a34a">Price</span>
+    </a>
+    <div class="header-actions" id="headerActions">
+      <button class="btn-ghost" id="historyNavBtn">🕐 History</button>
+      <button class="btn-premium" id="pricingNavBtn">⭐ Go Premium</button>
+      <button class="btn-outline" id="loginBtn">Sign In</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Dashboard Section -->
+  <section class="dashboard-section" id="dashboardSection" style="display:block">
+    <div class="dashboard-header">
+      <div>
+        <h2>My Account</h2>
+        <p id="dashboardUserEmail"></p>
+      </div>
+      <a href="/" class="btn-ghost" style="text-decoration:none;padding:8px 16px;border:1px solid var(--gray-200);border-radius:8px;font-size:13px">← Back to Search</a>
+    </div>
+
+    <div class="dashboard-tabs">
+      <button class="active" data-tab="favorites">❤️ Favorites</button>
+      <button data-tab="history">🕐 History</button>
+      <button data-tab="alerts">🔔 Price Alerts</button>
+      <button data-tab="coupons">🎫 Coupons</button>
+    </div>
+
+    <div class="dashboard-content" id="dashboardContent">
+      <!-- Rendered by JS -->
+    </div>
+  </section>
+
+  <!-- Admin Section -->
+  <section class="dashboard-section" id="adminSection">
+    <div class="dashboard-header">
+      <div>
+        <h2>Admin Panel</h2>
+        <p id="adminStatus"></p>
+      </div>
+      <button class="btn-ghost" id="adminBackBtn">← Back to Account</button>
+    </div>
+    <div class="admin-content" id="adminContent">
+      <!-- Rendered by JS -->
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+        <a href="/about">About</a>
+        <a href="/blog">Blog</a>
+        <a href="/partnerships">Partnerships</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+        <button class="btn-link" id="contactBtn">Contact Us</button>
+      </div>
+    <p>&copy; 2026 SnappRice. Search, compare, save.</p>
+    <p class="disclosure">As an Amazon Associate we earn from qualifying purchases. Prices and availability may vary.</p>
+  </div>
+</footer>
+
+<!-- Auth Modal -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal" style="max-width:380px">
+    <button class="modal-close" id="authModalClose">&times;</button>
+    <div id="authFormContainer"></div>
+  </div>
+</div>
+
+<script>
+  var vglnk = {key: '811162296b84b59fc816b1c12441ac9f'};
+  (function(d, t) {var s = d.createElement(t);
+    s.type = 'text/javascript';s.async = true;
+    s.src = '//cdn.viglink.com/api/vglnk.js';
+    var r = d.getElementsByTagName(t)[0];
+    r.parentNode.insertBefore(s, r);
+  }(document, 'script'));
+</script>
+<script src="https://www.anrdoezrs.net/am/101761591/include/allCj/sid/snapprice/impressions/page/am.js"></script>
+</body>
+</html>
