@@ -778,9 +778,9 @@ async function tryAutoLogin() {
 
 function updateUIForAuth() {
   const actions = document.getElementById('headerActions');
-  if (!actions) return;
   const user = getSession();
   currentUser = user;
+  if (!actions) return;
 
   if (user) {
     const initial = user.email[0].toUpperCase();
