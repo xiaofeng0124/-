@@ -777,18 +777,18 @@ function updateUIForAuth() {
 
   if (user) {
     const initial = user.email[0].toUpperCase();
-    const premiumBtnText = membershipData && isPremium() ? '⭐ Premium' : '⭐ Go Premium';
+    const premiumBtnText = membershipData && isPremium() ? 'Premium' : 'Go Premium';
     const premiumBtn = `<button class="btn-premium" id="pricingNavBtn">${premiumBtnText}</button>`;
     const expiryHtml = isPremium() && membershipData?.expiresAt
-      ? `<div class="membership-expiry">⭐ Premium &middot; ${formatDate(membershipData.expiresAt)}</div>`
+      ? `<div class="membership-expiry">Premium &middot; ${formatDate(membershipData.expiresAt)}</div>`
       : '';
     actions.innerHTML = `
         ${premiumBtn}
       <div class="desktop-header-actions">
-        <button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button><button class="btn-ghost desktop-only" id="favoritesBtn">❤️ Favorites</button>
+        <button class="btn-ghost desktop-only" id="couponsNavBtn">Coupons</button><button class="btn-ghost desktop-only" id="favoritesBtn">Favorites</button>
         
         <div class="history-wrap desktop-only">
-          <button class="btn-ghost" id="historyNavBtn">🕐 History</button>
+          <button class="btn-ghost" id="historyNavBtn">History</button>
           <div class="history-dropdown" id="historyDropdown">
             <div class="history-dropdown-header">
               <span>Recent Searches</span>
@@ -806,14 +806,14 @@ function updateUIForAuth() {
           </span>
         </button>
         <div class="user-dropdown" id="userDropdown">
-          <a href="/account" style="text-decoration:none;display:block">👤 My Account</a>
-          <a id="dropdownCoupons">🎫 Coupons</a>
-          <a id="dropdownFavorites">❤️ Favorites</a>
-          <a id="dropdownAlerts">🔔 Price Alerts</a>
+          <a href="/account" style="text-decoration:none;display:block">My Account</a>
+          <a id="dropdownCoupons">Coupons</a>
+          <a id="dropdownFavorites">Favorites</a>
+          <a id="dropdownAlerts">Price Alerts</a>
           
-<a id="dropdownHistory">🕐 History</a>
+<a id="dropdownHistory">History</a>
           
-          ${user.email === '1067678960@qq.com' ? '<a id="dropdownAdmin">⚙️ Admin Panel</a>' : ''}
+          ${user.email === '1067678960@qq.com' ? '<a id="dropdownAdmin">Admin Panel</a>' : ''}
           <div class="divider"></div>
           <button class="danger" id="logoutBtn">Sign Out</button>
         </div>
@@ -844,10 +844,10 @@ function updateUIForAuth() {
     document.getElementById('couponsNavBtn')?.addEventListener('click', () => { window.location.href = '/account'; });
   } else {
     actions.innerHTML = `
-						<button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button>
-      <button class="btn-ghost desktop-only" id="favoritesBtn2">❤️ Favorites</button>
+						<button class="btn-ghost desktop-only" id="couponsNavBtn">Coupons</button>
+      <button class="btn-ghost desktop-only" id="favoritesBtn2">Favorites</button>
 						<div class="history-wrap desktop-only">
-							<button class="btn-ghost" id="historyNavBtn">🕐 History</button>
+							<button class="btn-ghost" id="historyNavBtn">History</button>
 							<div class="history-dropdown" id="historyDropdown">
 								<div class="history-dropdown-header">
 									<span>Recent Searches</span>
@@ -856,7 +856,7 @@ function updateUIForAuth() {
 								<div class="history-dropdown-list" id="historyList"></div>
 							</div>
 						</div>
-      <button class="btn-premium" id="pricingNavBtn">⭐ Go Premium</button>
+      <button class="btn-premium" id="pricingNavBtn">Go Premium</button>
       <button class="btn-outline" id="loginBtn">Sign In</button>
     `;
     document.getElementById('loginBtn')?.addEventListener('click', () => showAuthModal('login'));
@@ -1985,7 +1985,7 @@ function showPremiumWelcome(email) {
   textGroup.appendChild(text);
 
   const sub = document.createElement('div');
-  sub.textContent = '⭐ Premium Member';
+  sub.textContent = 'Premium Member';
   sub.style.cssText = 'font-size:34px;font-weight:700;color:#FFC107;text-shadow:0 0 20px rgba(255,193,7,0.5),0 2px 8px rgba(0,0,0,0.2);margin-top:10px;animation:premiumFadeIn 0.8s ease-out;letter-spacing:1px';
   textGroup.appendChild(sub);
   overlay.appendChild(textGroup);
@@ -2381,7 +2381,7 @@ function renderAdminUserList() {
     const regDate = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : '—';
     const expDate = u.expiresAt ? new Date(u.expiresAt).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : '—';
     const tierBadge = u.tier === 'premium'
-      ? '<span style="background:#fffbeb;color:#d97706;padding:2px 10px;border-radius:100px;font-size:12px;font-weight:700">⭐ Premium</span>'
+      ? '<span style="background:#fffbeb;color:#d97706;padding:2px 10px;border-radius:100px;font-size:12px;font-weight:700">Premium</span>'
       : '<span style="color:var(--gray-500);font-size:13px">Free</span>';
     html += '<tr class="admin-user-row" data-email="' + u.email + '" style="border-bottom:1px solid var(--gray-100);cursor:pointer">' +
       '<td style="padding:10px 12px;color:var(--primary);font-weight:500">' + u.email + '</td>' +
@@ -2425,7 +2425,7 @@ function renderAdminUserDetail(data) {
     '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
       '<h3 style="font-size:20px;margin-bottom:4px">' + data.email + '</h3>' +
       '<p style="font-size:13px;color:var(--gray-500)">Registered: ' + regDate + '</p>' +
-      '<p style="font-size:13px;color:var(--gray-500);margin-top:2px">Membership: ' + (isPremium ? '⭐ Premium · Expires ' + expDate : 'Free') + '</p>' +
+      '<p style="font-size:13px;color:var(--gray-500);margin-top:2px">Membership: ' + (isPremium ? 'Premium — Expires ' + expDate : 'Free') + '</p>' +
     '</div>' +
 
     '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
