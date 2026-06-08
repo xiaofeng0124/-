@@ -890,10 +890,10 @@ function switchDashboardTab(tab) {
 
 
 
-function showAccountDashboard() {
+function showAccountDashboard(tab) {
   if (!currentUser) { showAuthModal('login'); return; }
   document.getElementById('sidebarEmail').textContent = currentUser.email;
-  switchAccountTab('favorites');
+  switchAccountTab(tab || 'favorites');
 }
 
 function switchAccountTab(tab) {
@@ -910,6 +910,12 @@ function switchAccountTab(tab) {
     case 'history': renderDashboardHistory(container); break;
     case 'alerts': renderDashboardAlerts(container); break;
     case 'coupons': renderDashboardCoupons(container); break;
+    case 'predictions':
+      container.innerHTML = '<div class="dashboard-empty"><span>📈</span><h3>Price Predictions</h3><p>AI-powered price predictions coming soon. We\'ll analyze historical data to predict the best time to buy.</p></div>';
+      break;
+    case 'export':
+      container.innerHTML = '<div class="dashboard-empty"><span>📤</span><h3>Export Data</h3><p>Export your favorites and price history as CSV — coming soon.</p></div>';
+      break;
     case 'settings': renderAccountSettings(container); break;
   }
 }
@@ -1381,10 +1387,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById("sidebarLogoutBtn")?.addEventListener("click", logout);
     setTimeout(function() {
-      if (getSession()) showAccountDashboard();
-      else { showAuthModal("login"); }
+      if (getSession()) {
+        var hashTab = window.location.hash.replace('#','');
+        showAccountDashboard(hashTab || 'favorites');
+      } else { showAuthModal("login"); }
     }, 300);
-    return;n;
+    return;
   }
 
   initSearch();
