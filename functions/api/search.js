@@ -1,4 +1,4 @@
-// 搜索引擎: Serper
+// 搜索引擎: TalorData
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
@@ -12,8 +12,8 @@ export async function onRequest(context) {
   }
 
   try {
-    const results = await searchSerper(query, env);
-    return new Response(JSON.stringify({ results, count: results.length, engine: 'serper' }), {
+    const results = await searchTalorData(query, env);
+    return new Response(JSON.stringify({ results, count: results.length, engine: 'talordata' }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
@@ -24,34 +24,59 @@ export async function onRequest(context) {
   }
 }
 
-async function searchSerper(query, env) {
-  const rawKey = env.SERPER_KEY || (await env.USERS?.get('config:serper_key')) || '';
+async function searchTalorData(query, env) {
+  const rawKey = env.TALORDATA_KEY || (await env.USERS?.get('config:talordata_key')) || '';
   const apiKey = rawKey.charCodeAt(0) === 0xFEFF ? rawKey.slice(1) : rawKey;
-  if (!apiKey) throw new Error('SERPER_KEY not configured');
+  if (!apiKey) throw new Error('TALORDATA_KEY not configured');
 
-  const response = await fetch('https://google.serper.dev/shopping', {
+  const response = await fetch('https://serpapi.talordata.net/serp/v1/request', {
     method: 'POST',
-    headers: { 'X-API-KEY': apiKey, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ q: query, gl: 'us' }),
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      engine: 'google_shopping',
+      q: query,
+      num: '20',
+      json: '1',
+    }),
   });
 
   if (!response.ok) {
-    throw new Error(`Serper请求失败: ${response.status}`);
+    throw new Error(`TalorData请求失败: ${response.status}`);
   }
 
   const data = await response.json();
-  const items = data.shopping || [];
+  if (data.code !== 0) {
+    throw new Error('TalorData返回错误');
+  }
+
+  const items = data.data?.shopping || [];
 
   return items
-    .filter(item => item.price)
+    .filter(item => {
+      const price = parseFloat((item.price || '').replace(/[^0-9.]/g, '')) || 0;
+      return price > 0;
+    })
     .map((item) => ({
-      store: item.source || item.seller || 'Unknown',
+      store: item.source || 'Unknown',
       price: parseFloat((item.price || '').replace(/[^0-9.]/g, '')) || 0,
-      rating: item.rating || 0,
-      reviews: item.reviews || parseInt(item.reviewCount) || 0,
+      rating: parseFloat(item.rating) || 0,
+      reviews: parseTalorDataReviews(item.reviews),
       title: item.title || '',
-      image: item.imageUrl || '',
-      url: item.link || '#',
-      shipping: item.delivery || null,
-    }));
+      image: item.img_link || '',
+      url: item.product_link || '#',
+      shipping: item.guarantee || null,
+    }))
+    .slice(0, 30);
+}
+
+function parseTalorDataReviews(str) {
+  if (!str) return 0;
+  if (typeof str === 'number') return str;
+  const cleaned = str.replace(/[^0-9.]/g, '');
+  if (/[kK]/.test(str)) return Math.round(parseFloat(cleaned) * 1000);
+  if (/[mM]/.test(str)) return Math.round(parseFloat(cleaned) * 1000000);
+  return parseInt(cleaned) || 0;
 }
