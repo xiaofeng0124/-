@@ -226,6 +226,26 @@ font-size: 11px;
 color: var(--gray-400);
 margin-top: 2px;
 }
+.popular-card .buy-btn {
+display: inline-block;
+background: #16a34a;
+color: #fff !important;
+font-weight: 600;
+padding: 8px 14px;
+border-radius: 8px;
+font-size: 13px;
+border: none;
+cursor: pointer;
+text-decoration: none;
+transition: background .2s, transform .1s;
+}
+.popular-card .buy-btn:hover {
+background: #15803d;
+transform: translateY(-1px);
+}
+.popular-card .buy-btn:active {
+transform: translateY(0);
+}
 
 .main-section {
 max-width: 1100px;
