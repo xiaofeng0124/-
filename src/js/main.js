@@ -1196,7 +1196,7 @@ function quickSearch(query, safeName) {
     if (card) card.classList.add('selected');
   }
   // 聚焦输入框但不自动搜索，用户可修改后点搜索按钮
-  if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+  // 不聚焦输入框，防止页面滚动
 }
 
 // ======== Search History ========
