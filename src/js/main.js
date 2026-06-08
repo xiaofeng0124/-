@@ -1675,11 +1675,10 @@ async function performSearch() {
 
 async function searchViaAPI(query) {
   try {
-    const [serpRes, ebayRes] = await Promise.all([
+    const [serpRes, ebayRes, amazonRes] = await Promise.all([
       fetch(`/api/search?q=${encodeURIComponent(query)}`).catch(() => null),
       fetch(`/api/ebay?q=${encodeURIComponent(query)}`).catch(() => null),
-	      fetch(`/api/amazon?q=${encodeURIComponent(query)}`).catch(() => null),
-	      fetch(`/api/amazon?q=${encodeURIComponent(query)}`).catch(() => null),
+      fetch(`/api/amazon?q=${encodeURIComponent(query)}`).catch(() => null),
     ]);
 
     let allStores = [];
@@ -1707,13 +1706,6 @@ async function searchViaAPI(query) {
     }
 
     if (amazonRes && amazonRes.ok) {
-	      const amazonData = await amazonRes.json();
-	      if (amazonData.results && amazonData.results.length > 0) {
-	        allStores = allStores.concat(amazonData.results);
-	        if (!productImage) productImage = amazonData.results[0].image || "";
-	      }
-	    }
-	    if (amazonRes && amazonRes.ok) {
 	      const amazonData = await amazonRes.json();
 	      if (amazonData.results && amazonData.results.length > 0) {
 	        allStores = allStores.concat(amazonData.results);
