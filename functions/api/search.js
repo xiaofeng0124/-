@@ -34,7 +34,7 @@ async function searchSerper(query, env) {
   const response = await fetch('https://google.serper.dev/shopping', {
     method: 'POST',
     headers: { 'X-API-KEY': apiKey, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ q: query, gl: 'us', num: 20 }),
+    body: JSON.stringify({ q: query, gl: 'us' }),
   });
 
   if (!response.ok) {
