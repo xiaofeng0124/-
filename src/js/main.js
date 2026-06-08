@@ -1337,19 +1337,30 @@ renderPopularProducts();
   });
 });
 
-// 浮动搜索栏
+// 浮动搜索栏（复制首页搜索框样式）
 (function() {
   const bar = document.createElement('div');
   bar.id = 'floatSearchBar';
-  bar.innerHTML = '<div class="float-search-inner"><input type="search" id="floatSearchInput" placeholder="Search any product..." autocomplete="off"><button id="floatSearchBtn">Search</button></div>';
+  bar.innerHTML = '<div class="search-box" style="margin:0;box-shadow:0 4px 12px rgba(0,0,0,0.06)">' +
+    '<input type="search" id="floatSearchInput" placeholder="Search any product... (e.g. AirPods, PS5, Nike Shoes, Coffee Maker)" autocomplete="off" spellcheck="false">' +
+    '<div class="search-actions">' +
+      '<button class="btn-voice" id="floatVoiceBtn" title="Voice search">🎤</button>' +
+      '<button class="btn-camera" id="floatCameraBtn">📷 <span>Photo</span></button>' +
+      '<button class="btn-search" id="floatSearchBtn">Search</button>' +
+    '</div></div>';
   document.body.appendChild(bar);
-  document.getElementById('floatSearchBtn')?.addEventListener('click', () => {
+  // 搜索
+  const doSearch = () => {
     const q = document.getElementById('floatSearchInput').value.trim();
     if (q) { document.getElementById('searchInput').value = q; performSearch(); bar.classList.remove('show'); }
-  });
-  document.getElementById('floatSearchInput')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') document.getElementById('floatSearchBtn')?.click();
-  });
+  };
+  document.getElementById('floatSearchBtn')?.addEventListener('click', doSearch);
+  document.getElementById('floatSearchInput')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
+  // 关联语音按钮
+  document.getElementById('floatVoiceBtn')?.addEventListener('click', () => { document.getElementById('voiceBtn')?.click(); });
+  // 关联拍照按钮
+  document.getElementById('floatCameraBtn')?.addEventListener('click', () => { document.getElementById('cameraBtn')?.click(); });
+  // 下滑显示
   const hero = document.querySelector('.hero');
   window.addEventListener('scroll', () => {
     const heroBottom = hero ? hero.offsetTop + hero.offsetHeight : 200;

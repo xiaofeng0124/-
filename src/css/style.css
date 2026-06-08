@@ -1917,58 +1917,21 @@ max-height: 300px;
 }
 }
 
-/* ======== 浮动搜索栏 ======== */
+/* ======== 浮动搜索栏（导航栏下方） ======== */
 #floatSearchBar {
 position: fixed;
-top: 0;
+top: 66px;
 left: 0;
 right: 0;
-z-index: 999;
+z-index: 99;
 background: var(--white);
-border-bottom: 1px solid var(--gray-200);
 padding: 8px 20px;
-transform: translateY(-100%);
+transform: translateY(-120%);
 transition: transform 0.3s ease;
-box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 #floatSearchBar.show {
 transform: translateY(0);
 }
-.float-search-inner {
-display: flex;
-gap: 8px;
-max-width: 1100px;
-margin: 0 auto;
-}
-#floatSearchInput {
-flex: 1;
-padding: 10px 16px;
-border: 2px solid var(--gray-200);
-border-radius: 8px;
-font-size: 16px;
-outline: none;
-background: var(--gray-50);
-}
-#floatSearchInput:focus {
-border-color: var(--primary);
-background: var(--white);
-}
-#floatSearchBtn {
-padding: 10px 20px;
-background: var(--primary);
-color: white;
-border: none;
-border-radius: 8px;
-font-weight: 600;
-font-size: 15px;
-cursor: pointer;
-white-space: nowrap;
-}
-#floatSearchBtn:hover {
-background: var(--primary-dark);
-}
 @media (max-width: 600px) {
-#floatSearchBar { padding: 6px 12px; }
-#floatSearchInput { font-size: 14px; padding: 8px 12px; }
-#floatSearchBtn { font-size: 13px; padding: 8px 14px; }
+#floatSearchBar { top: 58px; padding: 6px 12px; }
 }
