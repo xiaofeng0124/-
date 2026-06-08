@@ -785,8 +785,8 @@ function updateUIForAuth() {
     actions.innerHTML = `
         ${premiumBtn}
       <div class="desktop-header-actions">
-        <button class="btn-ghost desktop-only" id="favoritesBtn">❤️ Favorites</button>
-        <button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button>
+        <button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button><button class="btn-ghost desktop-only" id="favoritesBtn">❤️ Favorites</button>
+        
         <div class="history-wrap desktop-only">
           <button class="btn-ghost" id="historyNavBtn">🕐 History</button>
           <div class="history-dropdown" id="historyDropdown">
@@ -807,9 +807,10 @@ function updateUIForAuth() {
         </button>
         <div class="user-dropdown" id="userDropdown">
           <a href="/account" style="text-decoration:none;display:block">👤 My Account</a>
+          <a id="dropdownCoupons">🎫 Coupons</a>
           <a id="dropdownFavorites">❤️ Favorites</a>
           <a id="dropdownAlerts">🔔 Price Alerts</a>
-          <a id="dropdownCoupons">🎫 Coupons</a>
+          
 <a id="dropdownHistory">🕐 History</a>
           
           ${user.email === '1067678960@qq.com' ? '<a id="dropdownAdmin">⚙️ Admin Panel</a>' : ''}
