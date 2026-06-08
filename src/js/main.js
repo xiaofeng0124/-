@@ -806,7 +806,6 @@ function updateUIForAuth() {
           </span>
         </button>
         <div class="user-dropdown" id="userDropdown">
-          <a href="/account" style="text-decoration:none;display:block">My Account</a>
           <a id="dropdownCoupons">Coupons</a>
           <a id="dropdownFavorites">Favorites</a>
           <a id="dropdownAlerts">Price Alerts</a>
@@ -815,6 +814,7 @@ function updateUIForAuth() {
           
           ${user.email === '1067678960@qq.com' ? '<a id="dropdownAdmin">Admin Panel</a>' : ''}
           <div class="divider"></div>
+          <a href="/account" style="text-decoration:none;display:block;font-weight:600;padding:8px 16px;font-size:13px;color:var(--primary)">My Account</a>
           <button class="danger" id="logoutBtn">Sign Out</button>
         </div>
       </div>
