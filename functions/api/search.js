@@ -25,7 +25,7 @@ export async function onRequest(context) {
 }
 
 async function searchSerper(query, env) {
-  const rawKey = env.SERPER_KEY || '';
+  const rawKey = env.SERPER_KEY || (await env.USERS?.get('config:serper_key')) || '';
   const apiKey = rawKey.charCodeAt(0) === 0xFEFF ? rawKey.slice(1) : rawKey;
   if (!apiKey) throw new Error('SERPER_KEY not configured');
 
