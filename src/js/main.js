@@ -786,8 +786,7 @@ function updateUIForAuth() {
         ${premiumBtn}
       <div class="desktop-header-actions">
         <button class="btn-ghost desktop-only" id="favoritesBtn">❤️ Favorites</button>
-        <div class="history-wrap desktop-only">
-          <button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button>
+        <button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button>
         <div class="history-wrap desktop-only">
           <button class="btn-ghost" id="historyNavBtn">🕐 History</button>
           <div class="history-dropdown" id="historyDropdown">
@@ -798,8 +797,7 @@ function updateUIForAuth() {
             <div class="history-dropdown-list" id="historyList"></div>
           </div>
         </div>
-      </div>
-      <div class="user-menu">
+        <div class="user-menu">
         <button class="user-menu-trigger" id="userMenuTrigger">
           <span class="user-avatar">${initial}</span>
           <span class="user-menu-info">
@@ -812,7 +810,8 @@ function updateUIForAuth() {
           <a id="dropdownFavorites">❤️ Favorites</a>
           <a id="dropdownAlerts">🔔 Price Alerts</a>
           <a id="dropdownCoupons">🎫 Coupons</a>
-          <a id="dropdownHistory">🕐 History</a>
+<a id="dropdownHistory">🕐 History</a>
+          
           ${user.email === '1067678960@qq.com' ? '<a id="dropdownAdmin">⚙️ Admin Panel</a>' : ''}
           <div class="divider"></div>
           <button class="danger" id="logoutBtn">Sign Out</button>
@@ -845,17 +844,16 @@ function updateUIForAuth() {
   } else {
     actions.innerHTML = `
 						<div class="history-wrap desktop-only">
-							<button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button>
-        <div class="history-wrap desktop-only">
-          <button class="btn-ghost" id="historyNavBtn">🕐 History</button>
-          <div class="history-dropdown" id="historyDropdown">
-            <div class="history-dropdown-header">
-              <span>Recent Searches</span>
-              <button id="historyClearBtn">Clear</button>
-            </div>
-            <div class="history-dropdown-list" id="historyList"></div>
-          </div>
-        </div>
+							<button class="btn-ghost" id="historyNavBtn">🕐 History</button>
+							<div class="history-dropdown" id="historyDropdown">
+								<div class="history-dropdown-header">
+									<span>Recent Searches</span>
+									<button id="historyClearBtn">Clear</button>
+								</div>
+								<div class="history-dropdown-list" id="historyList"></div>
+							</div>
+						</div>
+						<button class="btn-ghost desktop-only" id="couponsNavBtn">🎫 Coupons</button>
       <button class="btn-ghost desktop-only" id="favoritesBtn2">❤️ Favorites</button>
       <button class="btn-premium" id="pricingNavBtn">⭐ Go Premium</button>
       <button class="btn-outline" id="loginBtn">Sign In</button>
@@ -2549,7 +2547,6 @@ window.adminConfirmMembership = adminConfirmMembership;
   window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 300); });
   btt.addEventListener('click', function(){ window.scrollTo({ top:0, behavior:'smooth' }); });
 })();
-
 
 
 
