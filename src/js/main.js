@@ -1039,32 +1039,43 @@ function copyCoupon(code) {
 
 async function searchProduct(name) {
   document.getElementById('dashboardSection').classList.remove('active');
-  document.getElementById('resultsSection').classList.add('active');
-					document.getElementById('popularSection')?.classList.add('hidden');
+  document.getElementById('popularSection')?.classList.add('hidden');
   const loading = document.getElementById('loading');
   if (loading) loading.classList.add('active');
   const query = name.toLowerCase();
 
-  const apiProduct = await searchViaAPI(query);
-  if (loading) loading.classList.remove('active');
+  let firstResult = true;
 
-  if (apiProduct) {
+  const apiProduct = await searchViaAPI(query, (data) => {
     currentPage = 1;
-    currentProduct = apiProduct;
-    const header = document.getElementById('productHeader');
-    header.innerHTML = `
-      <div class="product-thumbs">${apiProduct.image ? `<img src="${proxyImg(apiProduct.image)}" alt="${apiProduct.name}" onerror="this.style.display='none'">` : ''}</div>
-      <div class="product-meta">
-        <h2>${apiProduct.name}</h2>
-        <p>${apiProduct.stores.length} stores compared — find the best deal</p>
-      </div>`;
-    renderSortedStores(apiProduct.stores, 'featured');
-    return;
+    currentProduct = { name: data.name, image: data.image, stores: data.stores };
+
+    if (firstResult) {
+      firstResult = false;
+      document.getElementById('loading').classList.remove('active');
+      document.getElementById('resultsSection').classList.add('active');
+      const header = document.getElementById('productHeader');
+      header.innerHTML = `
+        <div class="product-thumbs">${data.image ? `<img src="${proxyImg(data.image)}" alt="${data.name}" onerror="this.style.display='none'">` : ''}</div>
+        <div class="product-meta">
+          <h2>${data.name}</h2>
+          <p>${data.stores.length} stores compared — find the best deal</p>
+        </div>`;
+    } else {
+      const meta = document.querySelector('.product-meta p');
+      if (meta) meta.textContent = `${data.stores.length} stores compared — find the best deal`;
+    }
+
+    renderSortedStores(data.stores, 'featured');
+    document.getElementById('loadingMore').style.display = data.done ? 'none' : 'flex';
+  });
+
+  if (!apiProduct) {
+    if (firstResult) {
+      if (loading) loading.classList.remove('active');
+      renderResults(query);
+    }
   }
-
-
-  if (loading) loading.classList.remove('active');
-  renderResults(query);
 }
 
 // ======== Price History ========
@@ -1657,50 +1668,75 @@ async function performSearch() {
   document.getElementById('sortSelect').value = 'featured';
   document.getElementById('storeFilter').value = 'all';
 
+  let firstResult = true;
 
-  const apiProduct = await searchViaAPI(query);
-  if (loading) loading.classList.remove('active');
-
-  if (apiProduct) {
+  const apiProduct = await searchViaAPI(query, (data) => {
     currentPage = 1;
-    currentProduct = apiProduct;
-    saveSearchHistory(apiProduct);
-    results.classList.add('active');
-    const header = document.getElementById('productHeader');
-    const thumbs = uploadedPhotos.length > 0
-      ? uploadedPhotos.map(s => `<img src="${s}" alt="upload">`).join('')
-      : (apiProduct.image ? `<img src="${proxyImg(apiProduct.image)}" alt="${apiProduct.name}" onerror="this.style.display='none'">` : '');
-    header.innerHTML = `
-      <div class="product-thumbs">${thumbs}</div>
-      <div class="product-meta">
-        <h2>${apiProduct.name}</h2>
-        <p>${apiProduct.stores.length} stores compared — find the best deal</p>
-      </div>`;
-    renderSortedStores(apiProduct.stores, 'featured');
-  } else {
+    currentProduct = { name: data.name, image: data.image, stores: data.stores };
 
-    setTimeout(() => { renderResults(query); }, 400);
+    if (firstResult) {
+      firstResult = false;
+      document.getElementById('loading').classList.remove('active');
+      results.classList.add('active');
+      saveSearchHistory(currentProduct);
+      const header = document.getElementById('productHeader');
+      const thumbs = uploadedPhotos.length > 0
+        ? uploadedPhotos.map(s => `<img src="${s}" alt="upload">`).join('')
+        : (data.image ? `<img src="${proxyImg(data.image)}" alt="${data.name}" onerror="this.style.display='none'">` : '');
+      header.innerHTML = `
+        <div class="product-thumbs">${thumbs}</div>
+        <div class="product-meta">
+          <h2>${data.name}</h2>
+          <p>${data.stores.length} stores compared — find the best deal</p>
+        </div>`;
+    } else {
+      const meta = document.querySelector('.product-meta p');
+      if (meta) meta.textContent = `${data.stores.length} stores compared — find the best deal`;
+    }
+
+    renderSortedStores(data.stores, 'featured');
+    document.getElementById('loadingMore').style.display = data.done ? 'none' : 'flex';
+  });
+
+  if (!apiProduct) {
+    if (loading) loading.classList.remove('active');
+    if (firstResult) {
+      setTimeout(() => { renderResults(query); }, 400);
+    }
   }
 }
 
-async function searchViaAPI(query) {
+async function searchViaAPI(query, onProgress) {
+  // 检查缓存（10分钟内有效）
   try {
-    const [serpRes, ebayRes, amazonRes] = await Promise.all([
-      fetch(`/api/search?q=${encodeURIComponent(query)}`).catch(() => null),
-      fetch(`/api/ebay?q=${encodeURIComponent(query)}`).catch(() => null),
-      fetch(`/api/amazon?q=${encodeURIComponent(query)}`).catch(() => null),
-    ]);
+    const cached = localStorage.getItem('sr_cache_' + query);
+    if (cached) {
+      const c = JSON.parse(cached);
+      if (Date.now() - c.t < 600000) {
+        onProgress?.({ stores: c.stores, name: c.name, image: c.image, done: true, cached: true });
+        return { name: c.name, image: c.image, stores: c.stores };
+      }
+    }
+  } catch {}
+
+  try {
+    // 三个请求同时发起
+    const serpP = fetch(`/api/search?q=${encodeURIComponent(query)}`).catch(() => null);
+    const ebayP = fetch(`/api/ebay?q=${encodeURIComponent(query)}`).catch(() => null);
+    const amazonP = fetch(`/api/amazon?q=${encodeURIComponent(query)}`).catch(() => null);
 
     let allStores = [];
     let productName = query.charAt(0).toUpperCase() + query.slice(1);
     let productImage = '';
+    let reported = false;
 
+    // 处理 Serper（最快+结果最多）
+    const serpRes = await serpP;
     if (serpRes && serpRes.ok) {
       const data = await serpRes.json();
       if (data.results && data.results.length > 0) {
         productName = data.results[0].title || productName;
         productImage = data.results[0].image || '';
-        // 过滤掉eBay（由eBay API处理），避免重复+节省SerpAPI额度
         allStores = data.results
           .filter(item => item.store !== 'eBay')
           .map(item => ({
@@ -1712,25 +1748,34 @@ async function searchViaAPI(query) {
           reputation: item.rating > 0 ? Math.round((item.rating / 5) * 100) : 85,
           url: item.url || '#'
         }));
+        reported = true;
+        onProgress?.({ stores: [...allStores], name: productName, image: productImage, done: false });
       }
     }
 
+    // 处理 Amazon（已同时在请求中）
+    const amazonRes = await amazonP;
     if (amazonRes && amazonRes.ok) {
-	      const amazonData = await amazonRes.json();
-	      if (amazonData.results && amazonData.results.length > 0) {
-	        allStores = allStores.concat(amazonData.results.map(item => ({
-	          store: 'Amazon',
-	          price: item.price,
-	          rating: item.rating || 0,
-	          reviews: item.reviews || 0,
-	          shipDays: item.shipping && item.shipping.toLowerCase().includes('free') ? 3 : 5,
-	          reputation: item.rating > 0 ? Math.round((item.rating / 5) * 100) : 85,
-	          url: item.url || '#'
-	        })));
-	        if (!productImage) productImage = amazonData.results[0].image || "";
-	      }
-	    }
-	    if (ebayRes && ebayRes.ok) {
+      const amazonData = await amazonRes.json();
+      if (amazonData.results && amazonData.results.length > 0) {
+        allStores = allStores.concat(amazonData.results.map(item => ({
+          store: 'Amazon',
+          price: item.price,
+          rating: item.rating || 0,
+          reviews: item.reviews || 0,
+          shipDays: item.shipping && item.shipping.toLowerCase().includes('free') ? 3 : 5,
+          reputation: item.rating > 0 ? Math.round((item.rating / 5) * 100) : 85,
+          url: item.url || '#'
+        })));
+        if (!productImage) productImage = amazonData.results[0].image || '';
+        reported = true;
+        onProgress?.({ stores: [...allStores], name: productName, image: productImage, done: false });
+      }
+    }
+
+    // 处理 eBay
+    const ebayRes = await ebayP;
+    if (ebayRes && ebayRes.ok) {
       const ebayData = await ebayRes.json();
       if (ebayData.results && ebayData.results.length > 0) {
         allStores = allStores.concat(ebayData.results.map(item => ({
@@ -1748,6 +1793,12 @@ async function searchViaAPI(query) {
 
     if (allStores.length === 0) throw new Error('No results from any source');
 
+    // 写入缓存
+    try {
+      localStorage.setItem('sr_cache_' + query, JSON.stringify({ stores: allStores, name: productName, image: productImage, t: Date.now() }));
+    } catch {}
+
+    onProgress?.({ stores: allStores, name: productName, image: productImage, done: true });
     return { name: productName, image: productImage, stores: allStores };
   } catch (e) {
     console.warn('API search failed, using mock:', e.message);
