@@ -1337,6 +1337,26 @@ renderPopularProducts();
   });
 });
 
+// 浮动搜索栏
+(function() {
+  const bar = document.createElement('div');
+  bar.id = 'floatSearchBar';
+  bar.innerHTML = '<div class="float-search-inner"><input type="search" id="floatSearchInput" placeholder="Search any product..." autocomplete="off"><button id="floatSearchBtn">Search</button></div>';
+  document.body.appendChild(bar);
+  document.getElementById('floatSearchBtn')?.addEventListener('click', () => {
+    const q = document.getElementById('floatSearchInput').value.trim();
+    if (q) { document.getElementById('searchInput').value = q; performSearch(); bar.classList.remove('show'); }
+  });
+  document.getElementById('floatSearchInput')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('floatSearchBtn')?.click();
+  });
+  const hero = document.querySelector('.hero');
+  window.addEventListener('scroll', () => {
+    const heroBottom = hero ? hero.offsetTop + hero.offsetHeight : 200;
+    bar.classList.toggle('show', window.scrollY > heroBottom);
+  }, { passive: true });
+})();
+
 function initModals() {
   document.getElementById('authModalClose')?.addEventListener('click', hideAuthModal);
 
