@@ -34,19 +34,19 @@ export async function onRequest(context) {
     }
 
     const data = await response.json();
-    const items = data.results || [];
+    const items = data.products || data.results || [];
 
     const results = items
-      .filter(item => item.price?.current)
+      .filter(item => item.price || item.price?.current)
       .map(item => ({
         store: 'Amazon',
-        price: item.price.current || 0,
-        rating: item.rating?.average || 0,
-        reviews: item.rating?.count || 0,
+        price: item.price?.current || item.price || 0,
+        rating: typeof item.rating === 'number' ? item.rating : item.rating?.average || 0,
+        reviews: item.rating?.count || item.reviews_count || 0,
         title: item.title || '',
-        image: item.images?.[0] || '',
+        image: item.image || item.images?.[0] || '',
         url: item.url || '#',
-        shipping: item.buybox?.prime ? 'Free Prime' : null,
+        shipping: item.buybox?.prime || item.is_prime ? 'Free Prime' : null,
       }))
       .filter(item => item.price > 0);
 
