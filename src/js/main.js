@@ -355,6 +355,9 @@ function removeAlert(id) {
   localUserData.alerts = localUserData.alerts.filter(a => a.id !== id);
   persistUserData();
 }
+function getExistingAlert(productName, store) {
+  return (localUserData?.alerts || []).find(a => a.productName === productName && a.store === store);
+}
 
 // ======== UI: Auth Modal ========
 function showAuthModal(tab = 'login') {
@@ -1097,7 +1100,28 @@ function openPriceHistory(productName, storeName, currentPrice, productImage) {
   document.getElementById('historyStoreName').textContent = storeName;
   document.getElementById('historyCurrentPrice').textContent = `Current: $${currentPrice.toFixed(2)}`;
   document.getElementById('historyModal').classList.add('active');
+  document.getElementById('alertSuccess').classList.remove('show');
+  document.getElementById('alertDuplicate').classList.remove('show');
   updateAlertRemaining();
+
+  // 检查是否已设置过该商品的价格提醒
+  const existing = getExistingAlert(productName, storeName);
+  const input = document.getElementById('alertTargetPrice');
+  const display = document.getElementById('alertTargetDisplay');
+  const btn = document.getElementById('alertSetBtn');
+  if (existing) {
+    input.style.display = 'none';
+    display.textContent = `$${existing.targetPrice.toFixed(2)}`;
+    display.style.display = 'inline';
+    btn.textContent = 'Cancel';
+    btn.className = 'alert-cancel-btn';
+  } else {
+    input.style.display = '';
+    input.value = '';
+    display.style.display = 'none';
+    btn.textContent = 'Alert me';
+    btn.className = '';
+  }
 
   const defaultDays = isPremium() ? 30 : 7;
   document.querySelectorAll('#historyControls button').forEach(b => {
@@ -1497,6 +1521,24 @@ function initModals() {
     renderPriceChart(days);
   });
   document.getElementById('alertSetBtn')?.addEventListener('click', () => {
+    const existing = getExistingAlert(currentHistoryProduct, currentHistoryStore);
+    if (existing) {
+      // 取消模式：移除提醒
+      removeAlert(existing.id);
+      updateAlertRemaining();
+      // 切换到设置模式
+      const input = document.getElementById('alertTargetPrice');
+      const display = document.getElementById('alertTargetDisplay');
+      const btn = document.getElementById('alertSetBtn');
+      input.style.display = '';
+      input.value = '';
+      display.style.display = 'none';
+      btn.textContent = 'Alert me';
+      btn.className = '';
+      document.getElementById('alertDuplicate').classList.remove('show');
+      showToast('Alert cancelled');
+      return;
+    }
     const input = document.getElementById('alertTargetPrice');
     const val = parseFloat(input.value);
     if (!val || val <= 0) { input.style.borderColor = '#ef4444'; setTimeout(() => input.style.borderColor = '', 800); return; }
@@ -1511,7 +1553,14 @@ function initModals() {
     updateAlertRemaining();
     const success = document.getElementById('alertSuccess');
     success.classList.add('show');
-    input.value = '';
+    // 切换到取消模式
+    const display = document.getElementById('alertTargetDisplay');
+    const btn = document.getElementById('alertSetBtn');
+    input.style.display = 'none';
+    display.textContent = `$${val.toFixed(2)}`;
+    display.style.display = 'inline';
+    btn.textContent = 'Cancel';
+    btn.className = 'alert-cancel-btn';
     setTimeout(() => success.classList.remove('show'), 3000);
   });
 }

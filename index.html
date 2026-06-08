@@ -14,9 +14,9 @@
     gtag('js', new Date());
     gtag('config', 'G-X0Z970RE0J');
   </script>
-  <link rel="stylesheet" href="src/css/style.css?v15">
+  <link rel="stylesheet" href="src/css/style.css?v16">
   <link rel="icon" href="src/logo.png?v4">
-  <script defer src="src/js/main.js?v66"></script>
+  <script defer src="src/js/main.js?v67"></script>
 </head>
 <body>
 
@@ -342,11 +342,15 @@
     <div class="alert-section">
       <h4>Get notified when price drops</h4>
       <div class="alert-form">
-        <input type="number" id="alertTargetPrice" placeholder="Target price ($)" min="1" step="0.01">
-        <button id="alertSetBtn">Alert me</button>
+        <div class="alert-input-row" id="alertInputRow">
+          <input type="number" id="alertTargetPrice" placeholder="Target price ($)" min="1" step="0.01">
+          <span class="alert-target-display" id="alertTargetDisplay" style="display:none"></span>
+          <button id="alertSetBtn">Alert me</button>
+        </div>
         <span id="alertRemaining" class="alert-remaining"></span>
       </div>
       <div class="alert-success" id="alertSuccess">We'll notify you when the price drops!</div>
+      <div class="alert-duplicate" id="alertDuplicate" style="display:none">You already set a price alert for this product</div>
     </div>
   </div>
 </div>
