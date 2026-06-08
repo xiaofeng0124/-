@@ -36,10 +36,9 @@ async function searchTalorData(query, env) {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
-      engine: 'google',
+      engine: 'google_shopping',
       q: query,
-      device: 'desktop',
-      num: '20',
+      num: '40',
       json: '1',
     }),
   });
@@ -53,18 +52,11 @@ async function searchTalorData(query, env) {
     throw new Error(`TalorData错误: ${JSON.stringify(data)}`);
   }
 
-  // 从 immersive_products 提取购物数据
-  const shoppingItems = data.data?.immersive_products || [];
-
-  // 也试试 organic_results 里的商品卡片
-  const organicItems = data.data?.organic_results || [];
-
+  const items = data.data?.shopping || [];
   const results = [];
 
-  // 处理购物结果
-  for (const item of shoppingItems) {
-    const priceStr = (item.price || '').replace(/[^0-9.]/g, '');
-    const price = parseFloat(priceStr) || 0;
+  for (const item of items) {
+    const price = parseFloat((item.price || '').replace(/[^0-9.]/g, '')) || 0;
     if (price <= 0) continue;
 
     results.push({
@@ -73,34 +65,13 @@ async function searchTalorData(query, env) {
       rating: parseFloat(item.rating) || 0,
       reviews: parseReviewCount(item.reviews) || 0,
       title: item.title || '',
-      image: item.thumbnail || item.image || '',
-      url: item.link || item.product_link || '#',
-      shipping: item.delivery || item.shipping || null,
+      image: item.img_link || '',
+      url: item.product_link || '#',
+      shipping: item.guarantee || null,
     });
   }
 
-  // 处理普通结果中带价格的商品
-  for (const item of organicItems) {
-    if (results.length >= 20) break;
-    const richSnippet = item.rich_snippet?.top || {};
-    const priceStr = (richSnippet?.price || item.snippet?.price || '').replace(/[^0-9.]/g, '');
-    const price = parseFloat(priceStr) || 0;
-    if (price <= 0) continue;
-    if (results.some(r => r.store === item.domain && Math.abs(r.price - price) < 1)) continue;
-
-    results.push({
-      store: item.domain || item.source || 'Unknown',
-      price,
-      rating: parseFloat(richSnippet?.rating || item.rating || 0) || 0,
-      reviews: 0,
-      title: item.title || '',
-      image: item.thumbnail || '',
-      url: item.link || '#',
-      shipping: null,
-    });
-  }
-
-  return results.slice(0, 20);
+  return results.slice(0, 30);
 }
 
 function parseReviewCount(str) {
