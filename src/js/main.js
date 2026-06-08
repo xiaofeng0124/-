@@ -1001,7 +1001,7 @@ function removeFavAndRefresh(productName, store) {
 }
 
 function renderDashboardAlerts(contOverride) {
-  const container = document.getElementById('dashboardContent');
+  const container = contOverride || document.getElementById('dashboardContent');
   const alerts = getAlerts();
   if (!alerts.length) {
     container.innerHTML = `<div class="dashboard-empty"><span>🔔</span><h3>No price alerts</h3><p>Set price alerts to get notified when prices drop.</p></div>`;
@@ -1024,7 +1024,7 @@ function removeAlertAndRefresh(id) {
 }
 
 function renderDashboardCoupons(contOverride) {
-  const container = document.getElementById('dashboardContent');
+  const container = contOverride || document.getElementById('dashboardContent');
   let html = '<div class="coupons-grid">';
   for (const [store, coupons] of Object.entries(MOCK_COUPONS)) {
     coupons.forEach(c => {
