@@ -778,6 +778,7 @@ async function tryAutoLogin() {
 
 function updateUIForAuth() {
   const actions = document.getElementById('headerActions');
+  if (!actions) return;
   const user = getSession();
   currentUser = user;
 
