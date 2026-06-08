@@ -886,7 +886,7 @@ function switchDashboardTab(tab) {
 }
 
 function renderDashboardFavorites(contOverride) {
-  const container = document.getElementById('dashboardContent');
+  const container = contOverride || document.getElementById('dashboardContent');
   const favs = getFavorites();
   if (!favs.length) {
     container.innerHTML = `<div class="dashboard-empty"><span>❤️</span><h3>No favorites yet</h3><p>Search for products and heart them to save here.</p></div>`;
@@ -894,12 +894,17 @@ function renderDashboardFavorites(contOverride) {
   }
   container.innerHTML = `<div class="popular-grid">${favs.map(f => {
     const img = f.image || '';
-    const q = (f.productName || '').replace(/'/g, "\\'");
-    return `<div class="popular-card" onclick="searchProduct('${q}')">
+    const buyUrl = getStoreUrl(f.store, f.productName, f.price);
+    const pn = (f.productName || '').replace(/'/g, "\\'");
+    return `<div class="popular-card" style="padding:10px">
       <img class="popular-card-img" src="${proxyImg(img)}" alt="${f.productName}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
-      <div class="popular-card-name">${f.productName}</div>
-      <div class="popular-card-price">$${(f.price||0).toFixed(2)}</div>
-      <span style="font-size:10px;color:var(--gray-400)">${f.store}</span>
+      <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">${f.store}</div>
+      <div class="popular-card-name" style="font-size:13px;-webkit-line-clamp:2;line-height:1.3;margin-bottom:4px">${f.productName}</div>
+      <div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:6px">$${(f.price||0).toFixed(2)}</div>
+      <div style="display:flex;gap:6px">
+        <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${pn}','${f.store}',${f.price},'${img.replace(/'/g, "\\'")}')" style="font-size:13px;padding:8px 12px">Buy Now</a>
+        <button class="icon-btn" style="width:36px;height:36px;font-size:13px;color:#ef4444" onclick="removeFavAndRefresh('${pn}','${f.store}')" title="Remove">✕</button>
+      </div>
     </div>`;
   }).join('')}</div>`;
 }
