@@ -909,23 +909,39 @@ function renderDashboardFavorites(contOverride) {
   }).join('')}</div>`;
 }
 
-function renderDashboardHistory(contOverride) {
-  const container = document.getElementById('dashboardContent');
-  const clicked = getClickedProducts();
-  if (!clicked.length) {
-    container.innerHTML = `<div class="dashboard-empty"><span>🕐</span><h3>No browsing history yet</h3><p>Products you click "Buy Now" on will appear here.</p></div>`;
-    return;
+async function renderDashboardHistory(contOverride) {
+  const container = contOverride || document.getElementById('dashboardContent');
+  container.innerHTML = '<div style="text-align:center;padding:40px"><div class="loading-spinner"></div></div>';
+
+  const s = getSession();
+  if (!s) { container.innerHTML = '<div class="dashboard-empty"><span>🕐</span><h3>Sign in to see your search history</h3></div>'; return; }
+
+  try {
+    const res = await fetch('/api/user-search', {
+      headers: { 'Authorization': `Bearer ${s.token}` }
+    });
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    const history = data.history || [];
+
+    if (!history.length) {
+      container.innerHTML = '<div class="dashboard-empty"><span>🕐</span><h3>No search history yet</h3><p>Your searches will appear here.</p></div>';
+      return;
+    }
+
+    container.innerHTML = `<div class="popular-grid">${history.map(h => {
+      const img = h.image || '';
+      const q = (h.query || '').replace(/'/g, "\\'");
+      const name = h.name || h.query || '';
+      return `<div class="popular-card" onclick="searchProduct('${q}')" style="cursor:pointer">
+        <img class="popular-card-img" src="${proxyImg(img)}" alt="${name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
+        <div class="popular-card-name">${name}</div>
+        <div style="font-size:10px;color:var(--gray-400);margin-top:2px">${timeAgo(h.time)}</div>
+      </div>`;
+    }).join('')}</div>`;
+  } catch {
+    container.innerHTML = '<div class="dashboard-empty"><span>🕐</span><h3>Could not load search history</h3></div>';
   }
-  container.innerHTML = `<div class="popular-grid">${clicked.map(c => {
-    const img = c.image || '';
-    const q = (c.name || '').replace(/'/g, "\\'");
-    return `<div class="popular-card" onclick="searchProduct('${q}')">
-      <img class="popular-card-img" src="${proxyImg(img)}" alt="${c.name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
-      <div class="popular-card-name">${c.name}</div>
-      <div class="popular-card-price">$${(c.price||0).toFixed(2)}</div>
-      <div style="font-size:10px;color:var(--gray-400)">${c.store} · ${timeAgo(c.time)}</div>
-    </div>`;
-  }).join('')}</div>`;
 }
 
 function removeFavAndRefresh(productName, store) {
@@ -1229,7 +1245,7 @@ function saveSearchHistory(product) {
     fetch('/api/user-search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${s.token}` },
-      body: JSON.stringify({ query: query.toLowerCase() }),
+      body: JSON.stringify({ query: query.toLowerCase(), name: product.name, image: product.image || '' }),
     }).catch(() => {});
   }
 }
