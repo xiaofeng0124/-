@@ -1391,6 +1391,10 @@ renderPopularProducts();
   tryAutoLogin();
 
   document.getElementById('refreshPopularBtn')?.addEventListener('click', refreshPopular);
+  document.getElementById('logoLink')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    goHome();
+  });
   document.getElementById('historyNavBtn')?.addEventListener('click', (e) => {
     e.stopPropagation();
     if (!getSession()) { showAuthModal('login'); return; }
@@ -1909,6 +1913,19 @@ function initPagination() {
     const btn = e.target.closest('.page-num');
     if (btn) goToPage(parseInt(btn.dataset.page));
   });
+}
+
+function goHome() {
+  document.getElementById('popularSection')?.classList.remove('hidden');
+  document.getElementById('resultsSection')?.classList.remove('active');
+  document.getElementById('dashboardSection')?.classList.remove('active');
+  document.getElementById('adminSection')?.classList.remove('active');
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+  document.getElementById('searchInput').value = '';
+  currentProduct = null;
+  paginatedStores = [];
+  renderPopularProducts();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ======== Coupon Popup ========
