@@ -18,7 +18,7 @@
   <link rel="icon" href="src/logo.png?v4">
   <script defer src="src/js/main.js?v61"></script>
   <style>
-    .account-layout { display: flex; min-height: 100vh; max-width: 1200px; margin: 0 auto; }
+    .account-layout { display: flex; min-height: 100vh; }
     .account-sidebar { width: 280px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--gray-200); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
     .sidebar-brand { padding: 28px 24px 24px; border-bottom: 1px solid var(--gray-100); }
     .sidebar-brand a { text-decoration: none; font-size: 28px; font-weight: 900; display: flex; gap: 6px; }
@@ -33,10 +33,11 @@
     .sidebar-email { display: block; font-size: 15px; font-weight: 600; color: var(--gray-600); margin-bottom: 12px; word-break: break-all; }
     .sidebar-logout { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; background: none; color: #dc2626; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
     .sidebar-logout:hover { background: #fef2f2; border-color: #fca5a5; }
-    .account-content { flex: 1; padding: 40px 48px; overflow-y: auto; font-size: 15px; }
+    .account-content { flex: 1; padding: 40px 48px; overflow-y: auto; font-size: 15px; max-width: 900px; }
     #floatSearchBar { display: none !important; }
     @media (max-width: 768px) {
       .account-layout { flex-direction: column; min-height: auto; }
+      .account-content { max-width: none; }
       .account-sidebar { width: 100%; position: static; height: auto; border-right: none; border-bottom: 1px solid var(--gray-200); }
       .sidebar-nav { display: flex; flex-wrap: wrap; padding: 8px 12px; gap: 4px; }
       .sidebar-nav button { width: auto; padding: 6px 12px; font-size: 13px; border-radius: 6px; border-left: none; font-weight: 500; }
