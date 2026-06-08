@@ -885,7 +885,7 @@ function switchDashboardTab(tab) {
   else if (tab === 'coupons') renderDashboardCoupons();
 }
 
-function renderDashboardFavorites() {
+function renderDashboardFavorites(contOverride) {
   const container = document.getElementById('dashboardContent');
   const favs = getFavorites();
   if (!favs.length) {
@@ -904,7 +904,7 @@ function renderDashboardFavorites() {
   }).join('')}</div>`;
 }
 
-function renderDashboardHistory() {
+function renderDashboardHistory(contOverride) {
   const container = document.getElementById('dashboardContent');
   const clicked = getClickedProducts();
   if (!clicked.length) {
@@ -928,7 +928,7 @@ function removeFavAndRefresh(productName, store) {
   renderDashboardFavorites();
 }
 
-function renderDashboardAlerts() {
+function renderDashboardAlerts(contOverride) {
   const container = document.getElementById('dashboardContent');
   const alerts = getAlerts();
   if (!alerts.length) {
@@ -951,7 +951,7 @@ function removeAlertAndRefresh(id) {
   renderDashboardAlerts();
 }
 
-function renderDashboardCoupons() {
+function renderDashboardCoupons(contOverride) {
   const container = document.getElementById('dashboardContent');
   let html = '<div class="coupons-grid">';
   for (const [store, coupons] of Object.entries(MOCK_COUPONS)) {
