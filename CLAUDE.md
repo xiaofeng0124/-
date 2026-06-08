@@ -130,9 +130,12 @@ git push origin master
 6. **搜索匹配**: `findProduct()` 支持中英文多语言关键字匹配（`LANG_KEYWORDS` 字典）。
 
 7. **环境变量**: 
-   - `SEARCH_ENGINE` — 搜索引擎（`serpapi` 或 `valueserp`，默认 `serpapi`）
+   - `SEARCH_ENGINE` — 搜索引擎（当前使用 `serper`，可选 `serpapi` / `valueserp`）
    - `SERPAPI_KEY` — SerpAPI 密钥（`SEARCH_ENGINE=serpapi` 时必填）
    - `VALUESERP_KEY` — ValueSERP 密钥（`SEARCH_ENGINE=valueserp` 时必填）
+   - `SERPER_KEY` — Serper 密钥（当前搜索引擎，`SEARCH_ENGINE=serper` 时必填，https://serper.dev）
+   - `ASA_KEY` — Amazon Scraper API 密钥（`/api/amazon` 用，https://amazonscraperapi.com）
+   - `EBAY_APP_ID` / `EBAY_CERT_ID` — eBay Browse API OAuth 凭证（已配置）
    - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`（可选，OAuth）。
 
 8. **价格历史**: 目前是模拟数据（`generatePriceHistory()` 基于随机游走），待接真实数据源。

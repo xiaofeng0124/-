@@ -1675,9 +1675,10 @@ async function performSearch() {
 
 async function searchViaAPI(query) {
   try {
-    const [amazonRes, ebayRes] = await Promise.all([
-      fetch(`/api/amazon?q=${encodeURIComponent(query)}`).catch(() => null),
+    const [serpRes, ebayRes, amazonRes] = await Promise.all([
+      fetch(`/api/search?q=${encodeURIComponent(query)}`).catch(() => null),
       fetch(`/api/ebay?q=${encodeURIComponent(query)}`).catch(() => null),
+      fetch(`/api/amazon?q=${encodeURIComponent(query)}`).catch(() => null),
     ]);
 
     let allStores = [];
@@ -1704,7 +1705,22 @@ async function searchViaAPI(query) {
       }
     }
 
-    if (ebayRes && ebayRes.ok) {
+    if (amazonRes && amazonRes.ok) {
+	      const amazonData = await amazonRes.json();
+	      if (amazonData.results && amazonData.results.length > 0) {
+	        allStores = allStores.concat(amazonData.results.map(item => ({
+	          store: 'Amazon',
+	          price: item.price,
+	          rating: item.rating || 0,
+	          reviews: item.reviews || 0,
+	          shipDays: item.shipping && item.shipping.toLowerCase().includes('free') ? 3 : 5,
+	          reputation: item.rating > 0 ? Math.round((item.rating / 5) * 100) : 85,
+	          url: item.url || '#'
+	        })));
+	        if (!productImage) productImage = amazonData.results[0].image || "";
+	      }
+	    }
+	    if (ebayRes && ebayRes.ok) {
       const ebayData = await ebayRes.json();
       if (ebayData.results && ebayData.results.length > 0) {
         allStores = allStores.concat(ebayData.results.map(item => ({
@@ -1730,26 +1746,19 @@ async function searchViaAPI(query) {
 }
 
 function findProduct(query) {
-  // 精确匹配优先
+
   for (const [key, product] of Object.entries(MOCK_PRODUCTS)) {
-    if (key === query) return product;
+    if (key.includes(query) || query.includes(key)) return product;
   }
 
-  // 关键词完整包含匹配
-  for (const [key, product] of Object.entries(MOCK_PRODUCTS)) {
-    const keyWords = key.toLowerCase().split(' ');
-    const queryWords = query.toLowerCase().split(' ');
-    const matchCount = keyWords.filter(kw => queryWords.includes(kw)).length;
-    if (matchCount >= 2 && matchCount === keyWords.length) return product;
+  for (const product of Object.values(MOCK_PRODUCTS)) {
+    if (product.name.toLowerCase().includes(query)) return product;
   }
 
-  // 单关键词匹配（至少3字符不重复）
-  const q = query.toLowerCase();
-  for (const [key, product] of Object.entries(MOCK_PRODUCTS)) {
-    if (key.length > 3 && (key.includes(q) || q.includes(key))) return product;
+  for (const [key, keywords] of Object.entries(LANG_KEYWORDS)) {
+    if (keywords.some(kw => query.includes(kw) || kw.includes(query))) return MOCK_PRODUCTS[key];
   }
-
-  return null;
+  return MOCK_PRODUCTS['airpods pro'];
 }
 
 function renderResults(query) {
