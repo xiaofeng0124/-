@@ -833,11 +833,11 @@ function updateUIForAuth() {
     }
     document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
     document.getElementById('favoritesBtn')?.addEventListener('click', () => { if (!getSession()) { showAuthModal('login'); return; } window.location.href = '/account'; });
-        document.getElementById('dropdownFavorites')?.addEventListener('click', () => { window.location.href = '/account'; });
-    document.getElementById('dropdownAlerts')?.addEventListener('click', () => { window.location.href = '/account'; });
+        document.getElementById('dropdownFavorites')?.addEventListener('click', () => { window.location.href = '/account#favorites'; });
+    document.getElementById('dropdownAlerts')?.addEventListener('click', () => { window.location.href = '/account#alerts'; });
     document.getElementById('dropdownHistory')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
-    document.getElementById('dropdownCoupons')?.addEventListener('click', () => { window.location.href = '/account'; });
-    document.getElementById('dropdownAdmin')?.addEventListener('click', showAdmin);
+    document.getElementById('dropdownCoupons')?.addEventListener('click', () => { window.location.href = '/account#coupons'; });
+    document.getElementById('dropdownAdmin')?.addEventListener('click', () => { window.location.href = '/account#admin'; });
     document.getElementById('logoutBtn')?.addEventListener('click', logout);
     document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
     document.getElementById('historyClearBtn')?.addEventListener('click', () => { localStorage.removeItem('sr_history'); renderSearchHistory(); });
@@ -1304,8 +1304,12 @@ document.addEventListener('DOMContentLoaded', () => {
     tryAutoLogin();
     // 等登录状态加载后显示仪表盘
     setTimeout(() => {
-      if (getSession()) showDashboard();
-      else { document.getElementById('dashboardSection').style.display = 'none'; showAuthModal('login'); }
+      if (getSession()) {
+        showDashboard();
+        const hash = window.location.hash.replace('#', '');
+        if (hash === 'admin') { document.getElementById('dashboardSection').style.display = 'none'; showAdmin(); }
+        else if (hash) switchDashboardTab(hash);
+      } else { document.getElementById('dashboardSection').style.display = 'none'; showAuthModal('login'); }
     }, 300);
     return;
   }
