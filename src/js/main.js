@@ -1360,13 +1360,16 @@ document.addEventListener('DOMContentLoaded', () => {
     updateUIForAuth();
     if (getSession()) syncUserData();
     if (getSession()) checkMembership();
-    tryAutoLogin();
-    // 等登录状态加载后显示仪表盘
-    setTimeout(() => {
-      if (getSession()) showDashboard();
-      else { document.getElementById('dashboardSection').style.display = 'none'; showAuthModal('login'); }
+        tryAutoLogin();
+    document.querySelectorAll("#sidebarNav button").forEach(function(btn) {
+      btn.addEventListener("click", function() { switchAccountTab(btn.dataset.tab); });
+    });
+    document.getElementById("sidebarLogoutBtn")?.addEventListener("click", logout);
+    setTimeout(function() {
+      if (getSession()) showAccountDashboard();
+      else { showAuthModal("login"); }
     }, 300);
-    return;
+    return;n;
   }
 
   initSearch();
