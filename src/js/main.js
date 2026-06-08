@@ -1343,6 +1343,7 @@ renderPopularProducts();
 
 // 浮动搜索栏（复制首页搜索框样式）
 (function() {
+  if (window.location.pathname.includes('/account')) return;
   const bar = document.createElement('div');
   bar.id = 'floatSearchBar';
   bar.innerHTML = '<div class="search-box" style="margin:0;box-shadow:0 4px 12px rgba(0,0,0,0.06)">' +
