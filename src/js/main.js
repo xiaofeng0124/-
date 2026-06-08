@@ -253,6 +253,9 @@ const PRICE_HISTORY_CACHE = {};
 let uploadedPhotos = [];
 let currentProduct = null;
 let currentUser = null;
+let currentPage = 1;
+const ITEMS_PER_PAGE = 40;
+let paginatedStores = [];
 let priceChartInstance = null;
 let currentHistoryProduct = null;
 let currentHistoryStore = null;
@@ -1046,6 +1049,7 @@ async function searchProduct(name) {
   if (loading) loading.classList.remove('active');
 
   if (apiProduct) {
+    currentPage = 1;
     currentProduct = apiProduct;
     const header = document.getElementById('productHeader');
     header.innerHTML = `
@@ -1375,6 +1379,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSearch();
   initPhotoUpload();
   initSortFilter();
+  initPagination();
   initModals();
   initPricingModal();
   initAdminPanel();
@@ -1653,6 +1658,7 @@ async function performSearch() {
   if (loading) loading.classList.remove('active');
 
   if (apiProduct) {
+    currentPage = 1;
     currentProduct = apiProduct;
     saveSearchHistory(apiProduct);
     results.classList.add('active');
@@ -1770,6 +1776,7 @@ function renderResults(query) {
     return;
   }
   currentProduct = product;
+  currentPage = 1;
   saveSearchHistory(product);
   document.getElementById('resultsSection').classList.add('active');
   const header = document.getElementById('productHeader');
@@ -1795,6 +1802,7 @@ function initSortFilter() {
 
 function applySort() {
   if (!currentProduct) return;
+  currentPage = 1;
   const sortBy = document.getElementById('sortSelect')?.value || 'featured';
   const storeFilter = document.getElementById('storeFilter')?.value || 'all';
   let stores = [...currentProduct.stores];
@@ -1813,10 +1821,24 @@ function renderSortedStores(stores, sortBy) {
     case 'newest': break;
     case 'bestsellers': break;
   }
-  const bestPrice = Math.min(...stores.filter(s => s.price).map(s => s.price));
+  paginatedStores = stores;
+  renderPage(currentPage);
+}
+
+function renderPage(page) {
+  const grid = document.getElementById('priceGrid');
+  if (!grid) return;
+
+  const totalPages = Math.max(1, Math.ceil(paginatedStores.length / ITEMS_PER_PAGE));
+  currentPage = Math.max(1, Math.min(page, totalPages));
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const end = start + ITEMS_PER_PAGE;
+  const pageItems = paginatedStores.slice(start, end);
+
+  const bestPrice = Math.min(...paginatedStores.filter(s => s.price).map(s => s.price));
   const user = getSession();
 
-  grid.innerHTML = stores.map(s => {
+  grid.innerHTML = pageItems.map(s => {
     const isBest = s.price === bestPrice;
     const buyUrl = getStoreUrl(s.store, currentProduct.name, s.price);
     const faved = user ? isFavorited(currentProduct.name, s.store) : false;
@@ -1835,6 +1857,58 @@ function renderSortedStores(stores, sortBy) {
         </div>
       </div>`;
   }).join('');
+
+  renderPagination(totalPages);
+}
+
+function renderPagination(totalPages) {
+  const bar = document.getElementById('paginationBar');
+  const numbers = document.getElementById('pageNumbers');
+  const totalInfo = document.getElementById('pageTotalInfo');
+  if (!bar || !numbers) return;
+
+  if (totalPages <= 1) {
+    bar.style.display = 'none';
+    return;
+  }
+  bar.style.display = 'flex';
+  totalInfo.textContent = `${paginatedStores.length} items`;
+
+  const prevBtn = document.getElementById('prevPageBtn');
+  const nextBtn = document.getElementById('nextPageBtn');
+  if (prevBtn) prevBtn.disabled = currentPage <= 1;
+  if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+  // Build page number buttons (show first, last, and ±2 around current)
+  let pages = [];
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+      pages.push(i);
+    } else if (pages[pages.length - 1] !== '...') {
+      pages.push('...');
+    }
+  }
+
+  numbers.innerHTML = pages.map(p => {
+    if (p === '...') return '<span class="page-dots">...</span>';
+    return `<button class="page-num ${p === currentPage ? 'active' : ''}" data-page="${p}">${p}</button>`;
+  }).join('');
+}
+
+function goToPage(page) {
+  if (page < 1 || page > Math.ceil(paginatedStores.length / ITEMS_PER_PAGE)) return;
+  currentPage = page;
+  renderPage(page);
+  window.scrollTo({ top: document.getElementById('resultsSection').offsetTop - 80, behavior: 'smooth' });
+}
+
+function initPagination() {
+  document.getElementById('prevPageBtn')?.addEventListener('click', () => goToPage(currentPage - 1));
+  document.getElementById('nextPageBtn')?.addEventListener('click', () => goToPage(currentPage + 1));
+  document.getElementById('pageNumbers')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.page-num');
+    if (btn) goToPage(parseInt(btn.dataset.page));
+  });
 }
 
 // ======== Coupon Popup ========
