@@ -1188,6 +1188,9 @@ function refreshPopular() {
 function quickSearch(query, safeName) {
   const input = document.getElementById('searchInput');
   if (input) input.value = query;
+  // 同步浮动搜索栏
+  const floatInput = document.getElementById('floatSearchInput');
+  if (floatInput) floatInput.value = query;
   // 清除其他卡片的高亮
   document.querySelectorAll('.popular-card.selected').forEach(c => c.classList.remove('selected'));
   // 高亮当前点击的卡片
