@@ -1675,8 +1675,8 @@ async function performSearch() {
 
 async function searchViaAPI(query) {
   try {
-    const [serpRes, ebayRes] = await Promise.all([
-      fetch(`/api/search?q=${encodeURIComponent(query)}`).catch(() => null),
+    const [amazonRes, ebayRes] = await Promise.all([
+      fetch(`/api/amazon?q=${encodeURIComponent(query)}`).catch(() => null),
       fetch(`/api/ebay?q=${encodeURIComponent(query)}`).catch(() => null),
     ]);
 
