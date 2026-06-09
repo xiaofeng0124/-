@@ -2971,11 +2971,12 @@ function renderAdminTabContent(tab, data) {
     var items = data.searchHistory.slice(0, 30);
     var html = '<div class="popular-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">';
     items.forEach(function(h) {
+      var img = h.image || '';
       var name = h.name || h.query || '';
-      html += '<div class="popular-card" style="padding:12px;cursor:default">' +
-        '<div style="font-size:28px;margin-bottom:8px">🔍</div>' +
-        '<div class="popular-card-name" style="font-size:12px">' + name + '</div>' +
-        '<div style="font-size:10px;color:var(--gray-400);margin-top:6px">' + timeAgo(h.time) + '</div>' +
+      html += '<div class="popular-card" style="padding:8px;cursor:default">' +
+        (img ? '<img class="popular-card-img" src="' + img + '" alt="" style="height:100px" onerror="this.style.display=\'none\'">' : '<div style="font-size:36px;margin:16px 0">🔍</div>') +
+        '<div class="popular-card-name" style="font-size:12px;margin-top:6px">' + name + '</div>' +
+        '<div style="font-size:10px;color:var(--gray-400);margin-top:4px">' + timeAgo(h.time) + '</div>' +
       '</div>';
     });
     html += '</div>';
