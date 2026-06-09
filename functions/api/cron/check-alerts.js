@@ -255,10 +255,14 @@ async function sendPriceAlertEmail(alert, userEmail, currentPrice, env) {
       </td>
     </tr>
     <tr>
-      <td style="padding:16px 24px;text-align:center">
-        <div style="font-size:40px;margin-bottom:8px">🔔</div>
-        <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:8px 0 4px">${escapeHtml(productName)}</h2>
-        <p style="font-size:14px;color:#64748b;margin:0">${escapeHtml(store)}</p>
+      <td style="padding:24px 24px 12px;text-align:center">
+        <p style="font-size:15px;color:#334155;margin:0;line-height:1.5">Hey there,<br><br>You set a price alert for <strong>${escapeHtml(productName)}</strong> on ${escapeHtml(store)} — and it just dropped to your target!</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:4px 24px;text-align:center">
+        <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">${escapeHtml(productName)}</h2>
+        <p style="font-size:14px;color:#64748b;margin:4px 0 0">${escapeHtml(store)}</p>
       </td>
     </tr>
     <tr>
@@ -289,6 +293,12 @@ async function sendPriceAlertEmail(alert, userEmail, currentPrice, env) {
     <tr>
       <td style="padding:20px 24px;text-align:center">
         <a href="${dealUrl}" target="_blank" style="display:inline-block;background:#16a34a;color:#fff;font-size:16px;font-weight:600;padding:14px 32px;border-radius:8px;text-decoration:none">View Deal</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:center;padding:8px 24px 4px">
+        <p style="font-size:14px;color:#64748b;margin:0">Happy saving!</p>
+        <p style="font-size:13px;color:#94a3b8;margin:6px 0 0">— The SnappRice Team</p>
       </td>
     </tr>
     <tr>
