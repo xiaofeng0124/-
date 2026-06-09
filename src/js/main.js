@@ -2947,33 +2947,50 @@ async function showAdminUserDetail(email) {
 
 function renderAdminTabContent(tab, data) {
   if (tab === 'favs') {
-    if (!data.favorites.length) return '<p style="font-size:13px;color:var(--gray-400);margin:0">No favorites</p>';
-    return data.favorites.slice(0, 20).map(function(f) {
-      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100)">' +
-        '<img src="' + (f.image || '') + '" alt="" style="width:40px;height:40px;object-fit:contain;border-radius:6px;flex-shrink:0" onerror="this.style.display=\'none\'">' +
-        '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (f.name || f.productName || '') + '</div><div style="font-size:12px;color:var(--gray-400)">' + (f.store || '') + ' · $' + (f.price || f.targetPrice || 0) + '</div></div>' +
+    if (!data.favorites.length) return '<div class="dashboard-empty" style="padding:30px 20px"><span>❤️</span><h3>No favorites</h3></div>';
+    var items = data.favorites.slice(0, 30);
+    var html = '<div class="popular-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">';
+    items.forEach(function(f) {
+      var img = f.image || '';
+      var name = f.name || f.productName || '';
+      var store = f.store || '';
+      var price = f.price || f.targetPrice || 0;
+      html += '<div class="popular-card" style="padding:8px">' +
+        '<img class="popular-card-img" src="' + img + '" alt="" style="height:100px" onerror="this.style.display=\'none\'">' +
+        '<div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">' + store + '</div>' +
+        '<div class="popular-card-name" style="font-size:12px">' + name + '</div>' +
+        '<div style="font-size:14px;font-weight:700;color:var(--primary);margin-top:4px">$' + price.toFixed(2) + '</div>' +
       '</div>';
-    }).join('') + (data.favorites.length > 20 ? '<p style="font-size:12px;color:var(--gray-400);margin:8px 0 0">Showing 20 of ' + data.favorites.length + '</p>' : '');
+    });
+    html += '</div>';
+    if (data.favorites.length > 30) html += '<p style="font-size:12px;color:var(--gray-400);margin:12px 0 0">Showing 30 of ' + data.favorites.length + '</p>';
+    return html;
   }
   if (tab === 'history') {
-    if (!data.searchHistory.length) return '<p style="font-size:13px;color:var(--gray-400);margin:0">No search history</p>';
-    return data.searchHistory.slice(0, 20).map(function(h) {
-      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
-        '<span style="font-size:13px">🔍</span>' +
-        '<span style="font-size:14px;flex:1">' + (h.query || h.name || '') + '</span>' +
-        '<span style="font-size:12px;color:var(--gray-400)">' + timeAgo(h.time) + '</span>' +
+    if (!data.searchHistory.length) return '<div class="dashboard-empty" style="padding:30px 20px"><span>🕐</span><h3>No search history</h3></div>';
+    var items = data.searchHistory.slice(0, 30);
+    var html = '<div class="popular-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">';
+    items.forEach(function(h) {
+      var name = h.name || h.query || '';
+      html += '<div class="popular-card" style="padding:12px;cursor:default">' +
+        '<div style="font-size:28px;margin-bottom:8px">🔍</div>' +
+        '<div class="popular-card-name" style="font-size:12px">' + name + '</div>' +
+        '<div style="font-size:10px;color:var(--gray-400);margin-top:6px">' + timeAgo(h.time) + '</div>' +
       '</div>';
-    }).join('') + (data.searchHistory.length > 20 ? '<p style="font-size:12px;color:var(--gray-400);margin:8px 0 0">Showing 20 of ' + data.searchHistory.length + '</p>' : '');
+    });
+    html += '</div>';
+    if (data.searchHistory.length > 30) html += '<p style="font-size:12px;color:var(--gray-400);margin:12px 0 0">Showing 30 of ' + data.searchHistory.length + '</p>';
+    return html;
   }
   if (tab === 'alerts') {
-    if (!data.alerts.length) return '<p style="font-size:13px;color:var(--gray-400);margin:0">No alerts set</p>';
+    if (!data.alerts.length) return '<div class="dashboard-empty" style="padding:30px 20px"><span>🔔</span><h3>No price alerts</h3></div>';
     return data.alerts.map(function(a) {
+      var img = a.image || '';
       var notified = a.notified ? '✅' : '⏳';
-      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
-        '<span style="font-size:13px">🔔</span>' +
-        '<div style="flex:1;font-size:14px">' + (a.productName || '') + ' @ ' + (a.store || '') + '</div>' +
-        '<span style="font-size:13px;font-weight:600;color:var(--primary)">$' + (a.targetPrice || 0) + '</span>' +
-        '<span style="font-size:12px;color:var(--gray-400)">' + notified + '</span>' +
+      return '<div class="dashboard-item" style="padding:8px 16px">' +
+        (img ? '<img src="' + img + '" alt="" style="width:40px;height:40px;object-fit:contain;border-radius:6px;flex-shrink:0" onerror="this.style.display=\'none\'">' : '<span style="font-size:24px;margin-right:8px">🔔</span>') +
+        '<div class="dashboard-item-info"><h4 style="font-size:13px">' + (a.productName || '') + '</h4><p style="font-size:12px">' + (a.store || '') + ' — Target: <strong>$' + (a.targetPrice || 0).toFixed(2) + '</strong></p></div>' +
+        '<span style="font-size:14px">' + notified + '</span>' +
       '</div>';
     }).join('');
   }
