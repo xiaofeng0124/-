@@ -1389,15 +1389,15 @@ document.addEventListener('DOMContentLoaded', () => {
     initAdminPanel();
     initContactForm();
     updateUIForAuth();
-    if (getSession()) syncUserData();
     if (getSession()) checkMembership();
         tryAutoLogin();
     document.querySelectorAll("#sidebarNav button").forEach(function(btn) {
       btn.addEventListener("click", function() { switchAccountTab(btn.dataset.tab); });
     });
     document.getElementById("sidebarLogoutBtn")?.addEventListener("click", logout);
-    setTimeout(function() {
+    setTimeout(async function() {
       if (getSession()) {
+        await syncUserData();
         var hashTab = window.location.hash.replace('#','');
         showAccountDashboard(hashTab || 'favorites');
       } else { showAuthModal("login"); }
