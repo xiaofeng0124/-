@@ -393,7 +393,7 @@ function renderAuthForm(tab) {
       <div class="form-group">
         <label>Password</label>
         <div style="position:relative">
-          <input type="password" id="regPassword" placeholder="At least 6 characters" style="padding-right:40px">
+          <input type="password" id="regPassword" placeholder="8+ chars, letters + numbers + symbols" style="padding-right:40px">
           <span id="pwToggle" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span>
         </div>
       </div>
@@ -481,7 +481,10 @@ async function handleSendCode() {
   const pw = document.getElementById('regPassword').value;
   const err = document.getElementById('authError');
   if (!email || !pw) { err.textContent = 'Please fill in all fields'; err.classList.add('show'); return; }
-  if (pw.length < 6) { err.textContent = 'Password must be at least 6 characters'; err.classList.add('show'); return; }
+  if (pw.length < 8) { err.textContent = 'Password must be at least 8 characters'; err.classList.add('show'); return; }
+  if (!/[a-zA-Z]/.test(pw) || !/[0-9]/.test(pw) || !/[^a-zA-Z0-9]/.test(pw)) {
+    err.textContent = 'Password must contain letters, numbers, and symbols'; err.classList.add('show'); return;
+  }
   if (!isCaptchaValid()) { err.textContent = 'Please enter the correct code shown above'; err.classList.add('show'); return; }
   const btn = document.getElementById('sendCodeBtn');
   btn.disabled = true; btn.textContent = 'Sending...';
@@ -960,14 +963,175 @@ function switchAccountTab(tab) {
 
 function renderAccountSettings(container) {
   var user = currentUser || {};
-  container.innerHTML = '<div style="max-width:500px">' +
+  var email = user.email || '';
+  var s = getSession();
+  var token = s ? s.token : '';
+
+  container.innerHTML =
+  '<div style="max-width:600px">' +
     '<h3 style="font-size:22px;margin-bottom:20px;font-weight:700">Account Settings</h3>' +
-    '<div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:24px">' +
-      '<div style="margin-bottom:16px"><label style="font-size:13px;color:var(--gray-500);display:block;margin-bottom:4px">Email</label><div style="font-size:16px;font-weight:500">' + (user.email || '') + '</div></div>' +
-      '<div style="margin-bottom:16px"><label style="font-size:13px;color:var(--gray-500);display:block;margin-bottom:4px">Membership</label><div style="font-size:16px;font-weight:500">' + (isPremium() ? 'Premium' : 'Free') + '</div></div>' +
+
+    // === Change Email ===
+    '<div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:24px;margin-bottom:16px">' +
+      '<h4 style="font-size:16px;font-weight:700;margin:0 0 4px">Change Email</h4>' +
+      '<p style="font-size:13px;color:var(--gray-500);margin:0 0 16px">Current: <strong>' + escapeHtml(email) + '</strong></p>' +
+      '<div id="changeEmailSection">' +
+        '<div class="form-group"><label>New Email</label><input type="email" id="newEmailInput" placeholder="new@example.com" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;box-sizing:border-box"></div>' +
+        '<div class="form-group"><label>Current Password</label><input type="password" id="emailPwInput" placeholder="Enter your current password" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;box-sizing:border-box"></div>' +
+        '<div class="form-group" id="emailCodeGroup" style="display:none"><label>Verification Code (sent to new email)</label><input type="text" id="emailCodeInput" placeholder="000000" maxlength="6" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;box-sizing:border-box;text-align:center;letter-spacing:4px;font-weight:700"></div>' +
+        '<div id="changeEmailError" style="font-size:13px;color:var(--red);margin-bottom:8px;display:none"></div>' +
+        '<div id="changeEmailSuccess" style="font-size:13px;color:#16a34a;margin-bottom:8px;display:none"></div>' +
+        '<div style="display:flex;gap:8px">' +
+          '<button class="btn-primary" id="sendEmailCodeBtn" style="flex:1">Send Code</button>' +
+          '<button class="btn-primary" id="confirmEmailBtn" style="flex:1;display:none">Confirm & Change</button>' +
+        '</div>' +
+      '</div>' +
     '</div>' +
-    '<div style="margin-top:20px"><a href="/" style="padding:10px 24px;background:var(--primary);color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Back to Search</a></div>' +
+
+    // === Change Password ===
+    '<div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:24px;margin-bottom:16px">' +
+      '<h4 style="font-size:16px;font-weight:700;margin:0 0 16px">Change Password</h4>' +
+      '<div id="changePwSection">' +
+        '<div class="form-group"><label>Current Password</label><input type="password" id="oldPwInput" placeholder="Enter your current password" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;box-sizing:border-box"></div>' +
+        '<div class="form-group"><label>New Password</label><input type="password" id="newPwInput" placeholder="8+ chars, letters + numbers + symbols" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;box-sizing:border-box"></div>' +
+        '<div class="form-group"><label>Confirm New Password</label><input type="password" id="confirmPwInput" placeholder="Re-enter new password" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;box-sizing:border-box"></div>' +
+        '<div class="form-group" id="pwCodeGroup" style="display:none"><label>Verification Code (sent to ' + escapeHtml(email) + ')</label><input type="text" id="pwCodeInput" placeholder="000000" maxlength="6" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;box-sizing:border-box;text-align:center;letter-spacing:4px;font-weight:700"></div>' +
+        '<div id="changePwError" style="font-size:13px;color:var(--red);margin-bottom:8px;display:none"></div>' +
+        '<div id="changePwSuccess" style="font-size:13px;color:#16a34a;margin-bottom:8px;display:none"></div>' +
+        '<div style="display:flex;gap:8px">' +
+          '<button class="btn-primary" id="sendPwCodeBtn" style="flex:1">Send Code</button>' +
+          '<button class="btn-primary" id="confirmPwBtn" style="flex:1;display:none">Confirm & Change</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div style="margin-top:4px"><a href="/" style="display:inline-block;padding:10px 24px;background:var(--primary);color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Back to Search</a></div>' +
   '</div>';
+
+  // ======== Change Email Logic ========
+  var emailStep = 'idle'; // idle → code_sent → done
+
+  document.getElementById('sendEmailCodeBtn')?.addEventListener('click', async function() {
+    var newEmail = document.getElementById('newEmailInput')?.value.trim();
+    var pw = document.getElementById('emailPwInput')?.value;
+    var err = document.getElementById('changeEmailError');
+    var success = document.getElementById('changeEmailSuccess');
+    if (err) err.style.display = 'none';
+    if (success) success.style.display = 'none';
+    if (!newEmail || !newEmail.includes('@')) { if(err){err.textContent='Please enter a valid new email';err.style.display='block'} return; }
+    if (!pw) { if(err){err.textContent='Please enter your current password';err.style.display='block'} return; }
+    var btn = document.getElementById('sendEmailCodeBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+    try {
+      var res = await fetch('/api/change-email', {
+        method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+        body:JSON.stringify({action:'send_code', password:pw, newEmail:newEmail})
+      });
+      var data = await res.json();
+      if (data.ok) {
+        emailStep = 'code_sent';
+        if(err) err.style.display='none';
+        if(success){success.textContent='Verification code sent to '+newEmail;success.style.display='block'}
+        document.getElementById('emailCodeGroup').style.display='';
+        document.getElementById('sendEmailCodeBtn').style.display='none';
+        document.getElementById('confirmEmailBtn').style.display='';
+      } else {
+        if(err){err.textContent=data.error||'Failed';err.style.display='block'}
+      }
+    } catch(e) { if(err){err.textContent='Network error';err.style.display='block'} }
+    if (btn) { btn.disabled = false; btn.textContent = 'Send Code'; }
+  });
+
+  document.getElementById('confirmEmailBtn')?.addEventListener('click', async function() {
+    var newEmail = document.getElementById('newEmailInput')?.value.trim();
+    var code = document.getElementById('emailCodeInput')?.value.trim();
+    var err = document.getElementById('changeEmailError');
+    var success = document.getElementById('changeEmailSuccess');
+    if (err) err.style.display = 'none';
+    if (success) success.style.display = 'none';
+    if (!code || code.length !== 6) { if(err){err.textContent='Please enter the 6-digit code';err.style.display='block'} return; }
+    var btn = document.getElementById('confirmEmailBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Verifying...'; }
+    try {
+      var res = await fetch('/api/change-email', {
+        method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+        body:JSON.stringify({action:'verify_code', newEmail:newEmail, code:code})
+      });
+      var data = await res.json();
+      if (data.ok) {
+        emailStep = 'done';
+        if(err) err.style.display='none';
+        if(success){success.textContent='✅ Email changed successfully! Please sign in with your new email.';success.style.display='block'}
+        document.getElementById('changeEmailSection').innerHTML = '<p style="font-size:14px;color:#16a34a;font-weight:600">✅ Email updated. Please sign in again.</p>';
+        setTimeout(function() { logout(); window.location.href = '/account'; }, 3000);
+      } else {
+        if(err){err.textContent=data.error||'Verification failed';err.style.display='block'}
+      }
+    } catch(e) { if(err){err.textContent='Network error';err.style.display='block'} }
+    if (btn) { btn.disabled = false; btn.textContent = 'Confirm & Change'; }
+  });
+
+  // ======== Change Password Logic ========
+  document.getElementById('sendPwCodeBtn')?.addEventListener('click', async function() {
+    var oldPw = document.getElementById('oldPwInput')?.value;
+    var newPw = document.getElementById('newPwInput')?.value;
+    var confirmPw = document.getElementById('confirmPwInput')?.value;
+    var err = document.getElementById('changePwError');
+    var success = document.getElementById('changePwSuccess');
+    if (err) err.style.display = 'none';
+    if (success) success.style.display = 'none';
+    if (!oldPw) { if(err){err.textContent='Please enter your current password';err.style.display='block'} return; }
+    if (!newPw || newPw.length < 8) { if(err){err.textContent='New password must be at least 8 characters';err.style.display='block'} return; }
+    if (!/[a-zA-Z]/.test(newPw) || !/[0-9]/.test(newPw) || !/[^a-zA-Z0-9]/.test(newPw)) {
+      if(err){err.textContent='Password must contain letters, numbers, and symbols';err.style.display='block'} return;
+    }
+    if (newPw !== confirmPw) { if(err){err.textContent='Passwords do not match';err.style.display='block'} return; }
+    var btn = document.getElementById('sendPwCodeBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+    try {
+      var res = await fetch('/api/change-password', {
+        method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+        body:JSON.stringify({action:'send_code', oldPassword:oldPw, newPassword:newPw})
+      });
+      var data = await res.json();
+      if (data.ok) {
+        if(err) err.style.display='none';
+        if(success){success.textContent='Verification code sent to your email';success.style.display='block'}
+        document.getElementById('pwCodeGroup').style.display='';
+        document.getElementById('sendPwCodeBtn').style.display='none';
+        document.getElementById('confirmPwBtn').style.display='';
+      } else {
+        if(err){err.textContent=data.error||'Failed';err.style.display='block'}
+      }
+    } catch(e) { if(err){err.textContent='Network error';err.style.display='block'} }
+    if (btn) { btn.disabled = false; btn.textContent = 'Send Code'; }
+  });
+
+  document.getElementById('confirmPwBtn')?.addEventListener('click', async function() {
+    var code = document.getElementById('pwCodeInput')?.value.trim();
+    var err = document.getElementById('changePwError');
+    var success = document.getElementById('changePwSuccess');
+    if (err) err.style.display = 'none';
+    if (success) success.style.display = 'none';
+    if (!code || code.length !== 6) { if(err){err.textContent='Please enter the 6-digit code';err.style.display='block'} return; }
+    var btn = document.getElementById('confirmPwBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Changing...'; }
+    try {
+      var res = await fetch('/api/change-password', {
+        method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+        body:JSON.stringify({action:'verify_code', code:code})
+      });
+      var data = await res.json();
+      if (data.ok) {
+        if(err) err.style.display='none';
+        if(success){success.textContent='✅ Password changed successfully!';success.style.display='block'}
+        document.getElementById('changePwSection').innerHTML = '<p style="font-size:14px;color:#16a34a;font-weight:600">✅ Password updated.</p>';
+      } else {
+        if(err){err.textContent=data.error||'Verification failed';err.style.display='block'}
+      }
+    } catch(e) { if(err){err.textContent='Network error';err.style.display='block'} }
+    if (btn) { btn.disabled = false; btn.textContent = 'Confirm & Change'; }
+  });
 }
 
 const FAV_PAGE_SIZE = 20; // 5列×4行
