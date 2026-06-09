@@ -954,7 +954,7 @@ function renderDashboardFavorites(contOverride) {
       <div class="popular-card-name" style="font-size:13px;-webkit-line-clamp:2;line-height:1.3;margin-bottom:4px">${f.productName}</div>
       <div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:6px">$${(f.price||0).toFixed(2)}</div>
       <div style="display:flex;gap:4px">
-        <button class="icon-btn" style="width:28px;height:28px;font-size:14px;flex-shrink:0;color:#ef4444" onclick="removeFavAndRefresh('${pn}','${f.store}','${(f.url||'').replace(/'/g, "\'")}')" title="Remove">✕</button>
+        <button class="icon-btn" style="width:28px;height:28px;font-size:15px;flex-shrink:0;color:#f43f5e" onclick="removeFavAndRefresh('${pn}','${f.store}','${(f.url||'').replace(/'/g, "\'")}',this)" title="Remove from favorites">❤️</button>
         <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${pn}','${f.store}',${f.price},'${img.replace(/'/g, "\\'")}')">Buy Now</a>
       </div>
     </div>`;
@@ -996,9 +996,16 @@ async function renderDashboardHistory(contOverride) {
   }
 }
 
-function removeFavAndRefresh(productName, store, url) {
-  removeFavorite(productName, store, url);
-  renderDashboardFavorites();
+function removeFavAndRefresh(productName, store, url, btn) {
+  if (btn) {
+    btn.textContent = '🤍';
+    btn.style.color = '#999';
+    btn.disabled = true;
+  }
+  setTimeout(() => {
+    removeFavorite(productName, store, url);
+    renderDashboardFavorites();
+  }, 200);
 }
 
 function renderDashboardAlerts(contOverride) {
