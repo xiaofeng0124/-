@@ -2888,12 +2888,12 @@ function renderAdminUserList() {
     content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-500)">No users registered yet.</div>';
     return;
   }
-  let html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:14px">' +
+  let html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:15px">' +
     '<thead><tr style="background:var(--gray-100);text-align:left">' +
-    '<th style="padding:10px 12px">Email</th>' +
-    '<th style="padding:10px 12px">Registered</th>' +
-    '<th style="padding:10px 12px">Tier</th>' +
-    '<th style="padding:10px 12px">Membership Expiry</th>' +
+    '<th style="padding:14px 16px">Email</th>' +
+    '<th style="padding:14px 16px">Registered</th>' +
+    '<th style="padding:14px 16px">Tier</th>' +
+    '<th style="padding:14px 16px">Membership Expiry</th>' +
     '</tr></thead><tbody>';
   for (const u of adminUsers) {
     const regDate = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : '—';
@@ -2902,10 +2902,10 @@ function renderAdminUserList() {
       ? '<span style="background:#fffbeb;color:#d97706;padding:2px 10px;border-radius:100px;font-size:12px;font-weight:700">Premium</span>'
       : '<span style="color:var(--gray-500);font-size:13px">Free</span>';
     html += '<tr class="admin-user-row" data-email="' + u.email + '" style="border-bottom:1px solid var(--gray-100);cursor:pointer">' +
-      '<td style="padding:10px 12px;color:var(--primary);font-weight:500">' + u.email + '</td>' +
-      '<td style="padding:10px 12px;color:var(--gray-500)">' + regDate + '</td>' +
-      '<td style="padding:10px 12px">' + tierBadge + '</td>' +
-      '<td style="padding:10px 12px;color:var(--gray-500)">' + expDate + '</td></tr>';
+      '<td style="padding:14px 16px;color:var(--primary);font-weight:600;font-size:15px">' + u.email + '</td>' +
+      '<td style="padding:14px 16px;color:var(--gray-500);font-size:15px">' + regDate + '</td>' +
+      '<td style="padding:14px 16px;font-size:15px">' + tierBadge + '</td>' +
+      '<td style="padding:14px 16px;color:var(--gray-500);font-size:15px">' + expDate + '</td></tr>';
   }
   html += '</tbody></table></div>';
   content.innerHTML = html;

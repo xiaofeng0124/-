@@ -34,6 +34,11 @@
     .sidebar-logout { width: 100%; padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px; background: none; color: #dc2626; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
     .sidebar-logout:hover { background: #fef2f2; border-color: #fca5a5; }
     .account-content { flex: 1; padding: 32px 24px; overflow-y: auto; font-size: 16px; max-width: 1100px; }
+    #adminSection { padding-left: 75px; }
+    #adminContent table { font-size: 16px !important; }
+    #adminContent td, #adminContent th { padding: 14px 16px !important; font-size: 15px !important; }
+    #adminContent .admin-user-row td { font-size: 15px !important; }
+    #adminContent .admin-user-detail { font-size: 15px; }
     #floatSearchBar { display: none !important; }
     @media (max-width: 768px) {
       .account-layout { flex-direction: column; min-height: auto; }
@@ -80,7 +85,6 @@
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn-ghost" id="adminBackBtn">← Back</button>
-          <button class="btn-outline" id="adminLogoutBtn">Logout</button>
         </div>
       </div>
       <div id="adminContent"></div>
