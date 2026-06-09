@@ -874,6 +874,9 @@ function switchDashboardTab(tab) {
 function showAccountDashboard(tab) {
   if (!currentUser) { showAuthModal('login'); return; }
   document.getElementById('sidebarEmail').textContent = currentUser.email;
+  // 管理员显示 Admin Panel 侧边栏按钮
+  const adminBtn = document.getElementById('sidebarAdminBtn');
+  if (adminBtn) adminBtn.style.display = currentUser.email === '1067678960@qq.com' ? '' : 'none';
   switchAccountTab(tab || 'favorites');
 }
 
@@ -897,19 +900,23 @@ function switchAccountTab(tab) {
       container.innerHTML = '<div style="margin-bottom:16px"><h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Export Data</h2><p style="font-size:13px;color:#94a3b8;margin:4px 0 0">Download your favorites, price history, and alerts as CSV for personal analysis.</p></div><div class="dashboard-empty"><span>📤</span><h3>Coming Soon</h3><p>Export functionality will be available soon. You\'ll be able to download your data in CSV format.</p></div>';
       break;
     case 'settings': renderAccountSettings(container); break;
+    case 'admin':
+      if (currentUser?.email === '1067678960@qq.com') {
+        window.location.href = '/';
+      } else {
+        container.innerHTML = '<div class="dashboard-empty"><span>🔒</span><h3>Access Denied</h3></div>';
+      }
+      break;
   }
 }
 
 function renderAccountSettings(container) {
   var user = currentUser || {};
-  var adminEmail = '1067678960@qq.com';
-  var isAdmin = user.email === adminEmail;
   container.innerHTML = '<div style="max-width:500px">' +
     '<h3 style="font-size:22px;margin-bottom:20px;font-weight:700">Account Settings</h3>' +
     '<div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:24px">' +
       '<div style="margin-bottom:16px"><label style="font-size:13px;color:var(--gray-500);display:block;margin-bottom:4px">Email</label><div style="font-size:16px;font-weight:500">' + (user.email || '') + '</div></div>' +
       '<div style="margin-bottom:16px"><label style="font-size:13px;color:var(--gray-500);display:block;margin-bottom:4px">Membership</label><div style="font-size:16px;font-weight:500">' + (isPremium() ? 'Premium' : 'Free') + '</div></div>' +
-      (isAdmin ? '<div style="margin-top:4px;padding-top:16px;border-top:1px solid var(--gray-100)"><a href="/" style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;text-decoration:none;color:#92400e;font-weight:600;font-size:14px">🛠 Admin Panel — Go to Homepage</a></div>' : '') +
     '</div>' +
     '<div style="margin-top:20px"><a href="/" style="padding:10px 24px;background:var(--primary);color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Back to Search</a></div>' +
   '</div>';
