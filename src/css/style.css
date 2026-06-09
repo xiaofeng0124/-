@@ -159,22 +159,30 @@ cursor: not-allowed;
 }
 .popular-grid {
 display: grid;
-grid-template-columns: repeat(4, 1fr);
-gap: 12px;
+grid-template-columns: repeat(5, 1fr);
+gap: 10px;
 }
 .popular-card {
 background: var(--white);
 border: 1px solid var(--gray-200);
 border-radius: var(--radius);
-padding: 12px;
+padding: 10px;
 cursor: pointer;
 transition: all 0.2s;
 text-align: center;
-display: flex;
-flex-direction: column;
 }
 .popular-card > div:last-child {
 margin-top: auto;
+}
+/* 收藏夹页面：卡片更宽、flex列布局对齐 */
+#accountContent .popular-grid {
+grid-template-columns: repeat(4, 1fr);
+gap: 12px;
+}
+#accountContent .popular-card {
+display: flex;
+flex-direction: column;
+padding: 12px;
 }
 .popular-card:hover {
 border-color: var(--primary);
@@ -569,8 +577,8 @@ border-color: var(--primary);
 
 .price-grid {
 display: grid;
-grid-template-columns: repeat(4, 1fr);
-gap: 12px;
+grid-template-columns: repeat(5, 1fr);
+gap: 8px;
 }
 
 .price-card {
