@@ -939,6 +939,7 @@ function renderAccountSettings(container) {
 
 const FAV_PAGE_SIZE = 20; // 5列×4行
 const HIST_PAGE_SIZE = 30; // 5列×6行
+const ALERT_PAGE_SIZE = 10;
 
 function renderDashboardFavorites(contOverride) {
   const container = contOverride || document.getElementById('dashboardContent');
@@ -1056,7 +1057,12 @@ function renderDashboardAlerts(contOverride) {
     container.innerHTML = `<div class="dashboard-empty"><span>🔔</span><h3>No price alerts</h3><p>Set price alerts to get notified when prices drop.</p></div>`;
     return;
   }
-  container.innerHTML = alerts.map(a => `
+  const totalPages = Math.max(1, Math.ceil(alerts.length / ALERT_PAGE_SIZE));
+  const page = Math.min(parseInt(container.dataset.alertPage || '1'), totalPages);
+  const start = (page - 1) * ALERT_PAGE_SIZE;
+  const pageItems = alerts.slice(start, start + ALERT_PAGE_SIZE);
+
+  container.innerHTML = pageItems.map(a => `
     <div class="dashboard-item">
       ${a.image ? '<img src="' + proxyImg(a.image) + '" alt="" style="width:56px;height:56px;object-fit:contain;border-radius:8px;flex-shrink:0" onerror="this.style.display=\'none\'">' : ''}
       <div class="dashboard-item-info">
@@ -1065,11 +1071,25 @@ function renderDashboardAlerts(contOverride) {
       </div>
       <button class="btn-sm btn-sm-outline" onclick="removeAlertAndRefresh('${a.id}')">Remove</button>
     </div>`).join('');
+
+  if (totalPages > 1) {
+    const nav = document.createElement('div');
+    nav.className = 'account-pagination';
+    nav.innerHTML = `<button class="page-btn" ${page <= 1 ? 'disabled' : ''} data-page="${page - 1}">← Prev</button><span class="page-info">${page} / ${totalPages}</span><button class="page-btn" ${page >= totalPages ? 'disabled' : ''} data-page="${page + 1}">Next →</button>`;
+    nav.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => {
+      const p = parseInt(b.dataset.page);
+      if (p >= 1 && p <= totalPages) { container.dataset.alertPage = p; renderDashboardAlerts(container); }
+    }));
+    container.appendChild(nav);
+  } else {
+    delete container.dataset.alertPage;
+  }
 }
 
 function removeAlertAndRefresh(id) {
   removeAlert(id);
-  renderDashboardAlerts();
+  const container = document.getElementById('accountContent') || document.getElementById('dashboardContent');
+  if (container) renderDashboardAlerts(container);
 }
 
 function renderDashboardCoupons(contOverride) {
