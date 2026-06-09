@@ -907,10 +907,10 @@ function switchAccountTab(tab) {
     case 'history': renderDashboardHistory(container); break;
     case 'alerts': renderDashboardAlerts(container); break;
     case 'predictions':
-      container.innerHTML = '<div style="margin-bottom:16px"><h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Price Predictions</h2><p style="font-size:13px;color:#94a3b8;margin:4px 0 0">AI-powered predictions to help you decide the best time to buy. Based on historical price trends and market data.</p></div><div class="dashboard-empty"><span>📈</span><h3>Coming Soon</h3><p>We\'re analyzing price history to predict future trends. Check back later!</p></div>';
+      container.innerHTML = '<div style="margin-bottom:16px"><h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Price Predictions</h2></div><div class="dashboard-empty"><span>📈</span><h3>Coming Soon</h3><p>We\'re analyzing price history to predict future trends. Check back later!</p></div>';
       break;
     case 'export':
-      container.innerHTML = '<div style="margin-bottom:16px"><h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Export Data</h2><p style="font-size:13px;color:#94a3b8;margin:4px 0 0">Download your favorites, price history, and alerts as CSV for personal analysis.</p></div><div class="dashboard-empty"><span>📤</span><h3>Coming Soon</h3><p>Export functionality will be available soon. You\'ll be able to download your data in CSV format.</p></div>';
+      container.innerHTML = '<div style="margin-bottom:16px"><h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Export Data</h2></div><div class="dashboard-empty"><span>📤</span><h3>Coming Soon</h3><p>You\'ll be able to export your data in CSV format.</p></div>';
       break;
     case 'settings': renderAccountSettings(container); break;
     case 'admin':
@@ -972,7 +972,7 @@ function renderAccountSettings(container) {
   container.innerHTML =
   '<div style="max-width:100%">' +
     '<h3 style="font-size:22px;margin-bottom:4px;font-weight:700">Account Settings</h3>' +
-    '<p style="font-size:13px;color:#94a3b8;margin:0 0 20px">Change your email address or update your password. Both require email verification for security.</p>' +
+    '<p style="font-size:13px;color:#94a3b8;margin:0 0 20px"></p>' +
     '<div style="display:flex;gap:16px;flex-wrap:wrap">' +
 
     // === Change Email ===
@@ -1013,7 +1013,7 @@ function renderAccountSettings(container) {
         '</div>' +
       '</div>' +
       '<div style="margin-top:12px;padding:10px 12px;background:#f8fafc;border-radius:8px;font-size:12px;color:#64748b;line-height:1.5">' +
-        'New password must be at least 8 characters long and include a mix of letters, numbers, and symbols for better security.' +
+        '' +
       '</div>' +
     '</div>' +
     '</div>' +
@@ -1164,8 +1164,7 @@ function renderDashboardFavorites(contOverride) {
   container.innerHTML = `
   <div style="margin-bottom:16px">
     <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Favorites</h2>
-    <p style="font-size:13px;color:#94a3b8;margin:4px 0 0">Click the heart icon on any product card to save it. Manage your favorites here.</p>
-  </div>
+    </div>
   <div class="popular-grid">${pageItems.map(f => {
     const img = f.image || '';
     const buyUrl = f.url || getStoreUrl(f.store, f.productName, f.price);
@@ -1224,8 +1223,7 @@ async function renderDashboardHistory(contOverride) {
     container.innerHTML = `
   <div style="margin-bottom:16px">
     <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Search History</h2>
-    <p style="font-size:13px;color:#94a3b8;margin:4px 0 0">Your recent searches appear here. Click any search to quickly find products again.</p>
-  </div>
+    </div>
   <div class="popular-grid">${pageItems.map(h => {
       const img = h.image || '';
       const q = (h.query || '').replace(/'/g, "\\'");
@@ -1291,7 +1289,7 @@ function renderDashboardAlerts(contOverride) {
   container.innerHTML = `
   <div style="margin-bottom:16px">
     <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Price Alerts</h2>
-    <p style="font-size:13px;color:#94a3b8;margin:4px 0 0">We'll send an email to your registered email address when the price drops to your target. Make sure your email is up to date.</p>
+    <p style="font-size:13px;color:#94a3b8;margin:4px 0 0"></p>
   </div>
   ` + pageItems.map(a => `
     <div class="dashboard-item">

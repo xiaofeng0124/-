@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How SnappRice Works — Search, compare, save</title>
+  <meta name="description" content="Learn how to use SnappRice to compare prices, track price drops, and save money across Amazon, eBay, Walmart, Best Buy, and more.">
+  <link rel="icon" href="src/logo.png?v4">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #0f172a;
+      background: #f8fafc;
+      line-height: 1.6;
+    }
+    .container { max-width: 720px; margin: 0 auto; padding: 40px 24px 80px; }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+    .subtitle { font-size: 15px; color: #64748b; margin-bottom: 32px; }
+    .section { margin-bottom: 36px; }
+    .section h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .section p, .section li { font-size: 14px; color: #334155; }
+    .section ul { padding-left: 20px; }
+    .section li { margin-bottom: 6px; }
+    .tip { background: #f1f5f9; border-radius: 8px; padding: 12px 16px; margin-top: 10px; font-size: 13px; color: #475569; }
+    hr { border: none; border-top: 1px solid #e2e8f0; margin: 32px 0; }
+    .back { display: inline-block; margin-top: 24px; padding: 10px 24px; background: #2563eb; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; }
+    .back:hover { background: #1d4ed8; }
+    @media (max-width: 600px) { .container { padding: 24px 16px 60px; } h1 { font-size: 22px; } }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>How SnappRice Works</h1>
+  <p class="subtitle">Search, compare, save — it's that simple.</p>
+
+  <div class="section">
+    <h2>🔍 Searching for Products</h2>
+    <p>Type any product name in the search bar and press Enter, or click the Search button. You can also:</p>
+    <ul>
+      <li><strong>Voice search</strong> — Click the 🎤 microphone icon and speak your search.</li>
+      <li><strong>Photo search</strong> — Click the 📷 camera icon to upload photos of items you want to find (up to 6 photos).</li>
+      <li><strong>Search history</strong> — Click "History" in the header to quickly repeat past searches.</li>
+    </ul>
+    <div class="tip">💡 Results are fetched from multiple stores at once. The first results appear in seconds, with more loading as they become available.</div>
+  </div>
+
+  <div class="section">
+    <h2>📊 Search Results &amp; Price Grid</h2>
+    <p>Results are shown as cards in a grid. Each card shows the store name, product name, price, and the "Best" badge if it's the lowest price found.</p>
+    <ul>
+      <li><strong>Sort</strong> — Use the "Sort by" dropdown to order by price (low to high or high to low), rating, or featured.</li>
+      <li><strong>Filter by store</strong> — Use the "Store" dropdown to show results from a specific store only.</li>
+      <li><strong>Pagination</strong> — 40 results per page. Use the page numbers or ← Prev / Next → to navigate.</li>
+      <li><strong>Buy Now</strong> — Click the green Buy Now button to go directly to the product page on the store's website.</li>
+    </ul>
+    <div class="tip">💡 Each result has its own unique link. Favoriting or setting a price alert applies to that specific listing only.</div>
+  </div>
+
+  <div class="section">
+    <h2>❤️ Favorites</h2>
+    <p>Click the heart icon 🤍 on any product card to save it to your favorites. The heart turns red ❤️ when saved.</p>
+    <ul>
+      <li><strong>Save</strong> — Click 🤍 on any search result card to add it to your favorites.</li>
+      <li><strong>Unsave</strong> — Click ❤️ on the same card to remove it. On the Favorites page, click the ❤️ to remove it from the list.</li>
+      <li><strong>View</strong> — Go to your Account → Favorites tab to see all saved items in one place.</li>
+      <li><strong>Pagination</strong> — Favorites show 20 per page (5 columns × 4 rows).</li>
+    </ul>
+    <div class="tip">💡 You must be signed in to use Favorites. Favorites are tied to your account and sync across devices.</div>
+  </div>
+
+  <div class="section">
+    <h2>📈 Price History &amp; Alerts</h2>
+    <p>Click the 📈 chart icon on any product card to open the price history chart and set price drop alerts.</p>
+    <h3 style="font-size:15px;font-weight:600;margin:12px 0 4px">Price Chart</h3>
+    <ul>
+      <li>Shows simulated price trends over the last 7, 30, or 90 days.</li>
+      <li>The lowest price over the selected period is shown below the chart.</li>
+      <li>30-day and 90-day views are available for Premium members.</li>
+    </ul>
+    <h3 style="font-size:15px;font-weight:600;margin:12px 0 4px">Price Alerts</h3>
+    <ul>
+      <li>Enter a target price and click "Alert me" to be notified when the price drops to your target.</li>
+      <li><strong>How it works</strong>: Every day at 4:00 AM EST, SnappRice checks the current price of your watched items. If the price is at or below your target, we send an email to your registered email address.</li>
+      <li><strong>One alert per product</strong> — You can only set one alert per product per store.</li>
+      <li><strong>Free limit</strong>: Up to 6 alerts. Premium members get unlimited alerts.</li>
+      <li><strong>Cancel</strong> — Click "Cancel" on an active alert to remove it. The alert section also shows "✓ Notification sent" once triggered.</li>
+    </ul>
+    <div class="tip">💡 Make sure your email address is up to date in Account Settings to receive price drop notifications.</div>
+  </div>
+
+  <div class="section">
+    <h2>🔔 After an Alert Triggers</h2>
+    <p>When the price drops to or below your target:</p>
+    <ul>
+      <li>You'll receive an email with the product name, store, your target price, the current price, and how much you save.</li>
+      <li>The email includes a "View Deal" button that takes you directly to the product.</li>
+      <li>The alert is marked as "Notification sent" in your account and won't trigger again for the same product.</li>
+      <li>You can still remove the alert after it triggers.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>👤 Your Account</h2>
+    <p>Sign in to save favorites, set price alerts, and manage your account.</p>
+    <ul>
+      <li><strong>Sign in / Register</strong> — Use email + password or Google OAuth. Password must be at least 8 characters with a mix of letters, numbers, and symbols.</li>
+      <li><strong>Account Settings</strong> — Change your email address or update your password. Both require verification for security.</li>
+      <li><strong>Membership</strong> — Free accounts have limited price alerts (6) and photo searches (5/month). Premium unlocks unlimited alerts, photo search, and extended price history.</li>
+    </ul>
+    <div class="tip">💡 When you change your email, all your data moves to the new account. Your old email will be blocked from re-registering for 3 months.</div>
+  </div>
+
+  <div class="section">
+    <h2>🛠 Admin Panel</h2>
+    <p>Available only for site administrators. Provides user management tools including viewing user details, search history, favorites, alerts, and managing Premium membership.</p>
+  </div>
+
+  <hr>
+  <p style="font-size:13px;color:#94a3b8;text-align:center">SnappRice — Search, compare, save — it's that simple.</p>
+  <div style="text-align:center">
+    <a href="/" class="back">← Back to Search</a>
+  </div>
+</div>
+<script>var vglnk={key:'811162296b84b59fc816b1c12441ac9f'};(function(d,t){var s=d.createElement(t);s.type='text/javascript';s.async=true;s.src='//cdn.viglink.com/api/vglnk.js';var r=d.getElementsByTagName(t)[0];r.parentNode.insertBefore(s,r);}(document,'script'));</script>
+</body>
+</html>
