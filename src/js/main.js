@@ -2883,12 +2883,12 @@ function renderAdminUserList() {
   const start = (page - 1) * ADMIN_PAGE_SIZE;
   const pageItems = adminUsers.slice(start, start + ADMIN_PAGE_SIZE);
 
-  let html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:15px">' +
+  let html = '<table style="width:100%;border-collapse:collapse;font-size:16px">' +
     '<thead><tr style="background:var(--gray-100);text-align:left">' +
-    '<th style="padding:14px 16px">Email</th>' +
-    '<th style="padding:14px 16px">Registered</th>' +
-    '<th style="padding:14px 16px">Tier</th>' +
-    '<th style="padding:14px 16px">Membership Expiry</th>' +
+    '<th style="padding:16px 24px">Email</th>' +
+    '<th style="padding:16px 24px">Registered</th>' +
+    '<th style="padding:16px 24px">Tier</th>' +
+    '<th style="padding:16px 24px">Membership Expiry</th>' +
     '</tr></thead><tbody>';
   for (const u of pageItems) {
     const regDate = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : '—';
@@ -2989,14 +2989,14 @@ function renderAdminUserDetail(data) {
   // Account info + Membership modification side by side
   let html = '' +
     '<div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">' +
-      '<div style="flex:1;min-width:315px;background:var(--white);border-radius:12px;padding:20px 24px;border:1px solid var(--gray-200)">' +
-        '<h4 style="font-size:13px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin:0 0 12px">Account Info</h4>' +
-        '<div style="font-size:16px;font-weight:600">' + data.email + '</div>' +
-        '<div style="font-size:14px;color:var(--gray-500);margin-top:8px">Registered: ' + regDate + '</div>' +
-        '<div style="font-size:14px;color:var(--gray-500);margin-top:4px">Membership: ' + (isPremium ? '<span style="color:#d97706;font-weight:600">Premium</span> — Expires ' + expDate : '<span style="color:var(--gray-500)">Free</span>') + '</div>' +
+      '<div style="flex:1;min-width:380px;background:var(--white);border-radius:12px;padding:24px 28px;border:1px solid var(--gray-200)">' +
+        '<h4 style="font-size:14px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin:0 0 16px">Account Info</h4>' +
+        '<div style="font-size:18px;font-weight:600">' + data.email + '</div>' +
+        '<div style="font-size:15px;color:var(--gray-500);margin-top:10px">Registered: ' + regDate + '</div>' +
+        '<div style="font-size:15px;color:var(--gray-500);margin-top:6px">Membership: ' + (isPremium ? '<span style="color:#d97706;font-weight:600">Premium</span> — Expires ' + expDate : '<span style="color:var(--gray-500)">Free</span>') + '</div>' +
       '</div>' +
-      '<div style="flex:1;min-width:315px;background:var(--white);border-radius:12px;padding:20px 24px;border:1px solid var(--gray-200)">' +
-        '<h4 style="font-size:13px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin:0 0 12px">Modify Membership</h4>' +
+      '<div style="flex:1;min-width:380px;background:var(--white);border-radius:12px;padding:24px 28px;border:1px solid var(--gray-200)">' +
+        '<h4 style="font-size:14px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin:0 0 16px">Modify Membership</h4>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">' +
           '<select id="adminMemberAction" style="padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
             '<option value="add">Add Premium</option>' +
