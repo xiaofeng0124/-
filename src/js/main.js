@@ -953,9 +953,9 @@ function renderDashboardFavorites(contOverride) {
       <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">${f.store}</div>
       <div class="popular-card-name" style="font-size:13px;-webkit-line-clamp:2;line-height:1.3;margin-bottom:4px">${f.productName}</div>
       <div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:6px">$${(f.price||0).toFixed(2)}</div>
-      <div style="display:flex;gap:6px">
-        <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${pn}','${f.store}',${f.price},'${img.replace(/'/g, "\\'")}')" style="font-size:13px;padding:8px 12px">Buy Now</a>
-        <button class="icon-btn" style="width:36px;height:36px;font-size:13px;color:#ef4444" onclick="removeFavAndRefresh('${pn}','${f.store}','${(f.url||'').replace(/'/g, "\'")}')" title="Remove">✕</button>
+      <div style="display:flex;gap:4px">
+        <button class="icon-btn" style="width:28px;height:28px;font-size:14px;flex-shrink:0;color:#ef4444" onclick="removeFavAndRefresh('${pn}','${f.store}','${(f.url||'').replace(/'/g, "\'")}')" title="Remove">✕</button>
+        <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${pn}','${f.store}',${f.price},'${img.replace(/'/g, "\\'")}')">Buy Now</a>
       </div>
     </div>`;
   }).join('')}</div>`;
@@ -1971,10 +1971,10 @@ function renderPage(page) {
         <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">${s.store}</div>
         <div class="popular-card-name" style="font-size:13px;-webkit-line-clamp:2;line-height:1.3;margin-bottom:4px">${currentProduct.name}</div>
         <div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:6px">$${s.price.toFixed(2)} ${isBest ? '<span style="font-size:11px;color:#16a34a;font-weight:600">Best</span>' : ''}</div>
-        <div style="display:flex;gap:6px;margin-top:4px">
+        <div style="display:flex;gap:4px;margin-top:4px">
+          <button class="icon-btn heart-btn ${faved ? 'favorited' : ''}" style="width:32px;height:32px;font-size:16px;flex-shrink:0" onclick="toggleFavorite(event,'${pn}','${s.store}',${s.price},'${img}','${itemUrl}')" title="${faved ? 'Remove from favorites' : 'Add to favorites'}">${faved ? '❤️' : '🤍'}</button>
+          <button class="icon-btn${hasAlert ? ' has-alert' : ''}" style="width:32px;height:32px;font-size:15px;flex-shrink:0" onclick="openPriceHistory('${pn}','${s.store}',${s.price},'${img}','${itemUrl}')" title="Price history & alerts">📈</button>
           <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${pn}','${s.store}',${s.price},'${img}')">Buy Now</a>
-          <button class="icon-btn heart-btn ${faved ? 'favorited' : ''}" style="width:36px;height:36px;font-size:15px" onclick="toggleFavorite(event,'${pn}','${s.store}',${s.price},'${img}','${itemUrl}')">${faved ? '❤️' : '🤍'}</button>
-          <button class="icon-btn${hasAlert ? ' has-alert' : ''}" style="width:36px;height:36px;font-size:15px" onclick="openPriceHistory('${pn}','${s.store}',${s.price},'${img}','${itemUrl}')" title="Price history">📈</button>
         </div>
       </div>`;
   }).join('');
