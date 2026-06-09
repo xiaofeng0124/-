@@ -1012,6 +1012,9 @@ function renderAccountSettings(container) {
           '<button class="btn-primary" id="confirmPwBtn" style="flex:1;display:none">Confirm & Change</button>' +
         '</div>' +
       '</div>' +
+      '<div style="margin-top:12px;padding:10px 12px;background:#f8fafc;border-radius:8px;font-size:12px;color:#64748b;line-height:1.5">' +
+        'New password must be at least 8 characters long and include a mix of letters, numbers, and symbols for better security.' +
+      '</div>' +
     '</div>' +
     '</div>' +
   '</div>';
