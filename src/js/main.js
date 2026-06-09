@@ -1008,9 +1008,7 @@ function renderAccountSettings(container) {
         '</div>' +
       '</div>' +
     '</div>' +
-
     '</div>' +
-    '<div style="margin-top:16px"><a href="/" style="display:inline-block;padding:10px 24px;background:var(--primary);color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Back to Search</a></div>' +
   '</div>';
 
   // ======== Change Email Logic ========
