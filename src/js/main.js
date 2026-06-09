@@ -770,8 +770,8 @@ function updateUIForAuth() {
 
   if (user) {
     const initial = user.email[0].toUpperCase();
-    const premiumBtnText = membershipData && isPremium() ? 'Premium' : 'Go Premium';
-    const premiumBtn = `<button class="btn-premium" id="pricingNavBtn">${premiumBtnText}</button>`;
+    const premiumBtnText = isPremium() ? '🎉 Premium (Free Trial)' : 'Go Premium';
+    const premiumBtn = `<button class="btn-premium" id="pricingNavBtn" style="background:#16a34a">${premiumBtnText}</button>`;
     const expiryHtml = isPremium() && membershipData?.expiresAt
       ? `<div class="membership-expiry">Premium &middot; ${formatDate(membershipData.expiresAt)}</div>`
       : '';
@@ -845,7 +845,7 @@ function updateUIForAuth() {
 								<div class="history-dropdown-list" id="historyList"></div>
 							</div>
 						</div>
-      <button class="btn-premium" id="pricingNavBtn">Go Premium</button>
+      <button class="btn-premium" id="pricingNavBtn" style="background:#16a34a">🎉 Premium (Free Trial)</button>
       <button class="btn-outline" id="loginBtn">Sign In</button>
     `;
     document.getElementById('loginBtn')?.addEventListener('click', () => showAuthModal('login'));
@@ -2446,7 +2446,8 @@ async function trackPhotoUsage() {
 }
 
 function isPremium() {
-  return membershipData?.tier === 'premium';
+  return true; // 🎉 限时免费：所有功能开放。取消 trial 时改回这行：
+  // return membershipData?.tier === 'premium';
 }
 
 function showPremiumWelcome(email) {
