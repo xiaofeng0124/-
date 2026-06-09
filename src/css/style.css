@@ -1326,15 +1326,7 @@ background: var(--gray-500);
 
 /* 商品卡价格历史按钮 - 已设降价提醒高亮 */
 .icon-btn.has-alert {
-background: #16a34a !important;
-color: #fff !important;
 border-color: #16a34a !important;
-box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25);
-animation: alert-pulse 2s ease-in-out infinite;
-}
-@keyframes alert-pulse {
-0%, 100% { box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25); }
-50% { box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.4); }
 }
 
 .alert-success {
