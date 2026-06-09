@@ -63,7 +63,12 @@ SnappRice (snapprice.co) — 跨平台比价引擎。用户输入商品名或上
 ### KV 命名空间
 - `user:{email}` — 用户密码哈希 / Google ID
 - `session:{token}` — 登录会话（7 天 TTL）
-- `userdata:{email}` — 收藏 + 降价提醒数据
+- `userdata:{email}` — 收藏 + 降价提醒数据（alert 含 `notified`/`notifiedAt` 字段）
+- `config:cron_key` — 降价提醒定时检查的密钥（配合 cron-job.org）
+- `config:resend_key` — Resend 邮件 API 密钥
+- `config:serper_key` — Serper 搜索密钥
+- `config:asa_key` — Amazon Scraper API 密钥
+- `config:eBay_client_id` / `config:eBay_cert_secret` — eBay API 凭证
 
 ## Commands
 
@@ -76,6 +81,30 @@ wrangler pages deployment list --project-name snapprice
 
 # wrangler 已全局安装，直接 wrangler 不用 npx（npx 每次检查更新慢 3-5 秒）
 ```
+
+### 降价提醒自动检查（Cron）
+
+- **端点**: `GET /api/cron/check-alerts?key={CRON_KEY}&limit=50`
+- **密钥**: KV `config:cron_key` 或环境变量 `CRON_SECRET`
+- **定时触发**: 外部 cron-job.org 每天 4AM EST (= 9AM UTC) 调一次
+- **逻辑**: 
+  1. 扫描所有 `userdata:*` KV 条目, 提取未通知的提醒
+  2. 按 URL 去重（不同用户相同商品只查一次价格）
+  3. 逐个检查价格：Amazon 用 ASA API、eBay 用 Browse API、其他用 fetch 页面抓取
+  4. 价格 ≤ 目标价 → Resend 发邮件 → 标记 `notified: true`
+- **价格检查方式**:
+  - Amazon: `amazonscraperapi.com`（需要 ASIN）
+  - eBay: `api.ebay.com/buy/browse/v1/item/get_item`（需要 Item ID）
+  - Walmart / Best Buy / Target: `fetch(url)` 从页面 HTML meta/JSON-LD 提取价格
+- **注意**: free plan Pages Function 有 30s 超时，`limit` 参数控制每次检查数量（默认 50），cron-job.org 可设多个间隔连续跑完
+
+### 设置 cron-job.org
+1. 注册 https://cron-job.org
+2. 新建任务:
+   - URL: `https://snapprice.co/api/cron/check-alerts?key=f1d4f12fe41d4e2f8a7d6f20c7a4dcf9`
+   - Schedule: Every day at 09:00 (UTC) = 4AM EST / 1AM PST
+   - 如果提醒数量大, 加 `&limit=50`, 每 10 分钟跑一批
+3. 保存即可
 
 ## 部署工作流
 
@@ -136,6 +165,7 @@ git push origin master
    - `SERPER_KEY` — Serper 密钥（当前搜索引擎，`SEARCH_ENGINE=serper` 时必填，https://serper.dev）
    - `ASA_KEY` — Amazon Scraper API 密钥（`/api/amazon` 用，https://amazonscraperapi.com）
    - `EBAY_APP_ID` / `EBAY_CERT_ID` — eBay Browse API OAuth 凭证（已配置）
+   - `CRON_SECRET` — 降价提醒 cron 密钥（可选，默认读 KV `config:cron_key`）
    - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`（可选，OAuth）。
 
 8. **价格历史**: 目前是模拟数据（`generatePriceHistory()` 基于随机游走），待接真实数据源。
