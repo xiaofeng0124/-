@@ -1494,11 +1494,13 @@ function initModals() {
   document.getElementById('historyModalClose')?.addEventListener('click', () => {
     document.getElementById('historyModal').classList.remove('active');
     if (priceChartInstance) { priceChartInstance.destroy(); priceChartInstance = null; }
+    if (currentProduct && paginatedStores.length) renderPage(currentPage);
   });
   document.getElementById('historyModal')?.addEventListener('click', (e) => {
     if (e.target === e.currentTarget) {
       document.getElementById('historyModal').classList.remove('active');
       if (priceChartInstance) { priceChartInstance.destroy(); priceChartInstance = null; }
+      if (currentProduct && paginatedStores.length) renderPage(currentPage);
     }
   });
   document.getElementById('dashboardCloseBtn')?.addEventListener('click', () => {
@@ -1966,7 +1968,7 @@ function renderPage(page) {
         <div style="display:flex;gap:6px;margin-top:4px">
           <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')">Buy Now</a>
           <button class="icon-btn heart-btn ${faved ? 'favorited' : ''}" style="width:36px;height:36px;font-size:15px" onclick="toggleFavorite(event,'${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')">${faved ? '❤️' : '🤍'}</button>
-          <button class="icon-btn" style="width:36px;height:36px;font-size:15px" onclick="openPriceHistory('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')" title="Price history">📈</button>
+          <button class="icon-btn${getExistingAlert(currentProduct.name, s.store) ? ' has-alert' : ''}" style="width:36px;height:36px;font-size:15px" onclick="openPriceHistory('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')" title="Price history">📈</button>
         </div>
       </div>`;
   }).join('');
