@@ -1950,6 +1950,31 @@ function initVoiceSearch() {
   });
 }
 
+async function identifyProductFromImage(imageDataUrl) {
+  const input = document.getElementById('searchInput');
+  if (!input) return;
+  try {
+    input.placeholder = '🔍 Identifying product...';
+    const res = await fetch('/api/vision', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: imageDataUrl }),
+    });
+    const data = await res.json();
+    if (data.ok && data.productName) {
+      input.value = data.productName;
+      input.placeholder = 'Search any product...';
+      // 自动触发搜索
+      performSearch();
+    } else {
+      input.placeholder = 'Search any product...';
+      showToast('Could not identify product. Try typing the name.');
+    }
+  } catch {
+    input.placeholder = 'Search any product...';
+  }
+}
+
 async function performSearch() {
   const input = document.getElementById('searchInput');
   const query = (input?.value || '').trim().toLowerCase();
@@ -2369,6 +2394,10 @@ function handleFiles(files) {
     if (currentUser) trackPhotoUsage();
     if (skipped > 0) {
       showToast(`Added ${results.length}, max 6 reached`);
+    }
+    // 自动识别第一张图片
+    if (results.length > 0 && results[0].startsWith('data:')) {
+      identifyProductFromImage(results[0]);
     }
   });
 }

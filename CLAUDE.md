@@ -166,6 +166,7 @@ git push origin master
    - `ASA_KEY` — Amazon Scraper API 密钥（`/api/amazon` 用，https://amazonscraperapi.com）
    - `EBAY_APP_ID` / `EBAY_CERT_ID` — eBay Browse API OAuth 凭证（已配置）
    - `CRON_SECRET` — 降价提醒 cron 密钥（可选，默认读 KV `config:cron_key`）
+      - `GEMINI_KEY` — Google Gemini API 密钥（`/api/vision` 图片识别用，可选 KV `config:gemini_key`）
    - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`（可选，OAuth）。
 
 8. **价格历史**: 目前是模拟数据（`generatePriceHistory()` 基于随机游走），待接真实数据源。
