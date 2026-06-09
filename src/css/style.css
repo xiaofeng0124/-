@@ -174,15 +174,14 @@ text-align: center;
 .popular-card > div:last-child {
 margin-top: auto;
 }
-/* 收藏夹页面：卡片更宽、flex列布局对齐 */
+/* 收藏夹页面：flex列布局对齐 */
 #accountContent .popular-grid {
-grid-template-columns: repeat(4, 1fr);
-gap: 12px;
+grid-template-columns: repeat(5, 1fr);
+gap: 10px;
 }
 #accountContent .popular-card {
 display: flex;
 flex-direction: column;
-padding: 12px;
 }
 #accountContent .popular-card .popular-card-name {
 min-height: 34px;
