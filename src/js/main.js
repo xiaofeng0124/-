@@ -2975,17 +2975,17 @@ function renderAdminUserDetail(data) {
   const expDate = data.membership.expiresAt ? new Date(data.membership.expiresAt).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : '—';
   const isPremium = data.membership.tier === 'premium';
 
-  // Account info + Membership modification combined
+  // Account info + Membership modification side by side
   let html = '' +
-    '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
-      '<div style="display:flex;align-items:flex-start;justify-content:space-between">' +
-        '<div>' +
-          '<h3 style="font-size:18px;font-weight:700;margin:0">' + data.email + '</h3>' +
-          '<p style="font-size:14px;color:var(--gray-500);margin:4px 0 0">Registered: ' + regDate + '</p>' +
-          '<p style="font-size:14px;color:var(--gray-500);margin:2px 0 0">Membership: ' + (isPremium ? '<span style="color:#d97706;font-weight:600">Premium</span> — Expires ' + expDate : '<span style="color:var(--gray-500)">Free</span>') + '</p>' +
-        '</div>' +
+    '<div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">' +
+      '<div style="flex:1;min-width:240px;background:var(--white);border-radius:12px;padding:20px 24px;border:1px solid var(--gray-200)">' +
+        '<h4 style="font-size:13px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin:0 0 12px">Account Info</h4>' +
+        '<div style="font-size:16px;font-weight:600">' + data.email + '</div>' +
+        '<div style="font-size:14px;color:var(--gray-500);margin-top:8px">Registered: ' + regDate + '</div>' +
+        '<div style="font-size:14px;color:var(--gray-500);margin-top:4px">Membership: ' + (isPremium ? '<span style="color:#d97706;font-weight:600">Premium</span> — Expires ' + expDate : '<span style="color:var(--gray-500)">Free</span>') + '</div>' +
       '</div>' +
-      '<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--gray-100)">' +
+      '<div style="flex:1;min-width:240px;background:var(--white);border-radius:12px;padding:20px 24px;border:1px solid var(--gray-200)">' +
+        '<h4 style="font-size:13px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin:0 0 12px">Modify Membership</h4>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">' +
           '<select id="adminMemberAction" style="padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
             '<option value="add">Add Premium</option>' +
@@ -2994,7 +2994,7 @@ function renderAdminUserDetail(data) {
           '<input type="number" id="adminMemberAmount" value="30" min="1" style="width:70px;padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
           '<span style="font-size:13px;color:var(--gray-600)">Days</span>' +
           '<button class="btn-primary" id="adminMemberSubmitBtn" style="padding:8px 20px;font-size:13px">Apply</button>' +
-          '<div id="adminMemberResult" style="font-size:13px;display:inline-block"></div>' +
+          '<div id="adminMemberResult" style="font-size:13px;width:100%;margin-top:4px"></div>' +
         '</div>' +
       '</div>' +
     '</div>';
