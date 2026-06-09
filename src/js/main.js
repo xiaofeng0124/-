@@ -1127,7 +1127,7 @@ function loadChartJS() {
 
 async function renderPriceChart(days) {
   if (typeof Chart === 'undefined') { try { await loadChartJS(); } catch { return; } }
-  const data = PRICE_HISTORY_CACHE[`${currentHistoryProduct}_${currentHistoryStore}`];
+  const data = PRICE_HISTORY_CACHE[`${currentHistoryProduct}_${currentHistoryStore}_${currentHistoryUrl}`] || PRICE_HISTORY_CACHE[`${currentHistoryProduct}_${currentHistoryStore}`];
   if (!data) return;
   const sliced = data.slice(-days);
   const prices = sliced.map(d => d.price);
