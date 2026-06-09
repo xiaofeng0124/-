@@ -2969,6 +2969,41 @@ async function showAdminUserDetail(email) {
   }
 }
 
+function renderAdminTabContent(tab, data) {
+  if (tab === 'favs') {
+    if (!data.favorites.length) return '<p style="font-size:13px;color:var(--gray-400);margin:0">No favorites</p>';
+    return data.favorites.slice(0, 20).map(function(f) {
+      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100)">' +
+        '<img src="' + (f.image || '') + '" alt="" style="width:40px;height:40px;object-fit:contain;border-radius:6px;flex-shrink:0" onerror="this.style.display=\'none\'">' +
+        '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (f.name || f.productName || '') + '</div><div style="font-size:12px;color:var(--gray-400)">' + (f.store || '') + ' · $' + (f.price || f.targetPrice || 0) + '</div></div>' +
+      '</div>';
+    }).join('') + (data.favorites.length > 20 ? '<p style="font-size:12px;color:var(--gray-400);margin:8px 0 0">Showing 20 of ' + data.favorites.length + '</p>' : '');
+  }
+  if (tab === 'history') {
+    if (!data.searchHistory.length) return '<p style="font-size:13px;color:var(--gray-400);margin:0">No search history</p>';
+    return data.searchHistory.slice(0, 20).map(function(h) {
+      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
+        '<span style="font-size:13px">🔍</span>' +
+        '<span style="font-size:14px;flex:1">' + (h.query || h.name || '') + '</span>' +
+        '<span style="font-size:12px;color:var(--gray-400)">' + timeAgo(h.time) + '</span>' +
+      '</div>';
+    }).join('') + (data.searchHistory.length > 20 ? '<p style="font-size:12px;color:var(--gray-400);margin:8px 0 0">Showing 20 of ' + data.searchHistory.length + '</p>' : '');
+  }
+  if (tab === 'alerts') {
+    if (!data.alerts.length) return '<p style="font-size:13px;color:var(--gray-400);margin:0">No alerts set</p>';
+    return data.alerts.map(function(a) {
+      var notified = a.notified ? '✅' : '⏳';
+      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
+        '<span style="font-size:13px">🔔</span>' +
+        '<div style="flex:1;font-size:14px">' + (a.productName || '') + ' @ ' + (a.store || '') + '</div>' +
+        '<span style="font-size:13px;font-weight:600;color:var(--primary)">$' + (a.targetPrice || 0) + '</span>' +
+        '<span style="font-size:12px;color:var(--gray-400)">' + notified + '</span>' +
+      '</div>';
+    }).join('');
+  }
+  return '';
+}
+
 function renderAdminUserDetail(data) {
   const content = document.getElementById('adminContent');
   const regDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : '—';
@@ -2999,43 +3034,20 @@ function renderAdminUserDetail(data) {
       '</div>' +
     '</div>';
 
-  // Favorites
-  html += '<div style="background:var(--white);border-radius:12px;padding:20px 24px;margin-bottom:12px;border:1px solid var(--gray-200)">' +
-    '<h4 style="font-size:15px;font-weight:700;margin:0 0 12px">Favorites (' + data.favorites.length + ')</h4>' +
-    (data.favorites.length ? data.favorites.slice(0, 10).map(function(f) {
-      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100)">' +
-        '<img src="' + (f.image || '') + '" alt="" style="width:40px;height:40px;object-fit:contain;border-radius:6px;flex-shrink:0" onerror="this.style.display=\'none\'">' +
-        '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (f.name || f.productName || '') + '</div><div style="font-size:12px;color:var(--gray-400)">' + (f.store || '') + ' · $' + (f.price || f.targetPrice || 0) + '</div></div>' +
-      '</div>';
-    }).join('') : '<p style="font-size:13px;color:var(--gray-400);margin:0">No favorites</p>') +
-    (data.favorites.length > 10 ? '<p style="font-size:12px;color:var(--gray-400);margin:8px 0 0">Showing 10 of ' + data.favorites.length + '</p>' : '') +
-  '</div>';
+  // Tabbed sections: Favorites / Search History / Price Alerts
+  var favCount = data.favorites.length;
+  var histCount = data.searchHistory.length;
+  var alertCount = data.alerts.length;
 
-  // Search History
-  html += '<div style="background:var(--white);border-radius:12px;padding:20px 24px;margin-bottom:12px;border:1px solid var(--gray-200)">' +
-    '<h4 style="font-size:15px;font-weight:700;margin:0 0 12px">Search History (' + data.searchHistory.length + ')</h4>' +
-    (data.searchHistory.length ? data.searchHistory.slice(0, 10).map(function(h) {
-      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
-        '<span style="font-size:13px">🔍</span>' +
-        '<span style="font-size:14px;flex:1">' + (h.query || h.name || '') + '</span>' +
-        '<span style="font-size:12px;color:var(--gray-400)">' + timeAgo(h.time) + '</span>' +
-      '</div>';
-    }).join('') : '<p style="font-size:13px;color:var(--gray-400);margin:0">No search history</p>') +
-    (data.searchHistory.length > 10 ? '<p style="font-size:12px;color:var(--gray-400);margin:8px 0 0">Showing 10 of ' + data.searchHistory.length + '</p>' : '') +
-  '</div>';
-
-  // Price Alerts
-  html += '<div style="background:var(--white);border-radius:12px;padding:20px 24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
-    '<h4 style="font-size:15px;font-weight:700;margin:0 0 12px">Price Alerts (' + data.alerts.length + ')</h4>' +
-    (data.alerts.length ? data.alerts.map(function(a) {
-      const notified = a.notified ? '✅' : '⏳';
-      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
-        '<span style="font-size:13px">🔔</span>' +
-        '<div style="flex:1;font-size:14px">' + (a.productName || '') + ' @ ' + (a.store || '') + '</div>' +
-        '<span style="font-size:13px;font-weight:600;color:var(--primary)">$' + (a.targetPrice || 0) + '</span>' +
-        '<span style="font-size:12px;color:var(--gray-400)">' + notified + '</span>' +
-      '</div>';
-    }).join('') : '<p style="font-size:13px;color:var(--gray-400);margin:0">No alerts set</p>') +
+  html += '<div style="background:var(--white);border-radius:12px;border:1px solid var(--gray-200);overflow:hidden;margin-bottom:16px">' +
+    '<div style="display:flex;border-bottom:1px solid var(--gray-200);background:var(--gray-50)">' +
+      '<button onclick="switchAdminTab(event,\'favs\')" class="admin-tab active" style="flex:1;padding:12px;border:none;background:none;font-size:14px;font-weight:600;cursor:pointer;color:var(--primary);border-bottom:2px solid var(--primary)">Favorites (' + favCount + ')</button>' +
+      '<button onclick="switchAdminTab(event,\'history\')" class="admin-tab" style="flex:1;padding:12px;border:none;background:none;font-size:14px;font-weight:500;cursor:pointer;color:var(--gray-500);border-bottom:2px solid transparent">History (' + histCount + ')</button>' +
+      '<button onclick="switchAdminTab(event,\'alerts\')" class="admin-tab" style="flex:1;padding:12px;border:none;background:none;font-size:14px;font-weight:500;cursor:pointer;color:var(--gray-500);border-bottom:2px solid transparent">Alerts (' + alertCount + ')</button>' +
+    '</div>' +
+    '<div id="adminTabContent" style="padding:16px 20px;min-height:80px">' +
+      renderAdminTabContent('favs', data) +
+    '</div>' +
   '</div>';
 
   content.innerHTML = html;
@@ -3053,7 +3065,25 @@ function renderAdminUserDetail(data) {
   };
 
   window._pendingMembershipEmail = data.email;
+  window._adminUserData = data;
 }
+
+window.switchAdminTab = function(e, tab) {
+  var tabs = document.querySelectorAll('.admin-tab');
+  tabs.forEach(function(t) {
+    t.style.color = 'var(--gray-500)';
+    t.style.fontWeight = '500';
+    t.style.borderBottomColor = 'transparent';
+  });
+  e.currentTarget.style.color = 'var(--primary)';
+  e.currentTarget.style.fontWeight = '600';
+  e.currentTarget.style.borderBottomColor = 'var(--primary)';
+  // Re-render content with stored data
+  var content = document.getElementById('adminTabContent');
+  if (content && window._adminUserData) {
+    content.innerHTML = renderAdminTabContent(tab, window._adminUserData);
+  }
+};
 
 async function adminConfirmMembership() {
   const pw = document.getElementById('adminConfirmInput').value;
