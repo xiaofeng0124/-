@@ -1324,9 +1324,23 @@ margin-left: auto;
 background: var(--gray-500);
 }
 
-/* 商品卡价格历史按钮 - 已设降价提醒高亮 */
+/* 商品卡图标按钮 - 无边框纯图标 */
+.icon-btn {
+border: none;
+background: none;
+padding: 0;
+cursor: pointer;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+transition: opacity .15s;
+}
+.icon-btn:hover { opacity: .7; }
+.icon-btn.heart-btn.favorited { color: #f43f5e; }
+
+/* 已设降价提醒高亮 */
 .icon-btn.has-alert {
-border-color: #16a34a !important;
+color: #16a34a !important;
 }
 
 .alert-success {
