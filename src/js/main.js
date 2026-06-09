@@ -971,7 +971,8 @@ function renderAccountSettings(container) {
 
   container.innerHTML =
   '<div style="max-width:100%">' +
-    '<h3 style="font-size:22px;margin-bottom:20px;font-weight:700">Account Settings</h3>' +
+    '<h3 style="font-size:22px;margin-bottom:4px;font-weight:700">Account Settings</h3>' +
+    '<p style="font-size:13px;color:#94a3b8;margin:0 0 20px">Change your email address or update your password. Both require email verification for security.</p>' +
     '<div style="display:flex;gap:16px;flex-wrap:wrap">' +
 
     // === Change Email ===
