@@ -1042,7 +1042,12 @@ function renderDashboardAlerts(contOverride) {
   const start = (page - 1) * ALERT_PAGE_SIZE;
   const pageItems = alerts.slice(start, start + ALERT_PAGE_SIZE);
 
-  container.innerHTML = pageItems.map(a => `
+  container.innerHTML = `
+  <div style="margin-bottom:16px">
+    <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Price Alerts</h2>
+    <p style="font-size:13px;color:#94a3b8;margin:4px 0 0">We'll send an email to your registered email address when the price drops to your target. Make sure your email is up to date.</p>
+  </div>
+  ` + pageItems.map(a => `
     <div class="dashboard-item">
       ${a.image ? '<img src="' + proxyImg(a.image) + '" alt="" style="width:56px;height:56px;object-fit:contain;border-radius:8px;flex-shrink:0" onerror="this.style.display=\'none\'">' : ''}
       <div class="dashboard-item-info">
