@@ -1127,7 +1127,7 @@ function renderDashboardAlerts(contOverride) {
       </div>
       	      <div style="display:flex;align-items:center;gap:38px;margin-left:auto;flex-shrink:0">
 	        ${a.notified ? '<span style="font-size:14px;font-weight:600;color:#16a34a;white-space:nowrap">✓ Notification sent</span>' : ''}
-	        <button class="btn-sm btn-sm-outline" onclick="removeAlertAndRefresh(''${a.id}')">Remove</button>
+	        <button class="btn-sm btn-sm-outline" onclick="removeAlertAndRefresh('${a.id}')">Remove</button>
 	      </div>
     </div>`).join('');
 
