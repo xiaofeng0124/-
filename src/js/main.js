@@ -2959,60 +2959,68 @@ function renderAdminUserDetail(data) {
   const expDate = data.membership.expiresAt ? new Date(data.membership.expiresAt).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : '—';
   const isPremium = data.membership.tier === 'premium';
 
+  // Account info + Membership modification combined
   let html = '' +
     '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
-      '<h3 style="font-size:20px;margin-bottom:4px">' + data.email + '</h3>' +
-      '<p style="font-size:13px;color:var(--gray-500)">Registered: ' + regDate + '</p>' +
-      '<p style="font-size:13px;color:var(--gray-500);margin-top:2px">Membership: ' + (isPremium ? 'Premium — Expires ' + expDate : 'Free') + '</p>' +
-    '</div>' +
-
-    '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
-      '<h4 style="margin-bottom:12px;font-size:15px">Modify Membership</h4>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">' +
-        '<select id="adminMemberAction" style="padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
-          '<option value="add">Add time</option>' +
-          '<option value="remove">Remove time</option>' +
-        '</select>' +
-        '<input type="number" id="adminMemberAmount" value="1" min="1" style="width:70px;padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
-        '<span style="font-size:13px;color:var(--gray-600);margin-right:4px">Days</span>' +
-        '<button class="btn-primary" id="adminMemberSubmitBtn" style="padding:8px 20px;font-size:13px">Apply</button>' +
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between">' +
+        '<div>' +
+          '<h3 style="font-size:18px;font-weight:700;margin:0">' + data.email + '</h3>' +
+          '<p style="font-size:14px;color:var(--gray-500);margin:4px 0 0">Registered: ' + regDate + '</p>' +
+          '<p style="font-size:14px;color:var(--gray-500);margin:2px 0 0">Membership: ' + (isPremium ? '<span style="color:#d97706;font-weight:600">Premium</span> — Expires ' + expDate : '<span style="color:var(--gray-500)">Free</span>') + '</p>' +
+        '</div>' +
       '</div>' +
-      '<div id="adminMemberResult" style="margin-top:8px;font-size:13px"></div>' +
-    '</div>' +
-
-    '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
-      '<h4 style="margin-bottom:12px;font-size:15px">Favorites (' + data.favorites.length + ')</h4>' +
-      (data.favorites.length ? data.favorites.map(function(f) {
-        return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100)">' +
-          '<img src="' + (f.image || '') + '" alt="" style="width:36px;height:36px;object-fit:contain;border-radius:4px" onerror="this.style.display=\'none\'">' +
-          '<div style="flex:1"><div style="font-size:13px;font-weight:500">' + (f.name || f.productName || '') + '</div><div style="font-size:11px;color:var(--gray-400)">' + (f.store || '') + ' · $' + (f.price || f.targetPrice || 0) + '</div></div>' +
-        '</div>';
-      }).join('') : '<p style="font-size:13px;color:var(--gray-400)">No favorites</p>') +
-    '</div>' +
-
-    '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
-      '<h4 style="margin-bottom:12px;font-size:15px">Search History (' + data.searchHistory.length + ')</h4>' +
-      (data.searchHistory.length ? data.searchHistory.map(function(h) {
-        return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
-          '<span style="font-size:14px">🔍</span>' +
-          '<span style="font-size:13px">' + h.query + '</span>' +
-          '<span style="font-size:11px;color:var(--gray-400);margin-left:auto">' + timeAgo(h.time) + '</span>' +
-        '</div>';
-      }).join('') : '<p style="font-size:13px;color:var(--gray-400)">No search history</p>') +
-    '</div>' +
-
-    '<div style="background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
-      '<h4 style="margin-bottom:12px;font-size:15px">Price Alerts (' + data.alerts.length + ')</h4>' +
-      (data.alerts.length ? data.alerts.map(function(a) {
-        const st = a.triggered ? '🔔 Triggered' : '⏳ Waiting';
-        return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
-          '<span style="font-size:14px">🔔</span>' +
-          '<div style="flex:1;font-size:13px">' + (a.productName || '') + ' @ ' + (a.store || '') + '</div>' +
-          '<span style="font-size:12px;font-weight:600">$' + (a.targetPrice || 0) + '</span>' +
-          '<span style="font-size:11px;color:var(--gray-400)">' + st + '</span>' +
-        '</div>';
-      }).join('') : '<p style="font-size:13px;color:var(--gray-400)">No alerts set</p>') +
+      '<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--gray-100)">' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">' +
+          '<select id="adminMemberAction" style="padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
+            '<option value="add">Add Premium</option>' +
+            '<option value="remove">Remove Premium</option>' +
+          '</select>' +
+          '<input type="number" id="adminMemberAmount" value="30" min="1" style="width:70px;padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
+          '<span style="font-size:13px;color:var(--gray-600)">Days</span>' +
+          '<button class="btn-primary" id="adminMemberSubmitBtn" style="padding:8px 20px;font-size:13px">Apply</button>' +
+          '<div id="adminMemberResult" style="font-size:13px;display:inline-block"></div>' +
+        '</div>' +
+      '</div>' +
     '</div>';
+
+  // Favorites
+  html += '<div style="background:var(--white);border-radius:12px;padding:20px 24px;margin-bottom:12px;border:1px solid var(--gray-200)">' +
+    '<h4 style="font-size:15px;font-weight:700;margin:0 0 12px">Favorites (' + data.favorites.length + ')</h4>' +
+    (data.favorites.length ? data.favorites.slice(0, 10).map(function(f) {
+      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100)">' +
+        '<img src="' + (f.image || '') + '" alt="" style="width:40px;height:40px;object-fit:contain;border-radius:6px;flex-shrink:0" onerror="this.style.display=\'none\'">' +
+        '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (f.name || f.productName || '') + '</div><div style="font-size:12px;color:var(--gray-400)">' + (f.store || '') + ' · $' + (f.price || f.targetPrice || 0) + '</div></div>' +
+      '</div>';
+    }).join('') : '<p style="font-size:13px;color:var(--gray-400);margin:0">No favorites</p>') +
+    (data.favorites.length > 10 ? '<p style="font-size:12px;color:var(--gray-400);margin:8px 0 0">Showing 10 of ' + data.favorites.length + '</p>' : '') +
+  '</div>';
+
+  // Search History
+  html += '<div style="background:var(--white);border-radius:12px;padding:20px 24px;margin-bottom:12px;border:1px solid var(--gray-200)">' +
+    '<h4 style="font-size:15px;font-weight:700;margin:0 0 12px">Search History (' + data.searchHistory.length + ')</h4>' +
+    (data.searchHistory.length ? data.searchHistory.slice(0, 10).map(function(h) {
+      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
+        '<span style="font-size:13px">🔍</span>' +
+        '<span style="font-size:14px;flex:1">' + (h.query || h.name || '') + '</span>' +
+        '<span style="font-size:12px;color:var(--gray-400)">' + timeAgo(h.time) + '</span>' +
+      '</div>';
+    }).join('') : '<p style="font-size:13px;color:var(--gray-400);margin:0">No search history</p>') +
+    (data.searchHistory.length > 10 ? '<p style="font-size:12px;color:var(--gray-400);margin:8px 0 0">Showing 10 of ' + data.searchHistory.length + '</p>' : '') +
+  '</div>';
+
+  // Price Alerts
+  html += '<div style="background:var(--white);border-radius:12px;padding:20px 24px;margin-bottom:16px;border:1px solid var(--gray-200)">' +
+    '<h4 style="font-size:15px;font-weight:700;margin:0 0 12px">Price Alerts (' + data.alerts.length + ')</h4>' +
+    (data.alerts.length ? data.alerts.map(function(a) {
+      const notified = a.notified ? '✅' : '⏳';
+      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-50)">' +
+        '<span style="font-size:13px">🔔</span>' +
+        '<div style="flex:1;font-size:14px">' + (a.productName || '') + ' @ ' + (a.store || '') + '</div>' +
+        '<span style="font-size:13px;font-weight:600;color:var(--primary)">$' + (a.targetPrice || 0) + '</span>' +
+        '<span style="font-size:12px;color:var(--gray-400)">' + notified + '</span>' +
+      '</div>';
+    }).join('') : '<p style="font-size:13px;color:var(--gray-400);margin:0">No alerts set</p>') +
+  '</div>';
 
   content.innerHTML = html;
 
@@ -3021,7 +3029,6 @@ function renderAdminUserDetail(data) {
     document.getElementById('adminConfirmInput').value = '';
     document.getElementById('adminConfirmError').classList.remove('show');
   });
-
 
   window._pendingMembershipEmail = data.email;
 }
