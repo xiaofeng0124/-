@@ -29,7 +29,7 @@ export async function onRequest(context) {
       body: JSON.stringify({
         contents: [{
           parts: [
-            { text: 'What product is in this image? Reply with ONLY the product name (e.g. "Nike Air Max 270 White"), nothing else. If you cannot identify it, reply "unknown".' },
+            { text: 'What specific product is shown in this image? Identify the brand, model, and product type. Reply with ONLY the product name (e.g. "iPhone 15 Pro Max" or "Samsung Galaxy S25" or "Sony WH-1000XM5"), nothing else. If you cannot identify it, reply only "unknown".' },
             { inline_data: { mime_type: mimeType, data: base64Data } }
           ]
         }]
