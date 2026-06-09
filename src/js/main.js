@@ -260,6 +260,7 @@ let priceChartInstance = null;
 let currentHistoryProduct = null;
 let currentHistoryStore = null;
 let currentHistoryImage = '';
+let currentHistoryUrl = '';
 
 // ======== Auth (Server-side via Cloudflare Workers + KV) ========
 let localUserData = null;
@@ -331,18 +332,18 @@ function getAlerts() { return localUserData?.alerts || []; }
 
 function addFavorite(item) {
   if (!localUserData) return;
-  if (!localUserData.favorites.some(f => f.productName === item.productName && f.store === item.store)) {
+  if (!localUserData.favorites.some(f => f.productName === item.productName && f.store === item.store && f.url === item.url)) {
     localUserData.favorites.push({ ...item, addedAt: new Date().toISOString() });
     persistUserData();
   }
 }
-function removeFavorite(productName, store) {
+function removeFavorite(productName, store, url) {
   if (!localUserData) return;
-  localUserData.favorites = localUserData.favorites.filter(f => !(f.productName === productName && f.store === store));
+  localUserData.favorites = localUserData.favorites.filter(f => !(f.productName === productName && f.store === store && f.url === url));
   persistUserData();
 }
-function isFavorited(productName, store) {
-  return localUserData?.favorites?.some(f => f.productName === productName && f.store === store) || false;
+function isFavorited(productName, store, url) {
+  return localUserData?.favorites?.some(f => f.productName === productName && f.store === store && f.url === url) || false;
 }
 
 function addAlert(alert) {
@@ -355,8 +356,8 @@ function removeAlert(id) {
   localUserData.alerts = localUserData.alerts.filter(a => a.id !== id);
   persistUserData();
 }
-function getExistingAlert(productName, store) {
-  return (localUserData?.alerts || []).find(a => a.productName === productName && a.store === store);
+function getExistingAlert(productName, store, url) {
+  return (localUserData?.alerts || []).find(a => a.productName === productName && a.store === store && a.url === url);
 }
 
 // ======== UI: Auth Modal ========
@@ -945,7 +946,7 @@ function renderDashboardFavorites(contOverride) {
   }
   container.innerHTML = `<div class="popular-grid">${favs.map(f => {
     const img = f.image || '';
-    const buyUrl = getStoreUrl(f.store, f.productName, f.price);
+    const buyUrl = f.url || getStoreUrl(f.store, f.productName, f.price);
     const pn = (f.productName || '').replace(/'/g, "\\'");
     return `<div class="popular-card" style="padding:10px">
       <img class="popular-card-img" src="${proxyImg(img)}" alt="${f.productName}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
@@ -954,7 +955,7 @@ function renderDashboardFavorites(contOverride) {
       <div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:6px">$${(f.price||0).toFixed(2)}</div>
       <div style="display:flex;gap:6px">
         <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${pn}','${f.store}',${f.price},'${img.replace(/'/g, "\\'")}')" style="font-size:13px;padding:8px 12px">Buy Now</a>
-        <button class="icon-btn" style="width:36px;height:36px;font-size:13px;color:#ef4444" onclick="removeFavAndRefresh('${pn}','${f.store}')" title="Remove">✕</button>
+        <button class="icon-btn" style="width:36px;height:36px;font-size:13px;color:#ef4444" onclick="removeFavAndRefresh('${pn}','${f.store}','${(f.url||'').replace(/'/g, "\'")}')" title="Remove">✕</button>
       </div>
     </div>`;
   }).join('')}</div>`;
@@ -995,8 +996,8 @@ async function renderDashboardHistory(contOverride) {
   }
 }
 
-function removeFavAndRefresh(productName, store) {
-  removeFavorite(productName, store);
+function removeFavAndRefresh(productName, store, url) {
+  removeFavorite(productName, store, url);
   renderDashboardFavorites();
 }
 
@@ -1089,14 +1090,15 @@ async function searchProduct(name) {
 }
 
 // ======== Price History ========
-function openPriceHistory(productName, storeName, currentPrice, productImage) {
-  const cacheKey = `${productName}_${storeName}`;
+function openPriceHistory(productName, storeName, currentPrice, productImage, itemUrl) {
+  const cacheKey = `${productName}_${storeName}_${itemUrl || ''}`;
   if (!PRICE_HISTORY_CACHE[cacheKey]) {
     PRICE_HISTORY_CACHE[cacheKey] = generatePriceHistory(currentPrice, 90);
   }
   currentHistoryProduct = productName;
   currentHistoryStore = storeName;
   currentHistoryImage = productImage || '';
+  currentHistoryUrl = itemUrl || '';
   document.getElementById('historyProductName').textContent = productName;
   document.getElementById('historyStoreName').textContent = storeName;
   document.getElementById('historyCurrentPrice').textContent = `Current: $${currentPrice.toFixed(2)}`;
@@ -1106,7 +1108,7 @@ function openPriceHistory(productName, storeName, currentPrice, productImage) {
   updateAlertRemaining();
 
   // 检查是否已设置过该商品的价格提醒
-  const existing = getExistingAlert(productName, storeName);
+  const existing = getExistingAlert(productName, storeName, itemUrl);
   const input = document.getElementById('alertTargetPrice');
   const display = document.getElementById('alertTargetDisplay');
   const btn = document.getElementById('alertSetBtn');
@@ -1524,7 +1526,7 @@ function initModals() {
     renderPriceChart(days);
   });
   document.getElementById('alertSetBtn')?.addEventListener('click', () => {
-    const existing = getExistingAlert(currentHistoryProduct, currentHistoryStore);
+    const existing = getExistingAlert(currentHistoryProduct, currentHistoryStore, currentHistoryUrl);
     if (existing) {
       // 取消模式：移除提醒
       removeAlert(existing.id);
@@ -1552,7 +1554,7 @@ function initModals() {
       showPricingModal();
       return;
     }
-    addAlert({ productName: currentHistoryProduct, store: currentHistoryStore, targetPrice: val, currentPrice: parseFloat(document.getElementById('historyCurrentPrice').textContent.replace(/[^0-9.]/g,'')), image: currentHistoryImage });
+    addAlert({ productName: currentHistoryProduct, store: currentHistoryStore, targetPrice: val, currentPrice: parseFloat(document.getElementById('historyCurrentPrice').textContent.replace(/[^0-9.]/g,'')), image: currentHistoryImage, url: currentHistoryUrl });
     updateAlertRemaining();
     const success = document.getElementById('alertSuccess');
     success.classList.add('show');
@@ -1956,7 +1958,11 @@ function renderPage(page) {
   grid.innerHTML = pageItems.map(s => {
     const isBest = s.price === bestPrice;
     const buyUrl = getStoreUrl(s.store, currentProduct.name, s.price);
-    const faved = user ? isFavorited(currentProduct.name, s.store) : false;
+    const itemUrl = (s.url || '').replace(/'/g, "\\'");
+    const pn = currentProduct.name.replace(/'/g, "\\'");
+    const img = (currentProduct.image || '').replace(/'/g, "\\'");
+    const faved = user ? isFavorited(currentProduct.name, s.store, s.url) : false;
+    const hasAlert = getExistingAlert(currentProduct.name, s.store, s.url);
     const storeColor = STORE_CONFIG[s.store]?.bg || '#666';
 
     return `
@@ -1966,9 +1972,9 @@ function renderPage(page) {
         <div class="popular-card-name" style="font-size:13px;-webkit-line-clamp:2;line-height:1.3;margin-bottom:4px">${currentProduct.name}</div>
         <div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:6px">$${s.price.toFixed(2)} ${isBest ? '<span style="font-size:11px;color:#16a34a;font-weight:600">Best</span>' : ''}</div>
         <div style="display:flex;gap:6px;margin-top:4px">
-          <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')">Buy Now</a>
-          <button class="icon-btn heart-btn ${faved ? 'favorited' : ''}" style="width:36px;height:36px;font-size:15px" onclick="toggleFavorite(event,'${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')">${faved ? '❤️' : '🤍'}</button>
-          <button class="icon-btn${getExistingAlert(currentProduct.name, s.store) ? ' has-alert' : ''}" style="width:36px;height:36px;font-size:15px" onclick="openPriceHistory('${currentProduct.name.replace(/'/g, "\\'")}','${s.store}',${s.price},'${(currentProduct.image || '').replace(/'/g, "\\'")}')" title="Price history">📈</button>
+          <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${pn}','${s.store}',${s.price},'${img}')">Buy Now</a>
+          <button class="icon-btn heart-btn ${faved ? 'favorited' : ''}" style="width:36px;height:36px;font-size:15px" onclick="toggleFavorite(event,'${pn}','${s.store}',${s.price},'${img}','${itemUrl}')">${faved ? '❤️' : '🤍'}</button>
+          <button class="icon-btn${hasAlert ? ' has-alert' : ''}" style="width:36px;height:36px;font-size:15px" onclick="openPriceHistory('${pn}','${s.store}',${s.price},'${img}','${itemUrl}')" title="Price history">📈</button>
         </div>
       </div>`;
   }).join('');
@@ -2057,16 +2063,16 @@ function showCouponPopup(event, el, store) {
 }
 
 // ======== Favorites Toggle ========
-function toggleFavorite(event, productName, store, price, image) {
+function toggleFavorite(event, productName, store, price, image, url) {
   event.stopPropagation();
   if (!currentUser) { showAuthModal('login'); return; }
   const btn = event.currentTarget;
-  if (isFavorited(productName, store)) {
-    removeFavorite(productName, store);
+  if (isFavorited(productName, store, url)) {
+    removeFavorite(productName, store, url);
     btn.classList.remove('favorited');
     btn.textContent = '🤍';
   } else {
-    addFavorite({ productName, store, price, image: image || '' });
+    addFavorite({ productName, store, price, image: image || '', url: url || '' });
     btn.classList.add('favorited');
     btn.textContent = '❤️';
   }
