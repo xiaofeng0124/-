@@ -2882,7 +2882,8 @@ function initAdminPanel() {
   document.getElementById('adminLogoutBtn')?.addEventListener('click', adminLogout);
 
 
-  if (window.location.hash === '#admin') {
+  // 首页 #admin 自动打开管理面板（个人中心用 /account#admin，不冲突）
+  if (window.location.hash === '#admin' && !window.location.pathname.includes('/account')) {
     window.location.hash = '';
     showAdmin();
   }
