@@ -1971,12 +1971,35 @@ async function identifyProductFromImage(imageDataUrl) {
     }
   } catch {
     input.placeholder = 'Search any product...';
+    showToast('Image recognition unavailable. Try typing the product name.');
   }
 }
 
 async function performSearch() {
   const input = document.getElementById('searchInput');
-  const query = (input?.value || '').trim().toLowerCase();
+  let query = (input?.value || '').trim().toLowerCase();
+
+  // 有图片没文字 → 自动识别
+  if (!query && uploadedPhotos.length > 0) {
+    const firstPhoto = uploadedPhotos[0];
+    if (firstPhoto && firstPhoto.startsWith('data:')) {
+      if (input) input.placeholder = '🔍 Identifying product...';
+      try {
+        const visionRes = await fetch('/api/vision', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: firstPhoto }),
+        });
+        if (visionRes.ok) {
+          const visionData = await visionRes.json();
+          if (visionData.ok && visionData.productName) {
+            if (input) { input.value = visionData.productName; query = visionData.productName.toLowerCase(); }
+          }
+        }
+      } catch {}
+      if (input) input.placeholder = 'Search any product...';
+    }
+  }
+
   if (!query && uploadedPhotos.length === 0) {
     input?.focus();
     input ? input.style.borderColor = '#ef4444' : null;
