@@ -961,6 +961,8 @@ function switchAccountTab(tab) {
   }
 }
 
+function escapeHtml(str) { return String(str).replace(/[&<>"']/g,function(m){if(m==='&')return'&amp;';if(m==='<')return'&lt;';if(m==='>')return'&gt;';if(m==='"')return'&quot;';if(m==="'")return'&#39;';return m;}); }
+
 function renderAccountSettings(container) {
   var user = currentUser || {};
   var email = user.email || '';
