@@ -889,6 +889,16 @@ function switchAccountTab(tab) {
   if (btn) btn.classList.add('active');
   var container = document.getElementById('accountContent');
   if (!container) return;
+  // 切换 tab 时清理管理员面板残留样式
+  container.style.display = '';
+  delete container.style.alignItems;
+  delete container.style.justifyContent;
+  delete container.style.minHeight;
+  // 隐藏管理面板相关区域
+  var adminSec = document.getElementById('adminSection');
+  if (adminSec) adminSec.style.display = 'none';
+  document.getElementById('adminLoginModal')?.classList.remove('active');
+  document.getElementById('adminConfirmModal')?.classList.remove('active');
   switch (tab) {
     case 'favorites': renderDashboardFavorites(container); break;
     case 'history': renderDashboardHistory(container); break;
