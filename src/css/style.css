@@ -219,6 +219,14 @@ font-size: 13px;
 font-weight: 700;
 color: var(--primary);
 }
+.popular-card-price-row {
+min-height: 28px;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 4px;
+flex-wrap: wrap;
+}
 .popular-store {
 display: none;
 }

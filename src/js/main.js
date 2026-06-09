@@ -952,7 +952,7 @@ function renderDashboardFavorites(contOverride) {
       <img class="popular-card-img" src="${proxyImg(img)}" alt="${f.productName}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
       <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">${f.store}</div>
       <div class="popular-card-name" style="font-size:13px;-webkit-line-clamp:2;line-height:1.3;margin-bottom:4px">${f.productName}</div>
-      <div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:6px">$${(f.price||0).toFixed(2)}</div>
+      <div class="popular-card-price-row">$${(f.price||0).toFixed(2)}</div>
       <div style="display:flex;gap:4px">
         <button class="icon-btn" style="width:28px;height:28px;font-size:15px;flex-shrink:0;color:#f43f5e" onclick="removeFavAndRefresh('${pn}','${f.store}','${(f.url||'').replace(/'/g, "\'")}',this)" title="Remove from favorites">❤️</button>
         <a href="${buyUrl}" target="_blank" rel="noopener" class="buy-btn" onclick="saveClickedProduct('${pn}','${f.store}',${f.price},'${img.replace(/'/g, "\\'")}')">Buy Now</a>
@@ -1981,7 +1981,7 @@ function renderPage(page) {
         <img class="popular-card-img" src="${proxyImg(currentProduct.image)}" alt="${currentProduct.name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
         <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">${s.store}</div>
         <div class="popular-card-name" style="font-size:13px;-webkit-line-clamp:2;line-height:1.3;margin-bottom:4px">${currentProduct.name}</div>
-        <div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:6px">$${s.price.toFixed(2)} ${isBest ? '<span style="font-size:11px;color:#16a34a;font-weight:600">Best</span>' : ''}</div>
+        <div class="popular-card-price-row">$${s.price.toFixed(2)} ${isBest ? '<span style="font-size:11px;color:#16a34a;font-weight:600">Best</span>' : ''}</div>
         <div style="display:flex;gap:4px;margin-top:4px">
           <button class="icon-btn heart-btn ${faved ? 'favorited' : ''}" style="width:32px;height:32px;font-size:16px;flex-shrink:0" onclick="toggleFavorite(event,'${pn}','${s.store}',${s.price},'${img}','${itemUrl}')" title="${faved ? 'Remove from favorites' : 'Add to favorites'}">${faved ? '❤️' : '🤍'}</button>
           <button class="icon-btn${hasAlert ? ' has-alert' : ''}" style="width:32px;height:32px;font-size:15px;flex-shrink:0" onclick="openPriceHistory('${pn}','${s.store}',${s.price},'${img}','${itemUrl}')" title="Price history & alerts">📈</button>
