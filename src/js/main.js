@@ -2924,23 +2924,9 @@ function renderAdminUserList() {
       showAdminUserDetail(adminSelectedEmail);
     });
   });
-  // 用户列表隐藏返回键
+  // 用户列表隐藏返回键, 清除onclick避免冲突
   document.getElementById('adminBackBtn').style.display = 'none';
-  document.getElementById('adminBackBtn').onclick = function() {
-    var s = document.getElementById('adminSection');
-    if (s) s.style.display = 'none';
-    document.getElementById('adminConfirmModal')?.classList.remove('active');
-    var c = document.getElementById('accountContent');
-    if (c) {
-      c.style.display = '';
-      delete c.style.alignItems;
-      delete c.style.justifyContent;
-      delete c.style.minHeight;
-    }
-    document.getElementById('adminLoginModal')?.classList.remove('active');
-    window._accountAdminCallback = null;
-    switchAccountTab('favorites');
-  };
+  document.getElementById('adminBackBtn').onclick = null;
 }
 
 async function showAdminUserDetail(email) {
@@ -3129,9 +3115,6 @@ function initAdminPanel() {
   });
 
 
-  document.getElementById('adminBackBtn')?.addEventListener('click', function() {
-    window.location.href = '/account';
-  });
   document.getElementById('adminLogoutBtn')?.addEventListener('click', adminLogout);
 
 
