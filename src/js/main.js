@@ -1124,9 +1124,8 @@ function renderDashboardAlerts(contOverride) {
       <div class="dashboard-item-info">
         <h4>${a.productName}</h4>
         <p>${a.store} — Target: <strong>$${a.targetPrice.toFixed(2)}</strong> &nbsp;·&nbsp; Current: $${a.currentPrice.toFixed(2)}</p>
-        ${a.notified ? '<span style="display:inline-block;font-size:11px;font-weight:600;color:#16a34a;background:#f0fdf4;padding:2px 8px;border-radius:4px;margin-top:4px">✓ Notification sent</span>' : ''}
       </div>
-      ${a.notified ? '<span style="font-size:22px;color:#16a34a;margin-right:8px">✅</span>' : ''}
+      ${a.notified ? '<span style="font-size:12px;font-weight:600;color:#16a34a;white-space:nowrap">✓ Sent</span>' : ''}
       <button class="btn-sm btn-sm-outline" onclick="removeAlertAndRefresh('${a.id}')">Remove</button>
     </div>`).join('');
 
