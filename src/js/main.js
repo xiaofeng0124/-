@@ -2935,7 +2935,8 @@ function renderAdminUserList() {
       showAdminUserDetail(adminSelectedEmail);
     });
   });
-  // 用户列表的返回键：退出管理面板
+  // 用户列表隐藏返回键
+  document.getElementById('adminBackBtn').style.display = 'none';
   document.getElementById('adminBackBtn').onclick = function() {
     var s = document.getElementById('adminSection');
     if (s) s.style.display = 'none';
@@ -3058,7 +3059,8 @@ function renderAdminUserDetail(data) {
     document.getElementById('adminConfirmError').classList.remove('show');
   });
 
-  // 返回按钮指向用户列表，不是退出管理面板
+  // 用户详情显示返回键
+  document.getElementById('adminBackBtn').style.display = '';
   document.getElementById('adminBackBtn').onclick = function() {
     document.getElementById('adminStatus').textContent = 'User Management';
     renderAdminUserList();
