@@ -902,17 +902,31 @@ function switchAccountTab(tab) {
     case 'settings': renderAccountSettings(container); break;
     case 'admin':
       if (currentUser?.email === '1067678960@qq.com') {
-        renderAccountAdminPanel(container);
-        // 个人中心返回按钮
+        // 每次进入都上锁，清空内容区域
+        container.innerHTML = '';
+        container.style.display = '';
+        var sec = document.getElementById('adminSection');
+        if (sec) sec.style.display = 'none';
+        // 显示空白背景 + 密码弹窗
+        document.getElementById('adminLoginModal')?.classList.add('active');
+        document.getElementById('adminPasswordInput').value = '';
+        document.getElementById('adminLoginError')?.classList.remove('show');
+        // 登录成功后打开管理面板
+        window._accountAdminCallback = function() {
+          container.style.display = 'none';
+          document.getElementById('adminSection').style.display = '';
+          showAdmin();
+        };
+        // 返回按钮
         document.getElementById('adminBackBtn')?.addEventListener('click', function handler() {
           document.getElementById('adminSection').style.display = 'none';
           document.getElementById('adminLoginModal').classList.remove('active');
           document.getElementById('adminConfirmModal').classList.remove('active');
-          var c = document.getElementById('accountContent');
-          if (c) c.style.display = '';
+          container.style.display = '';
           switchAccountTab('favorites');
           document.getElementById('adminBackBtn')?.removeEventListener('click', handler);
-        });
+          window._accountAdminCallback = null;
+        }, { once: true });
       } else {
         container.innerHTML = '<div class="dashboard-empty"><span>🔒</span><h3>Access Denied</h3></div>';
       }
@@ -2613,9 +2627,13 @@ async function adminLogin() {
       adminToken = data.token;
       sessionStorage.setItem('sr_admin_token', data.token);
       document.getElementById('adminLoginModal').classList.remove('active');
-      document.getElementById('adminSection').classList.add('active');
-      document.getElementById('adminContent').innerHTML = '<div style="text-align:center;padding:40px"><div class="loading-spinner"></div><p style="margin-top:12px">Loading users...</p></div>';
-      fetchAdminUsers();
+      if (typeof window._accountAdminCallback === 'function') {
+        window._accountAdminCallback();
+      } else {
+        document.getElementById('adminSection').classList.add('active');
+        document.getElementById('adminContent').innerHTML = '<div style="text-align:center;padding:40px"><div class="loading-spinner"></div><p style="margin-top:12px">Loading users...</p></div>';
+        fetchAdminUsers();
+      }
     } else {
       err.textContent = data.error || 'Login failed';
       err.classList.add('show');
