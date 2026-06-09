@@ -125,7 +125,7 @@ async function fetchProductPrice(productUrl, env) {
       const clientId = env.EBAY_APP_ID || (await env.USERS?.get('config:eBay_client_id') || '');
       const certId = env.EBAY_CERT_ID || (await env.USERS?.get('config:eBay_cert_secret') || '');
       if (!clientId || !certId) { console.log('eBay: no credentials'); return null; }
-      const basic = btoa(`${clientId}:${certId}`);
+      const basic = typeof btoa === 'function' ? btoa(`${clientId}:${certId}`) : Buffer.from(`${clientId}:${certId}`).toString('base64');
       const tokenRes = await fetch('https://api.ebay.com/identity/v1/oauth2/token', {
         method: 'POST',
         headers: { 'Authorization': `Basic ${basic}`, 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -133,12 +133,21 @@ async function fetchProductPrice(productUrl, env) {
       });
       const tokenData = await tokenRes.json();
       if (!tokenData.access_token) { console.log('eBay: token failed', tokenData); return null; }
-      const itemRes = await fetch(`https://api.ebay.com/buy/browse/v1/item/get_item?item_id=${itemId}`, {
+      // eBay Browse API 需要完整 item ID 格式
+      const fullItemId = itemId.includes('|') ? itemId : `v1|${itemId}|0`;
+      const itemRes = await fetch(`https://api.ebay.com/buy/browse/v1/item/get_item?item_id=${fullItemId}`, {
         headers: { 'Authorization': `Bearer ${tokenData.access_token}`, 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US', 'X-EBAY-C-ENDUSERCTX': 'affiliateCampaignId=5339155328' },
       });
       if (!itemRes.ok) {
-        const errText = await itemRes.text();
-        console.log('eBay item API error', itemRes.status, errText.slice(0,200));
+        // 尝试用搜索 API 兜底
+        const searchRes = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(extractDomain(productUrl).replace('www.',''))}&limit=1`, {
+          headers: { 'Authorization': `Bearer ${tokenData.access_token}`, 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US' },
+        });
+        if (searchRes.ok) {
+          const searchData = await searchRes.json();
+          const first = searchData.itemSummaries?.[0];
+          if (first?.price?.value) return parseFloat(first.price.value);
+        }
         return null;
       }
       const item = await itemRes.json();
