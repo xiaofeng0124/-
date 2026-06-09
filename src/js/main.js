@@ -314,18 +314,18 @@ function getAlerts() { return localUserData?.alerts || []; }
 
 function addFavorite(item) {
   if (!localUserData) return;
-  if (!localUserData.favorites.some(f => f.productName === item.productName && f.store === item.store && f.url === item.url)) {
+  if (!localUserData.favorites.some(f => f.productName === item.productName && f.store === item.store && (f.url === item.url || (!f.url && !item.url)))) {
     localUserData.favorites.push({ ...item, addedAt: new Date().toISOString() });
     persistUserData();
   }
 }
 function removeFavorite(productName, store, url) {
   if (!localUserData) return;
-  localUserData.favorites = localUserData.favorites.filter(f => !(f.productName === productName && f.store === store && f.url === url));
+  localUserData.favorites = localUserData.favorites.filter(f => !(f.productName === productName && f.store === store && (f.url === url || (!f.url && !url))));
   persistUserData();
 }
 function isFavorited(productName, store, url) {
-  return localUserData?.favorites?.some(f => f.productName === productName && f.store === store && f.url === url) || false;
+  return localUserData?.favorites?.some(f => f.productName === productName && f.store === store && (f.url === url || (!f.url && !url))) || false;
 }
 
 function addAlert(alert) {
