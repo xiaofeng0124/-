@@ -928,7 +928,12 @@ function renderDashboardFavorites(contOverride) {
   const start = (page - 1) * FAV_PAGE_SIZE;
   const pageItems = favs.slice(start, start + FAV_PAGE_SIZE);
 
-  container.innerHTML = `<div class="popular-grid">${pageItems.map(f => {
+  container.innerHTML = `
+  <div style="margin-bottom:16px">
+    <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Favorites</h2>
+    <p style="font-size:13px;color:#94a3b8;margin:4px 0 0">Click the heart icon on any product card to save it. Manage your favorites here.</p>
+  </div>
+  <div class="popular-grid">${pageItems.map(f => {
     const img = f.image || '';
     const buyUrl = f.url || getStoreUrl(f.store, f.productName, f.price);
     const pn = (f.productName || '').replace(/'/g, "\\'");
