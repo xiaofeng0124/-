@@ -970,11 +970,12 @@ function renderAccountSettings(container) {
   var token = s ? s.token : '';
 
   container.innerHTML =
-  '<div style="max-width:600px">' +
+  '<div style="max-width:100%">' +
     '<h3 style="font-size:22px;margin-bottom:20px;font-weight:700">Account Settings</h3>' +
+    '<div style="display:flex;gap:16px;flex-wrap:wrap">' +
 
     // === Change Email ===
-    '<div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:24px;margin-bottom:16px">' +
+    '<div style="flex:1;min-width:280px;background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:24px">' +
       '<h4 style="font-size:16px;font-weight:700;margin:0 0 4px">Change Email</h4>' +
       '<p style="font-size:13px;color:var(--gray-500);margin:0 0 16px">Current: <strong>' + escapeHtml(email) + '</strong></p>' +
       '<div id="changeEmailSection">' +
@@ -991,7 +992,7 @@ function renderAccountSettings(container) {
     '</div>' +
 
     // === Change Password ===
-    '<div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:24px;margin-bottom:16px">' +
+    '<div style="flex:1;min-width:280px;background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:24px">' +
       '<h4 style="font-size:16px;font-weight:700;margin:0 0 16px">Change Password</h4>' +
       '<div id="changePwSection">' +
         '<div class="form-group"><label>Current Password</label><input type="password" id="oldPwInput" placeholder="Enter your current password" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;box-sizing:border-box"></div>' +
@@ -1007,7 +1008,8 @@ function renderAccountSettings(container) {
       '</div>' +
     '</div>' +
 
-    '<div style="margin-top:4px"><a href="/" style="display:inline-block;padding:10px 24px;background:var(--primary);color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Back to Search</a></div>' +
+    '</div>' +
+    '<div style="margin-top:16px"><a href="/" style="display:inline-block;padding:10px 24px;background:var(--primary);color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Back to Search</a></div>' +
   '</div>';
 
   // ======== Change Email Logic ========
