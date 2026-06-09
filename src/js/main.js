@@ -1125,8 +1125,10 @@ function renderDashboardAlerts(contOverride) {
         <h4>${a.productName}</h4>
         <p>${a.store} — Target: <strong>$${a.targetPrice.toFixed(2)}</strong> &nbsp;·&nbsp; Current: $${a.currentPrice.toFixed(2)}</p>
       </div>
-      ${a.notified ? '<span style="font-size:14px;font-weight:600;color:#16a34a;white-space:nowrap;margin:0 8px 0 auto">✓ 通知已发送</span>' : ''}
-      <button class="btn-sm btn-sm-outline" onclick="removeAlertAndRefresh('${a.id}')">Remove</button>
+      	      <div style="display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0">
+	        ${a.notified ? '<span style="font-size:14px;font-weight:600;color:#16a34a;white-space:nowrap">✓ 通知已发送</span>' : ''}
+	        <button class="btn-sm btn-sm-outline" onclick="removeAlertAndRefresh(''${a.id}')">Remove</button>
+	      </div>
     </div>`).join('');
 
   if (totalPages > 1) {
