@@ -2990,7 +2990,7 @@ function renderAdminTabContent(tab, data) {
       var notified = a.notified ? '✅' : '⏳';
       return '<div class="dashboard-item" style="padding:8px 16px">' +
         (img ? '<img src="' + img + '" alt="" style="width:40px;height:40px;object-fit:contain;border-radius:6px;flex-shrink:0;margin-right:75px" onerror="this.style.display=\'none\'">' : '<span style="font-size:24px;flex-shrink:0;margin-right:75px">🔔</span>') +
-        '<div class="dashboard-item-info" style="min-width:0;overflow:hidden"><h4 style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (a.productName || '') + '</h4><p style="font-size:12px">' + (a.store || '') + ' — Target: <strong>$' + (a.targetPrice || 0).toFixed(2) + '</strong></p></div>' +
+        '<div class="dashboard-item-info" style="min-width:0;overflow:hidden"><h4 style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (a.productName || '') + '</h4><p style="font-size:12px">' + (a.store || '') + ' — Target: <strong>$' + (a.targetPrice || 0).toFixed(2) + '</strong> · Current: $' + (a.currentPrice || 0).toFixed(2) + '</p></div>' +
         '<span style="font-size:14px;flex-shrink:0;margin-left:8px">' + notified + '</span>' +
       '</div>';
     }).join('');
