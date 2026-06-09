@@ -1043,7 +1043,9 @@ function removeFavAndRefresh(productName, store, url, btn) {
   }
   setTimeout(() => {
     removeFavorite(productName, store, url);
-    renderDashboardFavorites();
+    // 找当前显示的容器刷新（个人中心用 #accountContent，主站用 #dashboardContent）
+    const container = document.getElementById('accountContent') || document.getElementById('dashboardContent');
+    if (container) renderDashboardFavorites(container);
   }, 200);
 }
 
