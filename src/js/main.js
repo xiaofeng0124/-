@@ -1056,7 +1056,7 @@ function renderDashboardAlerts(contOverride) {
   }
   container.innerHTML = alerts.map(a => `
     <div class="dashboard-item">
-      ${a.image ? '<img src="' + proxyImg(a.image) + '" alt="" style="width:48px;height:48px;object-fit:contain;border-radius:8px;flex-shrink:0" onerror="this.style.display=\'none\'">' : ''}
+      ${a.image ? '<img src="' + proxyImg(a.image) + '" alt="" style="width:56px;height:56px;object-fit:contain;border-radius:8px;flex-shrink:0" onerror="this.style.display=\'none\'">' : ''}
       <div class="dashboard-item-info">
         <h4>${a.productName}</h4>
         <p>${a.store} — Target: <strong>$${a.targetPrice.toFixed(2)}</strong> &nbsp;·&nbsp; Current: $${a.currentPrice.toFixed(2)}</p>
