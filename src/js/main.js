@@ -1964,8 +1964,7 @@ async function identifyProductFromImage(imageDataUrl) {
     if (data.ok && data.productName) {
       input.value = data.productName;
       input.placeholder = 'Search any product...';
-      // 自动触发搜索
-      performSearch();
+      showToast('✅ Identified: ' + data.productName);
     } else {
       input.placeholder = 'Search any product...';
       showToast('Could not identify product. Try typing the name.');
