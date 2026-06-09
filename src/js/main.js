@@ -876,7 +876,11 @@ function switchDashboardTab(tab) {
 
 function showAccountDashboard(tab) {
   if (!currentUser) { showAuthModal('login'); return; }
-  document.getElementById('sidebarEmail').textContent = currentUser.email;
+  var emailEl = document.getElementById('sidebarEmail');
+  emailEl.textContent = currentUser.email;
+  emailEl.style.cursor = 'pointer';
+  emailEl.title = 'Click to view account info';
+  emailEl.onclick = function() { switchAccountTab('settings'); };
   // 管理员显示 Admin Panel 侧边栏按钮
   const adminBtn = document.getElementById('sidebarAdminBtn');
   if (adminBtn) adminBtn.style.display = currentUser.email === '1067678960@qq.com' ? '' : 'none';
@@ -969,10 +973,20 @@ function renderAccountSettings(container) {
   var s = getSession();
   var token = s ? s.token : '';
 
+  var memberBadge = isPremium() ? '<span style="color:#16a34a;font-weight:700">Premium</span>' : '<span style="color:#64748b">Free</span>';
+  var memberExpiry = '';
+  if (membershipData?.expiresAt) {
+    var expDate = new Date(membershipData.expiresAt);
+    memberExpiry = ' · Expires: ' + expDate.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  }
+
   container.innerHTML =
   '<div style="max-width:100%">' +
     '<h3 style="font-size:22px;margin-bottom:4px;font-weight:700">Account Settings</h3>' +
-    '<p style="font-size:13px;color:#94a3b8;margin:0 0 20px"></p>' +
+    '<div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">' +
+      '<div><div style="font-size:15px;font-weight:600">' + escapeHtml(email) + '</div><div style="font-size:13px;color:#64748b;margin-top:2px">Membership: ' + memberBadge + (memberExpiry ? '<span style="color:#94a3b8;font-size:13px">' + memberExpiry + '</span>' : '') + '</div></div>' +
+      '<span style="font-size:28px">' + (isPremium() ? '⭐' : '🔓') + '</span>' +
+    '</div>' +
     '<div style="display:flex;gap:16px;flex-wrap:wrap">' +
 
     // === Change Email ===
