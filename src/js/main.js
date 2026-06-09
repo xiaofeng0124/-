@@ -902,29 +902,43 @@ function switchAccountTab(tab) {
     case 'settings': renderAccountSettings(container); break;
     case 'admin':
       if (currentUser?.email === '1067678960@qq.com') {
-        // 每次进入都上锁，清空内容区域
-        container.innerHTML = '';
-        container.style.display = '';
+        // 每次进入都上锁，在内容区域直接渲染登录界面（不弹窗）
         var sec = document.getElementById('adminSection');
         if (sec) sec.style.display = 'none';
-        // 显示空白背景 + 密码弹窗
-        document.getElementById('adminLoginModal')?.classList.add('active');
-        document.getElementById('adminPasswordInput').value = '';
+        container.innerHTML = '';
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
+        container.style.minHeight = '400px';
+        container.innerHTML = '<div style="text-align:center;width:100%;max-width:400px;padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:12px">' +
+          '<h2 style="font-size:22px;margin-bottom:4px;font-weight:700">Admin Panel</h2>' +
+          '<p style="font-size:14px;color:var(--gray-500);margin-bottom:20px">Enter the admin password to continue</p>' +
+          '<div class="auth-error" id="adminLoginError" style="margin-bottom:10px"></div>' +
+          '<div class="form-group"><label>Password</label><input type="password" id="adminPasswordInput" placeholder="Admin password" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;box-sizing:border-box"></div>' +
+          '<button class="btn-primary" id="adminLoginBtn" style="width:100%;margin-top:12px">Sign In</button>' +
+        '</div>';
+        document.getElementById('adminPasswordInput')?.focus();
         document.getElementById('adminLoginError')?.classList.remove('show');
+        document.getElementById('adminPasswordInput')?.addEventListener('keydown', function(ev) { if (ev.key === 'Enter') adminLogin(); });
+        document.getElementById('adminLoginBtn')?.addEventListener('click', adminLogin);
         // 登录成功后打开管理面板
         window._accountAdminCallback = function() {
           container.style.display = 'none';
-          document.getElementById('adminSection').style.display = '';
+          var sec2 = document.getElementById('adminSection');
+          if (sec2) sec2.style.display = '';
           showAdmin();
         };
-        // 返回按钮
-        document.getElementById('adminBackBtn')?.addEventListener('click', function handler() {
-          document.getElementById('adminSection').style.display = 'none';
-          document.getElementById('adminLoginModal').classList.remove('active');
-          document.getElementById('adminConfirmModal').classList.remove('active');
+        // 返回按钮：隐藏管理面板，显示内容区
+        document.getElementById('adminBackBtn')?.addEventListener('click', function handler2() {
+          var sec3 = document.getElementById('adminSection');
+          if (sec3) sec3.style.display = 'none';
+          document.getElementById('adminConfirmModal')?.classList.remove('active');
           container.style.display = '';
+          delete container.style.alignItems;
+          delete container.style.justifyContent;
+          delete container.style.minHeight;
           switchAccountTab('favorites');
-          document.getElementById('adminBackBtn')?.removeEventListener('click', handler);
+          document.getElementById('adminBackBtn')?.removeEventListener('click', handler2);
           window._accountAdminCallback = null;
         }, { once: true });
       } else {
@@ -2650,6 +2664,9 @@ function adminLogout() {
   var accountContent = document.getElementById('accountContent');
   if (accountContent && accountContent.style.display === 'none') {
     accountContent.style.display = '';
+    delete accountContent.style.alignItems;
+    delete accountContent.style.justifyContent;
+    delete accountContent.style.minHeight;
     var adminSection = document.getElementById('adminSection');
     if (adminSection) adminSection.style.display = 'none';
     switchAccountTab('favorites');
