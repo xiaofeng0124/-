@@ -825,7 +825,7 @@ function updateUIForAuth() {
         document.getElementById('dropdownFavorites')?.addEventListener('click', () => { window.location.href = '/account#favorites'; });
     document.getElementById('dropdownAlerts')?.addEventListener('click', () => { window.location.href = '/account#alerts'; });
     document.getElementById('dropdownHistory')?.addEventListener('click', () => { if (!getSession()) { showAuthModal('login'); return; } window.location.href = '/account#history'; });
-    document.getElementById('dropdownAdmin')?.addEventListener('click', () => { window.location.href = '/account#admin'; });
+    document.getElementById('dropdownAdmin')?.addEventListener('click', () => { if (!getSession()) { showAuthModal('login'); return; } window.location.href = '/account#admin'; });
     document.getElementById('logoutBtn')?.addEventListener('click', logout);
     document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
     document.getElementById('historyClearBtn')?.addEventListener('click', () => { localStorage.removeItem('sr_history'); renderSearchHistory(); });
@@ -903,6 +903,16 @@ function switchAccountTab(tab) {
     case 'admin':
       if (currentUser?.email === '1067678960@qq.com') {
         renderAccountAdminPanel(container);
+        // 个人中心返回按钮
+        document.getElementById('adminBackBtn')?.addEventListener('click', function handler() {
+          document.getElementById('adminSection').style.display = 'none';
+          document.getElementById('adminLoginModal').classList.remove('active');
+          document.getElementById('adminConfirmModal').classList.remove('active');
+          var c = document.getElementById('accountContent');
+          if (c) c.style.display = '';
+          switchAccountTab('favorites');
+          document.getElementById('adminBackBtn')?.removeEventListener('click', handler);
+        });
       } else {
         container.innerHTML = '<div class="dashboard-empty"><span>🔒</span><h3>Access Denied</h3></div>';
       }
@@ -1046,8 +1056,11 @@ function removeFavAndRefresh(productName, store, url, btn) {
 }
 
 function renderAccountAdminPanel(container) {
-  // 跳转到首页，自动打开管理面板
-  window.location.href = '/';
+  // 隐藏 account content 区域，显示管理面板
+  if (container) container.style.display = 'none';
+  var section = document.getElementById('adminSection');
+  if (section) section.style.display = '';
+  showAdmin();
 }
 
 function renderDashboardAlerts(contOverride) {
@@ -1444,10 +1457,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initModals();
   initPricingModal();
   initAdminPanel();
-  // 从个人中心跳转过来的管理员，自动打开管理面板
-  if (adminToken && sessionStorage.getItem('sr_admin_token')) {
-    setTimeout(showAdmin, 500);
-  }
   initContactForm();
 renderPopularProducts();
   updateUIForAuth();
@@ -2619,6 +2628,14 @@ function adminLogout() {
   sessionStorage.removeItem('sr_admin_token');
   hideAdmin();
   document.getElementById('popularSection')?.classList.remove('hidden');
+  // 个人中心：回到侧边栏视图
+  var accountContent = document.getElementById('accountContent');
+  if (accountContent && accountContent.style.display === 'none') {
+    accountContent.style.display = '';
+    var adminSection = document.getElementById('adminSection');
+    if (adminSection) adminSection.style.display = 'none';
+    switchAccountTab('favorites');
+  }
 }
 
 async function fetchAdminUsers() {

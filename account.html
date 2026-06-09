@@ -16,7 +16,7 @@
   </script>
   <link rel="stylesheet" href="src/css/style.css?v18">
   <link rel="icon" href="src/logo.png?v4">
-  <script defer src="src/js/main.js?v74"></script>
+  <script defer src="src/js/main.js?v75"></script>
   <style>
     .account-layout { display: flex; min-height: 100vh; }
     .account-sidebar { width: 220px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--gray-200); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
@@ -70,8 +70,48 @@
       </div>
     </aside>
     <div class="account-content" id="accountContent"></div>
+    <!-- Admin Panel (hidden by default, shown via JS) -->
+    <section class="dashboard-section" id="adminSection" style="display:none">
+      <div class="dashboard-header">
+        <div>
+          <h2>Admin Panel</h2>
+          <p id="adminStatus">User Management</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-ghost" id="adminBackBtn">← Back</button>
+          <button class="btn-outline" id="adminLogoutBtn">Logout</button>
+        </div>
+      </div>
+      <div id="adminContent"></div>
+    </section>
   </div>
 </main>
+
+<div class="modal-overlay" id="adminLoginModal">
+  <div class="modal" style="max-width:380px">
+    <button class="modal-close" id="adminLoginClose">×</button>
+    <div style="text-align:center;margin-bottom:20px">
+      <h2>Admin Login</h2>
+      <p class="sub" style="font-size:14px;color:var(--gray-500)">Enter the admin password to continue</p>
+    </div>
+    <div class="auth-error" id="adminLoginError"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="adminPasswordInput" placeholder="Admin password"></div>
+    <button class="btn-primary" id="adminLoginBtn" style="width:100%;margin-top:8px">Sign In</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="adminConfirmModal">
+  <div class="modal" style="max-width:380px">
+    <button class="modal-close" id="adminConfirmClose">×</button>
+    <div style="text-align:center;margin-bottom:20px">
+      <h2>Confirm Password</h2>
+      <p class="sub" style="font-size:14px;color:var(--gray-500)">Re-enter admin password to modify membership</p>
+    </div>
+    <div class="auth-error" id="adminConfirmError"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="adminConfirmInput" placeholder="Admin password"></div>
+    <button class="btn-primary" id="adminConfirmBtn" style="width:100%;margin-top:8px">Confirm</button>
+  </div>
+</div>
 
 <div class="modal-overlay" id="authModal">
   <div class="modal" style="max-width:380px">
