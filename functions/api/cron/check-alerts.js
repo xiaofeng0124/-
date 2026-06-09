@@ -124,7 +124,7 @@ async function fetchProductPrice(productUrl, env) {
     try {
       const clientId = env.EBAY_APP_ID || (await env.USERS?.get('config:eBay_client_id') || '');
       const certId = env.EBAY_CERT_ID || (await env.USERS?.get('config:eBay_cert_secret') || '');
-      if (!clientId || !certId) return null;
+      if (!clientId || !certId) { console.log('eBay: no credentials'); return null; }
       const basic = btoa(`${clientId}:${certId}`);
       const tokenRes = await fetch('https://api.ebay.com/identity/v1/oauth2/token', {
         method: 'POST',
@@ -132,14 +132,18 @@ async function fetchProductPrice(productUrl, env) {
         body: 'grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope',
       });
       const tokenData = await tokenRes.json();
-      if (!tokenData.access_token) return null;
+      if (!tokenData.access_token) { console.log('eBay: token failed', tokenData); return null; }
       const itemRes = await fetch(`https://api.ebay.com/buy/browse/v1/item/get_item?item_id=${itemId}`, {
-        headers: { 'Authorization': `Bearer ${tokenData.access_token}`, 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US' },
+        headers: { 'Authorization': `Bearer ${tokenData.access_token}`, 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US', 'X-EBAY-C-ENDUSERCTX': 'affiliateCampaignId=5339155328' },
       });
-      if (!itemRes.ok) return null;
+      if (!itemRes.ok) {
+        const errText = await itemRes.text();
+        console.log('eBay item API error', itemRes.status, errText.slice(0,200));
+        return null;
+      }
       const item = await itemRes.json();
       return item.price?.value ? parseFloat(item.price.value) : null;
-    } catch { return null; }
+    } catch (e) { console.log('eBay exception', e.message); return null; }
   }
 
   // Walmart / Best Buy / Target 等 → 页面抓取
