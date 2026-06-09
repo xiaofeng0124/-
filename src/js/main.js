@@ -937,6 +937,9 @@ function renderAccountSettings(container) {
   '</div>';
 }
 
+const FAV_PAGE_SIZE = 20; // 5列×4行
+const HIST_PAGE_SIZE = 30; // 5列×6行
+
 function renderDashboardFavorites(contOverride) {
   const container = contOverride || document.getElementById('dashboardContent');
   const favs = getFavorites();
@@ -944,11 +947,16 @@ function renderDashboardFavorites(contOverride) {
     container.innerHTML = `<div class="dashboard-empty"><span>❤️</span><h3>No favorites yet</h3><p>Search for products and heart them to save here.</p></div>`;
     return;
   }
-  container.innerHTML = `<div class="popular-grid">${favs.map(f => {
+  const totalPages = Math.max(1, Math.ceil(favs.length / FAV_PAGE_SIZE));
+  const page = Math.min(parseInt(container.dataset.favPage || '1'), totalPages);
+  const start = (page - 1) * FAV_PAGE_SIZE;
+  const pageItems = favs.slice(start, start + FAV_PAGE_SIZE);
+
+  container.innerHTML = `<div class="popular-grid">${pageItems.map(f => {
     const img = f.image || '';
     const buyUrl = f.url || getStoreUrl(f.store, f.productName, f.price);
     const pn = (f.productName || '').replace(/'/g, "\\'");
-    return `<div class="popular-card" style="padding:10px">
+    return `<div class="popular-card">
       <img class="popular-card-img" src="${proxyImg(img)}" alt="${f.productName}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
       <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">${f.store}</div>
       <div class="popular-card-name" style="font-size:13px;-webkit-line-clamp:2;line-height:1.3;margin-bottom:4px">${f.productName}</div>
@@ -959,6 +967,19 @@ function renderDashboardFavorites(contOverride) {
       </div>
     </div>`;
   }).join('')}</div>`;
+
+  if (totalPages > 1) {
+    const nav = document.createElement('div');
+    nav.className = 'account-pagination';
+    nav.innerHTML = `<button class="page-btn" ${page <= 1 ? 'disabled' : ''} data-page="${page - 1}">← Prev</button><span class="page-info">${page} / ${totalPages}</span><button class="page-btn" ${page >= totalPages ? 'disabled' : ''} data-page="${page + 1}">Next →</button>`;
+    nav.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => {
+      const p = parseInt(b.dataset.page);
+      if (p >= 1 && p <= totalPages) { container.dataset.favPage = p; renderDashboardFavorites(container); }
+    }));
+    container.appendChild(nav);
+  } else {
+    delete container.dataset.favPage;
+  }
 }
 
 async function renderDashboardHistory(contOverride) {
@@ -981,7 +1002,12 @@ async function renderDashboardHistory(contOverride) {
       return;
     }
 
-    container.innerHTML = `<div class="popular-grid">${history.map(h => {
+    const totalPages = Math.max(1, Math.ceil(history.length / HIST_PAGE_SIZE));
+    const page = Math.min(parseInt(container.dataset.histPage || '1'), totalPages);
+    const start = (page - 1) * HIST_PAGE_SIZE;
+    const pageItems = history.slice(start, start + HIST_PAGE_SIZE);
+
+    container.innerHTML = `<div class="popular-grid">${pageItems.map(h => {
       const img = h.image || '';
       const q = (h.query || '').replace(/'/g, "\\'");
       const name = h.name || h.query || '';
@@ -991,6 +1017,19 @@ async function renderDashboardHistory(contOverride) {
         <div style="font-size:10px;color:var(--gray-400);margin-top:2px">${timeAgo(h.time)}</div>
       </div>`;
     }).join('')}</div>`;
+
+    if (totalPages > 1) {
+      const nav = document.createElement('div');
+      nav.className = 'account-pagination';
+      nav.innerHTML = `<button class="page-btn" ${page <= 1 ? 'disabled' : ''} data-page="${page - 1}">← Prev</button><span class="page-info">${page} / ${totalPages}</span><button class="page-btn" ${page >= totalPages ? 'disabled' : ''} data-page="${page + 1}">Next →</button>`;
+      nav.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => {
+        const p = parseInt(b.dataset.page);
+        if (p >= 1 && p <= totalPages) { container.dataset.histPage = p; renderDashboardHistory(container); }
+      }));
+      container.appendChild(nav);
+    } else {
+      delete container.dataset.histPage;
+    }
   } catch {
     container.innerHTML = '<div class="dashboard-empty"><span>🕐</span><h3>Could not load search history</h3></div>';
   }
