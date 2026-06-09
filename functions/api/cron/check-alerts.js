@@ -45,7 +45,7 @@ export async function onRequest(context) {
       count++;
       if (count > (parseInt(url.searchParams.get('limit') || '50'))) break;
 
-      const currentPrice = await fetchProductPrice(productUrl, env);
+      const currentPrice = await fetchProductPrice(productUrl, env, entries[0]?.alert?.productName || '');
       results.checked++;
 
       if (currentPrice === null || currentPrice === undefined) {
@@ -100,7 +100,7 @@ async function listKVByPrefix(kv, prefix) {
 }
 
 // ======== 获取当前价格 ========
-async function fetchProductPrice(productUrl, env) {
+async function fetchProductPrice(productUrl, env, productName) {
   const domain = extractDomain(productUrl);
 
   // Amazon
@@ -133,25 +133,17 @@ async function fetchProductPrice(productUrl, env) {
       });
       const tokenData = await tokenRes.json();
       if (!tokenData.access_token) { console.log('eBay: token failed', tokenData); return null; }
-      // eBay Browse API 需要完整 item ID 格式
-      const fullItemId = itemId.includes('|') ? itemId : `v1|${itemId}|0`;
-      const itemRes = await fetch(`https://api.ebay.com/buy/browse/v1/item/get_item?item_id=${fullItemId}`, {
-        headers: { 'Authorization': `Bearer ${tokenData.access_token}`, 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US', 'X-EBAY-C-ENDUSERCTX': 'affiliateCampaignId=5339155328' },
+      // 直接用搜索 API 查价格（get_item 需要额外 scope，且商品易过期）
+      const searchQuery = productName || 'product';
+      const searchRes = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchQuery)}&limit=1`, {
+        headers: { 'Authorization': `Bearer ${tokenData.access_token}`, 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US' },
       });
-      if (!itemRes.ok) {
-        // 尝试用搜索 API 兜底
-        const searchRes = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(extractDomain(productUrl).replace('www.',''))}&limit=1`, {
-          headers: { 'Authorization': `Bearer ${tokenData.access_token}`, 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US' },
-        });
-        if (searchRes.ok) {
-          const searchData = await searchRes.json();
-          const first = searchData.itemSummaries?.[0];
-          if (first?.price?.value) return parseFloat(first.price.value);
-        }
-        return null;
+      if (searchRes.ok) {
+        const searchData = await searchRes.json();
+        const first = searchData.itemSummaries?.[0];
+        if (first?.price?.value) return parseFloat(first.price.value);
       }
-      const item = await itemRes.json();
-      return item.price?.value ? parseFloat(item.price.value) : null;
+      return null;
     } catch (e) { console.log('eBay exception', e.message); return null; }
   }
 
