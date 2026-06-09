@@ -2935,6 +2935,22 @@ function renderAdminUserList() {
       showAdminUserDetail(adminSelectedEmail);
     });
   });
+  // 用户列表的返回键：退出管理面板
+  document.getElementById('adminBackBtn').onclick = function() {
+    var s = document.getElementById('adminSection');
+    if (s) s.style.display = 'none';
+    document.getElementById('adminConfirmModal')?.classList.remove('active');
+    var c = document.getElementById('accountContent');
+    if (c) {
+      c.style.display = '';
+      delete c.style.alignItems;
+      delete c.style.justifyContent;
+      delete c.style.minHeight;
+    }
+    document.getElementById('adminLoginModal')?.classList.remove('active');
+    window._accountAdminCallback = null;
+    switchAccountTab('favorites');
+  };
 }
 
 async function showAdminUserDetail(email) {
@@ -3029,6 +3045,12 @@ function renderAdminUserDetail(data) {
     document.getElementById('adminConfirmInput').value = '';
     document.getElementById('adminConfirmError').classList.remove('show');
   });
+
+  // 返回按钮指向用户列表，不是退出管理面板
+  document.getElementById('adminBackBtn').onclick = function() {
+    document.getElementById('adminStatus').textContent = 'User Management';
+    renderAdminUserList();
+  };
 
   window._pendingMembershipEmail = data.email;
 }
