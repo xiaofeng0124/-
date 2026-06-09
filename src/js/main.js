@@ -215,24 +215,6 @@ const POPULAR_POOL = [
 ];
 let currentPopular = [];
 
-const MOCK_COUPONS = {
-  Amazon: [
-    { code: 'SAVE10', desc: '10% off electronics', expiry: '2026-06-30' },
-    { code: 'FREESHIP', desc: 'Free shipping on orders $25+', expiry: '2026-12-31' }
-  ],
-  Walmart: [
-    { code: 'WALMART5', desc: '$5 off orders $50+', expiry: '2026-06-15' }
-  ],
-  'Best Buy': [
-    { code: 'BESTBUY20', desc: '20% off select items', expiry: '2026-06-01' }
-  ],
-  Target: [
-    { code: 'TARGET15', desc: '15% off one item', expiry: '2026-07-01' }
-  ],
-  eBay: [
-    { code: 'EBAY5OFF', desc: '5% off when you buy 2+', expiry: '2026-06-20' }
-  ]
-};
 
 
 function generatePriceHistory(basePrice, days = 90) {
@@ -793,7 +775,7 @@ function updateUIForAuth() {
     actions.innerHTML = `
         ${premiumBtn}
       <div class="desktop-header-actions">
-        <button class="btn-ghost desktop-only" id="couponsNavBtn">Coupons</button><button class="btn-ghost desktop-only" id="favoritesBtn">Favorites</button>
+        <button class="btn-ghost desktop-only" id="favoritesBtn">Favorites</button>
         
         <div class="history-wrap desktop-only">
           <button class="btn-ghost" id="historyNavBtn">History</button>
@@ -814,7 +796,6 @@ function updateUIForAuth() {
           </span>
         </button>
         <div class="user-dropdown" id="userDropdown">
-          <a id="dropdownCoupons">Coupons</a>
           <a id="dropdownFavorites">Favorites</a>
           <a id="dropdownAlerts">Price Alerts</a>
           
@@ -844,16 +825,13 @@ function updateUIForAuth() {
         document.getElementById('dropdownFavorites')?.addEventListener('click', () => { window.location.href = '/account#favorites'; });
     document.getElementById('dropdownAlerts')?.addEventListener('click', () => { window.location.href = '/account#alerts'; });
     document.getElementById('dropdownHistory')?.addEventListener('click', () => { if (!getSession()) { showAuthModal('login'); return; } window.location.href = '/account#history'; });
-    document.getElementById('dropdownCoupons')?.addEventListener('click', () => { window.location.href = '/account#coupons'; });
     document.getElementById('dropdownAdmin')?.addEventListener('click', () => { window.location.href = '/account#admin'; });
     document.getElementById('logoutBtn')?.addEventListener('click', logout);
     document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
     document.getElementById('historyClearBtn')?.addEventListener('click', () => { localStorage.removeItem('sr_history'); renderSearchHistory(); });
-    document.getElementById('couponsNavBtn')?.addEventListener('click', () => { window.location.href = '/account'; });
   } else {
     actions.innerHTML = `
-						<button class="btn-ghost desktop-only" id="couponsNavBtn">Coupons</button>
-      <button class="btn-ghost desktop-only" id="favoritesBtn2">Favorites</button>
+						<button class="btn-ghost desktop-only" id="favoritesBtn2">Favorites</button>
 						<div class="history-wrap desktop-only">
 							<button class="btn-ghost" id="historyNavBtn">History</button>
 							<div class="history-dropdown" id="historyDropdown">
@@ -870,7 +848,6 @@ function updateUIForAuth() {
     document.getElementById('loginBtn')?.addEventListener('click', () => showAuthModal('login'));
     document.getElementById('pricingNavBtn')?.addEventListener('click', showPricingModal);
     document.getElementById('favoritesBtn2')?.addEventListener('click', () => { if (!getSession()) { showAuthModal('login'); return; } window.location.href = '/account'; });
-    document.getElementById('couponsNavBtn')?.addEventListener('click', () => { window.location.href = '/account'; });
 				document.getElementById('historyNavBtn')?.addEventListener('click', (e) => { e.stopPropagation(); if (!getSession()) { showAuthModal('login'); return; } toggleSearchHistory(); });
   }
 }
@@ -890,7 +867,6 @@ function switchDashboardTab(tab) {
   if (tab === 'favorites') renderDashboardFavorites();
   else if (tab === 'history') renderDashboardHistory();
   else if (tab === 'alerts') renderDashboardAlerts();
-  else if (tab === 'coupons') renderDashboardCoupons();
 }
 
 
@@ -914,7 +890,6 @@ function switchAccountTab(tab) {
     case 'favorites': renderDashboardFavorites(container); break;
     case 'history': renderDashboardHistory(container); break;
     case 'alerts': renderDashboardAlerts(container); break;
-    case 'coupons': renderDashboardCoupons(container); break;
     case 'predictions':
       container.innerHTML = '<div class="dashboard-empty"><span>📈</span><h3>Price Predictions</h3><p>AI-powered price predictions coming soon. We\'ll analyze historical data to predict the best time to buy.</p></div>';
       break;
@@ -1092,72 +1067,8 @@ function removeAlertAndRefresh(id) {
   if (container) renderDashboardAlerts(container);
 }
 
-function renderDashboardCoupons(contOverride) {
-  const container = contOverride || document.getElementById('dashboardContent');
-  let html = '<div class="coupons-grid">';
-  for (const [store, coupons] of Object.entries(MOCK_COUPONS)) {
-    coupons.forEach(c => {
-      html += `<div class="coupon-card">
-        <span class="store-tag" style="background:${STORE_CONFIG[store]?.bg||'#666'};color:white">${store}</span>
-        <h4>${c.desc}</h4>
-        <p>Expires: ${c.expiry}</p>
-        <div class="coupon-large-code" onclick="copyCoupon('${c.code}')">${c.code} 📋</div>
-      </div>`;
-    });
-  }
-  html += '</div>';
-  container.innerHTML = html;
-}
 
-function copyCoupon(code) {
-  navigator.clipboard?.writeText(code).then(() => {
-    const el = document.activeElement;
-    if (el) { el.textContent = 'Copied! ✓'; setTimeout(() => { el.textContent = `${code} 📋`; }, 1500); }
-  }).catch(() => {});
-}
 
-async function searchProduct(name) {
-  document.getElementById('dashboardSection').classList.remove('active');
-  document.getElementById('popularSection')?.classList.add('hidden');
-  const loading = document.getElementById('loading');
-  if (loading) loading.classList.add('active');
-  const query = name.toLowerCase();
-
-  let firstResult = true;
-
-  const apiProduct = await searchViaAPI(query, (data) => {
-    currentPage = 1;
-    currentProduct = { name: data.name, image: data.image, stores: data.stores };
-
-    if (firstResult) {
-      firstResult = false;
-      document.getElementById('loading').classList.remove('active');
-      document.getElementById('resultsSection').classList.add('active');
-      const header = document.getElementById('productHeader');
-      header.innerHTML = `
-        <div class="product-thumbs">${data.image ? `<img src="${proxyImg(data.image)}" alt="${data.name}" onerror="this.style.display='none'">` : ''}</div>
-        <div class="product-meta">
-          <h2>${data.name}</h2>
-          <p>${data.stores.length} stores compared — find the best deal</p>
-        </div>`;
-    } else {
-      const meta = document.querySelector('.product-meta p');
-      if (meta) meta.textContent = `${data.stores.length} stores compared — find the best deal`;
-    }
-
-    renderSortedStores(data.stores, 'featured');
-    document.getElementById('loadingMore').style.display = data.done ? 'none' : 'flex';
-  });
-
-  if (!apiProduct) {
-    if (firstResult) {
-      if (loading) loading.classList.remove('active');
-      renderResults(query);
-    }
-  }
-}
-
-// ======== Price History ========
 function openPriceHistory(productName, storeName, currentPrice, productImage, itemUrl) {
   const cacheKey = `${productName}_${storeName}_${itemUrl || ''}`;
   if (!PRICE_HISTORY_CACHE[cacheKey]) {
@@ -2117,22 +2028,6 @@ function goHome() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ======== Coupon Popup ========
-function showCouponPopup(event, el, store) {
-  event.stopPropagation();
-  document.querySelectorAll('.coupon-popup').forEach(p => p.remove());
-  const coupons = MOCK_COUPONS[store] || [];
-  if (!coupons.length) return;
-  const popup = document.createElement('div');
-  popup.className = 'coupon-popup active';
-  popup.style.position = 'absolute';
-  popup.innerHTML = `<h5>${store} Coupons</h5>${coupons.map(c => `
-    <div class="coupon-item"><span>${c.desc}</span><span class="coupon-code" onclick="copyCoupon('${c.code}')">${c.code}<span class="coupon-arrow">📋</span></span></div>`).join('')}`;
-  el.style.position = 'relative';
-  el.appendChild(popup);
-  const closePopup = (e2) => { if (!popup.contains(e2.target) && e2.target !== el) { popup.remove(); document.removeEventListener('click', closePopup); }};
-  setTimeout(() => document.addEventListener('click', closePopup), 10);
-}
 
 // ======== Favorites Toggle ========
 function toggleFavorite(event, productName, store, price, image, url) {
