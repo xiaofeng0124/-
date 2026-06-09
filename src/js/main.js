@@ -902,7 +902,7 @@ function switchAccountTab(tab) {
     case 'settings': renderAccountSettings(container); break;
     case 'admin':
       if (currentUser?.email === '1067678960@qq.com') {
-        window.location.href = '/';
+        renderAccountAdminPanel(container);
       } else {
         container.innerHTML = '<div class="dashboard-empty"><span>🔒</span><h3>Access Denied</h3></div>';
       }
@@ -1043,6 +1043,86 @@ function removeFavAndRefresh(productName, store, url, btn) {
     const container = document.getElementById('accountContent') || document.getElementById('dashboardContent');
     if (container) renderDashboardFavorites(container);
   }, 200);
+}
+
+function renderAccountAdminPanel(container) {
+  var isLoggedIn = adminToken && sessionStorage.getItem('sr_admin_token');
+  if (!isLoggedIn) {
+    // 显示登录界面
+    container.innerHTML = `
+    <div style="margin-bottom:16px">
+      <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">🛠 Admin Panel</h2>
+      <p style="font-size:13px;color:#94a3b8;margin:4px 0 0">Enter the admin password to manage users.</p>
+    </div>
+    <div style="max-width:400px;background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:24px">
+      <input type="password" id="adminPwInput" placeholder="Admin password" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;margin-bottom:10px;box-sizing:border-box">
+      <div id="adminLoginError" style="font-size:13px;color:var(--red);margin-bottom:8px;display:none"></div>
+      <button onclick="accountAdminLogin()" style="width:100%;padding:10px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Sign In</button>
+    </div>`;
+    document.getElementById('adminPwInput')?.addEventListener('keydown', function(e) { if (e.key === 'Enter') accountAdminLogin(); });
+    return;
+  }
+  // 已登录，显示用户管理
+  container.innerHTML = `
+  <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">🛠 Admin Panel</h2>
+      <p style="font-size:13px;color:#94a3b8;margin:4px 0 0">Manage user accounts and permissions.</p>
+    </div>
+    <button onclick="accountAdminLogout()" style="padding:8px 16px;border:1px solid var(--gray-200);border-radius:8px;background:var(--white);color:#ef4444;font-size:13px;font-weight:600;cursor:pointer">Sign Out</button>
+  </div>
+  <div id="accountAdminContent" style="min-height:200px"><div style="text-align:center;padding:40px"><div class="loading-spinner"></div></div></div>`;
+  fetchAccountAdminUsers();
+}
+
+window.accountAdminLogin = async function() {
+  var pw = document.getElementById('adminPwInput')?.value;
+  var err = document.getElementById('adminLoginError');
+  if (!pw) { if(err){err.textContent='Password required';err.style.display='block'} return; }
+  try {
+    var res = await fetch('/api/admin?action=login', {
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:pw})
+    });
+    var data = await res.json();
+    if (data.ok) {
+      adminToken = data.token;
+      sessionStorage.setItem('sr_admin_token', data.token);
+      var c = document.getElementById('accountContent');
+      if(c) renderAccountAdminPanel(c);
+    } else {
+      if(err){err.textContent=data.error||'Login failed';err.style.display='block'}
+    }
+  } catch { if(err){err.textContent='Network error';err.style.display='block'} }
+};
+
+window.accountAdminLogout = function() {
+  adminToken = null;
+  sessionStorage.removeItem('sr_admin_token');
+  var c = document.getElementById('accountContent');
+  if(c) renderAccountAdminPanel(c);
+};
+
+async function fetchAccountAdminUsers() {
+  var content = document.getElementById('accountAdminContent');
+  if (!content) return;
+  try {
+    var res = await fetch('/api/admin?action=users', {
+      headers: {'Authorization':'Bearer '+adminToken}
+    });
+    if (res.status === 401) { adminToken=null; sessionStorage.removeItem('sr_admin_token'); var c=document.getElementById('accountContent'); if(c) renderAccountAdminPanel(c); return; }
+    var data = await res.json();
+    var users = data.users || [];
+    content.innerHTML = '<div style="font-size:13px;color:var(--gray-500);margin-bottom:12px">'+users.length+' users</div>';
+    users.forEach(function(u) {
+      content.innerHTML += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--white);border:1px solid var(--gray-200);border-radius:8px;margin-bottom:6px">'+
+        '<div><div style="font-weight:600;font-size:14px">'+escapeHtml(u.email)+'</div><div style="font-size:12px;color:var(--gray-500)">Joined: '+new Date(u.createdAt||Date.now()).toLocaleDateString()+'</div></div>'+
+        '<span style="font-size:12px;padding:2px 10px;border-radius:12px;background:'+(u.tier==='premium'?'#fef3c7':'#f1f5f9')+';color:'+(u.tier==='premium'?'#92400e':'#64748b')+';font-weight:600">'+(u.tier||'free')+'</span>'+
+      '</div>';
+    });
+  } catch {
+    if(content) content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--red)">Failed to load users. <button class="btn-ghost" onclick="fetchAccountAdminUsers()">Retry</button></div>';
+  }
 }
 
 function renderDashboardAlerts(contOverride) {
