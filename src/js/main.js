@@ -1320,15 +1320,17 @@ function quickSearch(query, safeName) {
 // ======== Search History ========
 function saveSearchHistory(product) {
   if (!product || !product.name) return;
+  const CUTOFF = Date.now() - 60 * 24 * 60 * 60 * 1000; // 60天
   let history = JSON.parse(localStorage.getItem('sr_history') || '[]');
-  history = history.filter(h => h.name !== product.name);
+  // 过滤过期 + 去重
+  history = history.filter(h => h.time > CUTOFF && h.name !== product.name);
   history.unshift({
     name: product.name,
     image: product.image || '',
     query: product.query || product.name,
     time: Date.now()
   });
-  if (history.length > 20) history = history.slice(0, 20);
+  if (history.length > 80) history = history.slice(0, 80);
   localStorage.setItem('sr_history', JSON.stringify(history));
 
 
@@ -1359,7 +1361,9 @@ function getClickedProducts() {
 
 function renderSearchHistory() {
   const list = document.getElementById('historyList');
-  const history = JSON.parse(localStorage.getItem('sr_history') || '[]');
+  const CUTOFF = Date.now() - 60 * 24 * 60 * 60 * 1000;
+  let history = JSON.parse(localStorage.getItem('sr_history') || '[]');
+  history = history.filter(h => h.time > CUTOFF);
   if (!history.length) {
     list.innerHTML = '<div class="history-empty">No search history yet</div>';
     return;

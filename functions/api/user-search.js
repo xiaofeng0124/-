@@ -17,7 +17,8 @@ export async function onRequest(context) {
 
   // GET: retrieve search history
   if (request.method === 'GET') {
-    const history = JSON.parse(await env.USERS.get(key) || '[]');
+    const CUTOFF = Date.now() - 60 * 24 * 60 * 60 * 1000;
+    const history = JSON.parse(await env.USERS.get(key) || '[]').filter(h => h.time > CUTOFF);
     return new Response(JSON.stringify({ history }), {
       headers: { 'Content-Type': 'application/json' },
     });
@@ -31,10 +32,11 @@ export async function onRequest(context) {
         return new Response(JSON.stringify({ error: 'Query required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
       }
 
+      const CUTOFF = Date.now() - 60 * 24 * 60 * 60 * 1000; // 60天过期
       const history = JSON.parse(await env.USERS.get(key) || '[]');
-      const filtered = history.filter(h => h.query !== query);
+      const filtered = history.filter(h => h.time > CUTOFF && h.query !== query);
       filtered.unshift({ query, name: name || query, image: image || '', time: Date.now() });
-      const trimmed = filtered.slice(0, 50);
+      const trimmed = filtered.slice(0, 80);
       await env.USERS.put(key, JSON.stringify(trimmed));
 
       return new Response(JSON.stringify({ ok: true }), {
