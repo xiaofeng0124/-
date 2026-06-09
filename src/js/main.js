@@ -2888,6 +2888,12 @@ function renderAdminUserList() {
     content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-500)">No users registered yet.</div>';
     return;
   }
+  const ADMIN_PAGE_SIZE = 15;
+  const totalPages = Math.max(1, Math.ceil(adminUsers.length / ADMIN_PAGE_SIZE));
+  const page = Math.min(parseInt(content.dataset.adminPage || '1'), totalPages);
+  const start = (page - 1) * ADMIN_PAGE_SIZE;
+  const pageItems = adminUsers.slice(start, start + ADMIN_PAGE_SIZE);
+
   let html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:15px">' +
     '<thead><tr style="background:var(--gray-100);text-align:left">' +
     '<th style="padding:14px 16px">Email</th>' +
@@ -2895,7 +2901,7 @@ function renderAdminUserList() {
     '<th style="padding:14px 16px">Tier</th>' +
     '<th style="padding:14px 16px">Membership Expiry</th>' +
     '</tr></thead><tbody>';
-  for (const u of adminUsers) {
+  for (const u of pageItems) {
     const regDate = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : '—';
     const expDate = u.expiresAt ? new Date(u.expiresAt).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : '—';
     const tierBadge = u.tier === 'premium'
@@ -2908,7 +2914,21 @@ function renderAdminUserList() {
       '<td style="padding:14px 16px;color:var(--gray-500);font-size:15px">' + expDate + '</td></tr>';
   }
   html += '</tbody></table></div>';
+
+  if (totalPages > 1) {
+    html += '<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:20px;padding:8px 0">' +
+      '<button class="page-btn" ' + (page <= 1 ? 'disabled' : '') + ' onclick="adminGoPage(' + (page - 1) + ')">← Prev</button>' +
+      '<span style="font-size:14px;color:var(--gray-500)">' + page + ' / ' + totalPages + '</span>' +
+      '<button class="page-btn" ' + (page >= totalPages ? 'disabled' : '') + ' onclick="adminGoPage(' + (page + 1) + ')">Next →</button>' +
+    '</div>';
+  }
   content.innerHTML = html;
+
+  window.adminGoPage = function(p) {
+    if (p < 1 || p > totalPages) return;
+    content.dataset.adminPage = p;
+    renderAdminUserList();
+  };
   content.querySelectorAll('.admin-user-row').forEach(row => {
     row.addEventListener('click', () => {
       adminSelectedEmail = row.dataset.email;
