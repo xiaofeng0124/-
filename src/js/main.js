@@ -3014,13 +3014,13 @@ function renderAdminUserDetail(data) {
   // Account info + Membership modification side by side
   let html = '' +
     '<div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">' +
-      '<div style="flex:1;min-width:240px;background:var(--white);border-radius:12px;padding:20px 24px;border:1px solid var(--gray-200)">' +
+      '<div style="flex:1;min-width:315px;background:var(--white);border-radius:12px;padding:20px 24px;border:1px solid var(--gray-200)">' +
         '<h4 style="font-size:13px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin:0 0 12px">Account Info</h4>' +
         '<div style="font-size:16px;font-weight:600">' + data.email + '</div>' +
         '<div style="font-size:14px;color:var(--gray-500);margin-top:8px">Registered: ' + regDate + '</div>' +
         '<div style="font-size:14px;color:var(--gray-500);margin-top:4px">Membership: ' + (isPremium ? '<span style="color:#d97706;font-weight:600">Premium</span> — Expires ' + expDate : '<span style="color:var(--gray-500)">Free</span>') + '</div>' +
       '</div>' +
-      '<div style="flex:1;min-width:240px;background:var(--white);border-radius:12px;padding:20px 24px;border:1px solid var(--gray-200)">' +
+      '<div style="flex:1;min-width:315px;background:var(--white);border-radius:12px;padding:20px 24px;border:1px solid var(--gray-200)">' +
         '<h4 style="font-size:13px;color:var(--gray-500);font-weight:600;text-transform:uppercase;margin:0 0 12px">Modify Membership</h4>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">' +
           '<select id="adminMemberAction" style="padding:8px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px">' +
