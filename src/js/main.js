@@ -945,19 +945,8 @@ function switchAccountTab(tab) {
           if (sec2) sec2.style.display = '';
           showAdmin();
         };
-        // 返回按钮：隐藏管理面板，显示内容区
-        document.getElementById('adminBackBtn')?.addEventListener('click', function handler2() {
-          var sec3 = document.getElementById('adminSection');
-          if (sec3) sec3.style.display = 'none';
-          document.getElementById('adminConfirmModal')?.classList.remove('active');
-          container.style.display = '';
-          delete container.style.alignItems;
-          delete container.style.justifyContent;
-          delete container.style.minHeight;
-          switchAccountTab('favorites');
-          document.getElementById('adminBackBtn')?.removeEventListener('click', handler2);
-          window._accountAdminCallback = null;
-        }, { once: true });
+        // 返回按钮由 renderAdminUserList / renderAdminUserDetail 管理
+        // 旧版 { once: true } handler 已移除，改用 onclick
       } else {
         container.innerHTML = '<div class="dashboard-empty"><span>🔒</span><h3>Access Denied</h3></div>';
       }
