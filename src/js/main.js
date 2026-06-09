@@ -891,10 +891,10 @@ function switchAccountTab(tab) {
     case 'history': renderDashboardHistory(container); break;
     case 'alerts': renderDashboardAlerts(container); break;
     case 'predictions':
-      container.innerHTML = '<div class="dashboard-empty"><span>📈</span><h3>Price Predictions</h3><p>AI-powered price predictions coming soon. We\'ll analyze historical data to predict the best time to buy.</p></div>';
+      container.innerHTML = '<div style="margin-bottom:16px"><h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Price Predictions</h2><p style="font-size:13px;color:#94a3b8;margin:4px 0 0">AI-powered predictions to help you decide the best time to buy. Based on historical price trends and market data.</p></div><div class="dashboard-empty"><span>📈</span><h3>Coming Soon</h3><p>We\'re analyzing price history to predict future trends. Check back later!</p></div>';
       break;
     case 'export':
-      container.innerHTML = '<div class="dashboard-empty"><span>📤</span><h3>Export Data</h3><p>Export your favorites and price history as CSV — coming soon.</p></div>';
+      container.innerHTML = '<div style="margin-bottom:16px"><h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Export Data</h2><p style="font-size:13px;color:#94a3b8;margin:4px 0 0">Download your favorites, price history, and alerts as CSV for personal analysis.</p></div><div class="dashboard-empty"><span>📤</span><h3>Coming Soon</h3><p>Export functionality will be available soon. You\'ll be able to download your data in CSV format.</p></div>';
       break;
     case 'settings': renderAccountSettings(container); break;
   }
@@ -988,7 +988,12 @@ async function renderDashboardHistory(contOverride) {
     const start = (page - 1) * HIST_PAGE_SIZE;
     const pageItems = history.slice(start, start + HIST_PAGE_SIZE);
 
-    container.innerHTML = `<div class="popular-grid">${pageItems.map(h => {
+    container.innerHTML = `
+  <div style="margin-bottom:16px">
+    <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0">Search History</h2>
+    <p style="font-size:13px;color:#94a3b8;margin:4px 0 0">Your recent searches appear here. Click any search to quickly find products again.</p>
+  </div>
+  <div class="popular-grid">${pageItems.map(h => {
       const img = h.image || '';
       const q = (h.query || '').replace(/'/g, "\\'");
       const name = h.name || h.query || '';
