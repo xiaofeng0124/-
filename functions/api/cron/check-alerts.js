@@ -105,15 +105,16 @@ async function fetchProductPrice(productUrl, env, productName) {
 
   // Amazon
   if (domain.includes('amazon')) {
-    const asin = extractASIN(productUrl);
-    if (!asin) return null;
     const key = env.ASA_KEY || (await env.USERS?.get('config:asa_key') || '');
     if (!key) return null;
+    const searchQuery = productName || 'product';
     try {
-      const res = await fetch(`https://api.amazonscraperapi.com/api/v1/amazon/product?api_key=${key}&asin=${asin}&domain=com`);
+      const res = await fetch(`https://api.amazonscraperapi.com/api/v1/amazon/search?api_key=${key}&query=${encodeURIComponent(searchQuery)}&domain=com`);
       if (!res.ok) return null;
       const data = await res.json();
-      return data.price?.current || data.price || null;
+      const items = data.products || data.results || [];
+      if (items.length > 0) return items[0].price?.current || items[0].price || null;
+      return null;
     } catch { return null; }
   }
 
