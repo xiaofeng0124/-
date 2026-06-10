@@ -139,14 +139,11 @@
         </select>
 
         <label style="margin-left:12px;">Store:</label>
-        <select id="storeFilter">
-          <option value="all">All Stores</option>
-          <option value="Amazon">Amazon</option>
-          <option value="Walmart">Walmart</option>
-          <option value="eBay">eBay</option>
-          <option value="Best Buy">Best Buy</option>
-          <option value="Target">Target</option>
-        </select>
+        <div class="store-filter-wrap" id="storeFilterWrap">
+          <button class="store-filter-btn" id="storeFilterBtn">All Stores ▾</button>
+          <div class="store-filter-dropdown" id="storeFilterDropdown" style="display:none"></div>
+        </div>
+        <select id="storeFilter" style="display:none"><option value="all">All Stores</option></select>
       </div>
 
       <div class="price-grid" id="priceGrid"></div>

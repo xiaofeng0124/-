@@ -2042,6 +2042,7 @@ async function performSearch() {
     }
 
     renderSortedStores(data.stores, 'featured');
+    if (data.done) updateStoreFilter(data.stores);
     document.getElementById('loadingMore').style.display = data.done ? 'none' : 'flex';
   });
 
@@ -2192,6 +2193,7 @@ function renderResults(query) {
       <p>${product.stores.length} stores compared — find the best deal</p>
     </div>`;
   renderSortedStores(product.stores, 'featured');
+  updateStoreFilter(product.stores);
 }
 
 // ======== Sort & Filter ========
@@ -2200,6 +2202,50 @@ function initSortFilter() {
   const storeFilter = document.getElementById('storeFilter');
   if (sortSelect) sortSelect.addEventListener('change', applySort);
   if (storeFilter) storeFilter.addEventListener('change', applySort);
+
+  // 自定义商家筛选下拉
+  const btn = document.getElementById('storeFilterBtn');
+  const dd = document.getElementById('storeFilterDropdown');
+  if (btn && dd) {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dd.style.display = dd.style.display === 'none' ? '' : 'none';
+    });
+    // 点击选项
+    dd.addEventListener('click', (e) => {
+      const opt = e.target.closest('.store-filter-opt');
+      if (!opt) return;
+      const val = opt.dataset.value;
+      document.getElementById('storeFilter').value = val || 'all';
+      dd.querySelectorAll('.store-filter-opt').forEach(el => el.classList.remove('active'));
+      if (val) opt.classList.add('active');
+      else dd.querySelector('.all-opt')?.classList.add('active');
+      btn.textContent = (val || 'All Stores') + ' ▾';
+      dd.style.display = 'none';
+      applySort();
+    });
+    // 点击外部关闭
+    document.addEventListener('click', () => { dd.style.display = 'none'; });
+  }
+}
+
+/** 从搜索结果更新商家筛选下拉 */
+function updateStoreFilter(stores) {
+  const dd = document.getElementById('storeFilterDropdown');
+  const sel = document.getElementById('storeFilter');
+  if (!dd || !sel) return;
+  // 提取所有不重复商家名
+  const storeSet = new Set();
+  stores.forEach(s => { if (s.store) storeSet.add(s.store); });
+  const storeList = [...storeSet].sort();
+  // 更新隐藏 select（让 applySort 能正常用）
+  sel.innerHTML = '<option value="all">All Stores</option>';
+  storeList.forEach(s => { sel.innerHTML += `<option value="${s}">${s}</option>`; });
+  // 更新自定义下拉
+  let html = '<button class="store-filter-opt all-opt active" data-value="">All Stores</button>';
+  storeList.forEach(s => { html += `<button class="store-filter-opt" data-value="${s}">${s}</button>`; });
+  dd.innerHTML = html;
+  document.getElementById('storeFilterBtn').textContent = 'All Stores ▾';
 }
 
 function applySort() {
