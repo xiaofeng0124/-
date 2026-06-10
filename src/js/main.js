@@ -177,7 +177,7 @@ const POPULAR_POOL = [
   { name: 'Google Pixel 9 Pro', price: 199 },
   { name: 'Apple iPhone 16', price: 59 },
   { name: 'Samsung Galaxy S25', price: 199 },
-  { name: 'MacBook Air M4', price: 479 },
+  { name: 'MacBook Air M4', price: 689 },
   { name: 'Apple iPhone 17', price: 999 },
   { name: 'AirPods Pro 3', price: 199 },
   { name: 'AirPods 4', price: 99 },
