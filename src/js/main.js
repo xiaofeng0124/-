@@ -143,12 +143,20 @@ const STORE_TRANSLATIONS = {
   'Macy\'s': { zh: '梅西百货', es: 'Macy\'s', fr: 'Macy\'s', de: 'Macy\'s', ja: 'メイシーズ', ko: '메이시스' },
 };
 
-/** 获取当前浏览器语言对应的商家名 */
+/** 获取当前浏览器语言对应的商家名（支持前缀匹配，如 Walmart - XXX → 沃尔玛） */
 function tStore(englishName) {
   const lang = (navigator.language || 'en').split('-')[0];
   if (lang === 'en') return englishName;
-  const translations = STORE_TRANSLATIONS[englishName];
-  if (translations && translations[lang]) return translations[lang];
+  // 先精确匹配
+  const exact = STORE_TRANSLATIONS[englishName];
+  if (exact && exact[lang]) return exact[lang];
+  // 再前缀匹配（Walmart - LUOGENLI → 沃尔玛）
+  for (const [key, trans] of Object.entries(STORE_TRANSLATIONS)) {
+    if (englishName.startsWith(key) && trans[lang]) {
+      const suffix = englishName.slice(key.length).trim();
+      return suffix ? `${trans[lang]} - ${suffix}` : trans[lang];
+    }
+  }
   return englishName;
 }
 
