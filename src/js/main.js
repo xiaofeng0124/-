@@ -2299,8 +2299,8 @@ function renderSortedStores(stores, sortBy) {
     case 'featured':
       // 优先商家排前面，同组内按价格排序
       stores.sort((a, b) => {
-        const aPrio = PRIORITY_STORES.includes(a.store) ? 0 : 1;
-        const bPrio = PRIORITY_STORES.includes(b.store) ? 0 : 1;
+        const aPrio = PRIORITY_STORES.some(p => a.store.startsWith(p)) ? 0 : 1;
+        const bPrio = PRIORITY_STORES.some(p => b.store.startsWith(p)) ? 0 : 1;
         if (aPrio !== bPrio) return aPrio - bPrio;
         return a.price - b.price;
       });
