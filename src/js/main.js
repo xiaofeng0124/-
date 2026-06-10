@@ -2110,10 +2110,16 @@ async function searchViaAPI(query, onProgress) {
   } catch {}
 
   try {
-    // 三个请求同时发起
-    const serpP = fetch(`/api/search?q=${encodeURIComponent(query)}`).catch(() => null);
-    const ebayP = fetch(`/api/ebay?q=${encodeURIComponent(query)}`).catch(() => null);
-    const amazonP = fetch(`/api/amazon?q=${encodeURIComponent(query)}`).catch(() => null);
+    // 三个请求同时发起，每个最多等4秒
+    const TIMEOUT = 4000;
+    const t = (ms) => new Promise(r => setTimeout(r, ms));
+    const fetchWithTimeout = (url) => Promise.race([
+      fetch(url).catch(() => null),
+      t(TIMEOUT).then(() => null)
+    ]);
+    const serpP = fetchWithTimeout(`/api/search?q=${encodeURIComponent(query)}`);
+    const ebayP = fetchWithTimeout(`/api/ebay?q=${encodeURIComponent(query)}`);
+    const amazonP = fetchWithTimeout(`/api/amazon?q=${encodeURIComponent(query)}`);
 
     let allStores = [];
     let productName = query.charAt(0).toUpperCase() + query.slice(1);
