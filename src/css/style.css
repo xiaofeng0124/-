@@ -613,11 +613,11 @@ position: absolute; top: 100%; left: 0; margin-top: 4px;
 background: var(--white); border: 1px solid var(--gray-200);
 border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 padding: 8px; z-index: 100; min-width: 280px;
-display: grid; grid-template-columns: repeat(4, auto);
+display: grid; grid-template-columns: repeat(4, 1fr);
 gap: 2px;
 }
 @media (max-width: 768px) {
-.store-filter-dropdown { grid-template-columns: repeat(2, auto); min-width: 200px; }
+.store-filter-dropdown { grid-template-columns: repeat(2, 1fr); min-width: 200px; }
 }
 .store-filter-opt {
 padding: 6px 12px; border-radius: 6px; font-size: 13px;
