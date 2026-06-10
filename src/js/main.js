@@ -2134,7 +2134,7 @@ async function searchViaAPI(query, onProgress) {
           reviews: item.reviews,
           shipDays: item.shipping && item.shipping.toLowerCase().includes('free') ? 3 : 5,
           reputation: item.rating > 0 ? Math.round((item.rating / 5) * 100) : 85,
-          url: item.url || '#'
+          url: (item.url || '#').startsWith('https://www.google.com/') ? getStoreUrl(item.store, productName, item.price) : (item.url || '#')
         }));
         reported = true;
         onProgress?.({ stores: [...allStores], name: productName, image: productImage, done: false });
@@ -2153,7 +2153,7 @@ async function searchViaAPI(query, onProgress) {
           reviews: item.reviews || 0,
           shipDays: item.shipping && item.shipping.toLowerCase().includes('free') ? 3 : 5,
           reputation: item.rating > 0 ? Math.round((item.rating / 5) * 100) : 85,
-          url: item.url || '#'
+          url: (item.url || '#').startsWith('https://www.google.com/') ? getStoreUrl(item.store, productName, item.price) : (item.url || '#')
         })));
         if (!productImage) productImage = amazonData.results[0].image || '';
         reported = true;
@@ -2173,7 +2173,7 @@ async function searchViaAPI(query, onProgress) {
           reviews: item.reviews,
           shipDays: 5,
           reputation: item.rating > 0 ? Math.round((item.rating / 5) * 100) : 85,
-          url: item.url || '#'
+          url: (item.url || '#').startsWith('https://www.google.com/') ? getStoreUrl(item.store, productName, item.price) : (item.url || '#')
         })));
         if (!productImage) productImage = ebayData.results[0].image || '';
       }
@@ -3301,6 +3301,7 @@ window.adminConfirmMembership = adminConfirmMembership;
   window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 300); });
   btt.addEventListener('click', function(){ window.scrollTo({ top:0, behavior:'smooth' }); });
 })();
+
 
 
 
