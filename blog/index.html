@@ -1,39 +1,36 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-X0Z970RE0J"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-X0Z970RE0J');
-  </script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X0Z970RE0J');</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog 鈥?SnappRice</title>
-  <link rel="stylesheet" href="/src/css/style.css?v10">
-  <link rel="icon" href="/src/logo.png?v4">
+  <title>Blog — SnappRice</title>
+  <link rel="stylesheet" href="/src/css/style.css">
+  <link rel="icon" href="/src/logo.png">
   <style>
-    .blog-page { max-width: 760px; margin: 40px auto; padding: 0 20px 80px; }
+    .blog-page { max-width: 800px; margin: 40px auto; padding: 0 20px 80px; }
     .blog-page h1 { font-size: 28px; margin-bottom: 8px; }
     .blog-page .subtitle { font-size: 15px; color: var(--gray-500); margin-bottom: 32px; }
-    .blog-card { display: block; padding: 20px 24px; margin-bottom: 16px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; text-decoration: none; transition: box-shadow .2s, border-color .2s; }
+    .blog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .blog-card { display: block; padding: 20px 24px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; text-decoration: none; transition: box-shadow .2s, border-color .2s; }
     .blog-card:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(22,163,74,0.1); }
-    .blog-card h2 { font-size: 17px; color: var(--dark); margin-bottom: 6px; }
+    .blog-card h2 { font-size: 16px; color: var(--dark); margin-bottom: 4px; line-height: 1.4; }
     .blog-card .meta { font-size: 12px; color: var(--gray-400); margin-bottom: 8px; }
-    .blog-card p { font-size: 14px; color: var(--gray-600); line-height: 1.6; margin: 0; }
-    .blog-card .tag { display: inline-block; font-size: 11px; font-weight: 600; color: var(--primary); background: #f0fdf4; padding: 2px 10px; border-radius: 100px; margin-top: 8px; }
-    .back-to-top { position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;z-index:999; }
-    .back-to-top.visible { opacity:1;transform:translateY(0); }
-    .back-to-top:hover { background:#15803d; }
+    .blog-card p { font-size: 13px; color: var(--gray-600); line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .pagination-bar { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 32px; }
+    .page-info { font-size: 14px; color: var(--gray-500); }
+    .page-btn { padding: 8px 20px; background: var(--primary); color: #fff; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; transition: background .2s; }
+    .page-btn:hover { background: #15803d; }
+    .page-btn.disabled { opacity: 0.4; pointer-events: none; }
+    @media (max-width: 600px) { .blog-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <header>
     <div class="header-inner">
       <a href="/" class="logo">
-        <img src="/src/logo.png?v2" alt="SnappRice" style="width:56px;height:56px;border-radius:12px">
+        <img src="/src/logo.png" alt="SnappRice">
         <span style="font-size:34px;font-weight:800;color:var(--dark);margin-left:8px">Snap</span>
         <span style="font-size:34px;font-weight:800;color:#16a34a">Price</span>
       </a>
@@ -43,72 +40,43 @@
     <div class="blog-page">
       <h1>SnappRice Blog</h1>
       <p class="subtitle">Shopping tips, price comparison guides, and smart savings strategies.</p>
-
-      <a class="blog-card" href="/blog/amazon-vs-walmart-2026">
-        <h2>Amazon vs. Walmart: Which Store Offers Better Deals in 2026?</h2>
-        <div class="meta">May 29, 2026 路 4 min read</div>
-        <p>A side-by-side comparison of pricing, shipping, and product selection across Amazon and Walmart 鈥?so you know where to buy before you click.</p>
-        <span class="tag">Comparison</span>
-      </a>
-
-      <a class="blog-card" href="/blog/best-budget-electronics-2026">
-        <h2>Best Budget Electronics Under $50 in 2026</h2>
-        <div class="meta">May 29, 2026 路 5 min read</div>
-        <p>You don't need to spend a fortune for quality gadgets. We've rounded up the top-rated electronics under $50 across Amazon, Walmart, eBay, and Best Buy.</p>
-        <span class="tag">Shopping Guide</span>
-      </a>
-
-      <a class="blog-card" href="/blog/how-to-spot-fake-discounts">
-        <h2>How to Spot Fake Discounts When Shopping Online</h2>
-        <div class="meta">May 29, 2026 路 4 min read</div>
-        <p>Not every sale is a real deal. Learn the telltale signs of inflated original prices and fake markdowns 鈥?and how SnappRice helps you see the truth.</p>
-        <span class="tag">Consumer Tips</span>
-      </a>
-
-      <a class="blog-card" href="/blog/best-time-to-buy-seasonal-calendar">
-        <h2>The Best Time to Buy: Seasonal Shopping Calendar for 2026</h2>
-        <div class="meta">May 29, 2026 路 5 min read</div>
-        <p>Timing your purchases right can save you hundreds. From Prime Day to Black Friday, here's when to buy electronics, appliances, clothing, and more.</p>
-        <span class="tag">Seasonal</span>
-      </a>
-
-      <a class="blog-card" href="/blog/price-alert-strategies">
-        <h2>Price Alert Strategies: Never Overpay Again</h2>
-        <div class="meta">May 29, 2026 路 3 min read</div>
-        <p>Set smart price alerts and let SnappRice do the monitoring for you. Here's how to choose the right target price and catch the lowest dip.</p>
-        <span class="tag">Tips & Tricks</span>
-      </a>
+      <div class="blog-grid" id="blogGrid"></div>
+      <div class="pagination-bar" id="paginationBar"></div>
     </div>
   </main>
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-links">
-        <a href="/about">About</a>
-        <a href="/blog">Blog</a>
-        <a href="/partnerships">Partnerships</a>
-        <a href="/privacy">Privacy Policy</a>
-        <a href="/terms">Terms of Service</a>
-        <button class="btn-link" id="contactBtn">Contact Us</button>
-      </div>
-      <p>&copy; 2026 SnappRice. Search, compare, save.</p>
-    </div>
-  </footer>
-  <button class="back-to-top" id="backToTop" aria-label="Back to top">鈫?/button>
+  <button class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
   <script>
-    var btt = document.getElementById('backToTop');
-    window.addEventListener('scroll', function(){ btt.classList.toggle('visible', window.scrollY > 300); });
-    btt.addEventListener('click', function(){ window.scrollTo({ top:0, behavior:'smooth' }); });
+    window.addEventListener('scroll',function(){document.getElementById('backToTopBtn').classList.toggle('visible',window.scrollY>300)});
   </script>
-<script type="text/javascript">
-  var vglnk = {key: '811162296b84b59fc816b1c12441ac9f'};
-  (function(d, t) {var s = d.createElement(t);
-    s.type = 'text/javascript';s.async = true;
-    s.src = '//cdn.viglink.com/api/vglnk.js';
-    var r = d.getElementsByTagName(t)[0];
-    r.parentNode.insertBefore(s, r);
-  }(document, 'script'));
-</script>
-<script src="https://www.anrdoezrs.net/am/101761591/include/allCj/sid/snapprice/impressions/page/am.js"></script>
+  <script>
+    var articles = [
+      {file:'airpods-pro-3-price-comparison.html', title:'AirPods Pro 3 Price Comparison: Where to Buy in 2026', date:'June 11, 2026', tag:'Price Comparison', desc:'Compare AirPods Pro 3 prices across Amazon, Walmart, Best Buy, Target, and eBay to find the best deal.'},
+      {file:'macbook-air-m4-deals.html', title:'MacBook Air M4: Best Deals and Price Comparison 2026', date:'June 11, 2026', tag:'Price Comparison', desc:'Find the best price on the MacBook Air M4 across Amazon, Walmart, Best Buy, and more.'},
+      {file:'amazon-prime-day-2026-guide.html', title:'Amazon Prime Day 2026: Complete Shopping Guide', date:'June 11, 2026', tag:'Shopping Guide', desc:'Everything you need to know to shop smart during Amazon Prime Day 2026.'},
+      {file:'iphone-17-price-comparison.html', title:'iPhone 17 Price Comparison: Where to Get the Best Deal', date:'June 11, 2026', tag:'Price Comparison', desc:'Compare iPhone 17, Pro, and Pro Max prices across Apple, Amazon, Best Buy, Walmart, and eBay.'},
+      {file:'back-to-school-laptop-deals-2026.html', title:'Back to School Laptop Deals 2026: Best Prices by Category', date:'June 11, 2026', tag:'Shopping Guide', desc:'Find the best laptop deals for back to school, from budget to premium.'},
+      {file:'amazon-vs-walmart-2026.html', title:'Amazon vs. Walmart: Which Store Offers Better Deals in 2026?', date:'May 29, 2026', tag:'Comparison', desc:'A side-by-side comparison of pricing, shipping, and product selection across Amazon and Walmart.'},
+      {file:'best-budget-electronics-2026.html', title:'Best Budget Electronics Under $50 in 2026', date:'May 29, 2026', tag:'Shopping Guide', desc:'Top-rated electronics under $50 across Amazon, Walmart, eBay, and Best Buy.'},
+      {file:'how-to-spot-fake-discounts.html', title:'How to Spot Fake Discounts When Shopping Online', date:'May 29, 2026', tag:'Consumer Tips', desc:'Learn the telltale signs of inflated original prices and fake markdowns.'},
+      {file:'best-time-to-buy-seasonal-calendar.html', title:'The Best Time to Buy: Seasonal Shopping Calendar for 2026', date:'May 29, 2026', tag:'Shopping Guide', desc:'Month-by-month guide to the best times to buy everything.'},
+      {file:'price-alert-strategies.html', title:'Smart Strategies for Price Alerts in 2026', date:'June 7, 2026', tag:'Consumer Tips', desc:'Master price alerts to never overpay again.'}
+    ];
+    articles.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+    var perPage = 16, page = 1, totalPages = Math.ceil(articles.length/perPage);
+    function renderPage(p) {
+      var start = (p-1)*perPage, end = Math.min(start+perPage, articles.length);
+      var items = articles.slice(start, end);
+      var grid = document.getElementById('blogGrid');
+      grid.innerHTML = items.map(function(a){return '<a class="blog-card" href="/blog/'+a.file+'"><h2>'+a.title+'</h2><div class="meta">'+a.date+' · '+a.tag+'</div><p>'+a.desc+'</p></a>';}).join('');
+      var bar = document.getElementById('paginationBar');
+      if (totalPages <= 1) { bar.innerHTML = ''; return; }
+      bar.innerHTML = (p>1?'<a class="page-btn" href="#" onclick="renderPage('+(p-1)+');return false;">← Prev</a>':'<span class="page-btn disabled">← Prev</span>') +
+        '<span class="page-info">Page '+p+' of '+totalPages+'</span>' +
+        (p<totalPages?'<a class="page-btn" href="#" onclick="renderPage('+(p+1)+');return false;">Next →</a>':'<span class="page-btn disabled">Next →</span>');
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    renderPage(1);
+  </script>
+  <script src="https://www.anrdoezrs.net/am/101761591/include/allCj/sid/snapprice/impressions/page/am.js"></script>
 </body>
 </html>
-
