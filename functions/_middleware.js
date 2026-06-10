@@ -7,6 +7,14 @@ export async function onRequest(context) {
   const response = await context.next();
   const headers = new Headers(response.headers);
 
+  // ---- 安全头 ----
+  // HSTS: 强制HTTPS，1年生效，包含子域名
+  headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  // 防点击劫持
+  headers.set('X-Frame-Options', 'DENY');
+  // 权限策略：限制API权限
+  headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), interest-cohort=()');
+
   // ---- CORS ----
   headers.set('Access-Control-Allow-Origin', '*');
   headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
