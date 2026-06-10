@@ -143,8 +143,18 @@ const STORE_TRANSLATIONS = {
   'Macy\'s': { zh: '梅西百货', es: 'Macy\'s', fr: 'Macy\'s', de: 'Macy\'s', ja: 'メイシーズ', ko: '메이시스' },
 };
 
-/** 商家名始终显示英文 */
+/** 获取当前浏览器语言对应的商家名（支持前缀匹配，如 Walmart - XXX → 沃尔玛） */
 function tStore(englishName) {
+  const lang = (navigator.language || 'en').split('-')[0];
+  if (lang === 'en') return englishName;
+  const exact = STORE_TRANSLATIONS[englishName];
+  if (exact && exact[lang]) return exact[lang];
+  for (const [key, trans] of Object.entries(STORE_TRANSLATIONS)) {
+    if (englishName.startsWith(key) && trans[lang]) {
+      const suffix = englishName.slice(key.length).trim();
+      return suffix ? `${trans[lang]} - ${suffix}` : trans[lang];
+    }
+  }
   return englishName;
 }
 
@@ -2264,10 +2274,12 @@ function updateStoreFilter(stores) {
   const dd = document.getElementById('storeFilterDropdown');
   const sel = document.getElementById('storeFilter');
   if (!dd || !sel) return;
-  // 提取所有不重复商家名
+  // 提取所有不重复商家名，优先商家排最前面
   const storeSet = new Set();
   stores.forEach(s => { if (s.store) storeSet.add(s.store); });
-  const storeList = [...storeSet].sort();
+  const priority = PRIORITY_STORES.filter(p => [...storeSet].some(s => s.startsWith(p)));
+  const otherStores = [...storeSet].filter(s => !priority.some(p => s.startsWith(p))).sort();
+  const storeList = [...priority, ...otherStores];
   // 更新隐藏 select（让 applySort 能正常用）
   sel.innerHTML = '<option value="all">All Stores</option>';
   storeList.forEach(s => { sel.innerHTML += `<option value="${s}">${s}</option>`; });
@@ -2337,7 +2349,7 @@ function renderPage(page) {
     return `
       <div class="popular-card" style="padding:10px">
         <img class="popular-card-img" src="${proxyImg(currentProduct.image)}" alt="${currentProduct.name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
-        <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">${tStore(s.store)}</div>
+        <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">${s.store}</div>
         <div class="popular-card-name" style="font-size:13px;-webkit-line-clamp:2;line-height:1.3;margin-bottom:4px">${currentProduct.name}</div>
         <div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:6px">$${s.price.toFixed(2)} ${isBest ? '<span style="font-size:11px;color:#16a34a;font-weight:600">Best</span>' : ''}</div>
         <div style="display:flex;gap:4px;margin-top:4px">
