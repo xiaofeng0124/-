@@ -118,6 +118,40 @@ function getStoreUrl(store, productName, price) {
   }
 }
 
+// ======== 优先展示的商家（搜索结果中排在前面） ========
+const PRIORITY_STORES = ['Amazon','Walmart','Target','Best Buy','eBay','Bed Bath & Beyond','Wayfair','Williams-Sonoma','Bloomingdale\'s','Menards'];
+
+// ======== 商家名称多语言翻译 ========
+const STORE_TRANSLATIONS = {
+  'Amazon': { zh: '亚马逊', es: 'Amazon', fr: 'Amazon', de: 'Amazon', ja: 'アマゾン', ko: '아마존' },
+  'Walmart': { zh: '沃尔玛', es: 'Walmart', fr: 'Walmart', de: 'Walmart', ja: 'ウォルマート', ko: '월마트' },
+  'Target': { zh: '塔吉特', es: 'Target', fr: 'Target', de: 'Target', ja: 'ターゲット', ko: '타겟' },
+  'Best Buy': { zh: '百思买', es: 'Best Buy', fr: 'Best Buy', de: 'Best Buy', ja: 'ベストバイ', ko: '베스트바이' },
+  'eBay': { zh: '易贝', es: 'eBay', fr: 'eBay', de: 'eBay', ja: 'イーベイ', ko: '이베이' },
+  'Bed Bath & Beyond': { zh: 'Bed Bath & Beyond', es: 'Bed Bath & Beyond', fr: 'Bed Bath & Beyond', de: 'Bed Bath & Beyond', ja: 'ベッド・バス・アンド・ビヨンド', ko: '베드 배스 앤 비욘드' },
+  'Wayfair': { zh: 'Wayfair', es: 'Wayfair', fr: 'Wayfair', de: 'Wayfair', ja: 'ウェイフェア', ko: '웨이페어' },
+  'Williams-Sonoma': { zh: 'Williams-Sonoma', es: 'Williams-Sonoma', fr: 'Williams-Sonoma', de: 'Williams-Sonoma', ja: 'ウィリアムズ・ソノマ', ko: '윌리엄스 소노마' },
+  'Bloomingdale\'s': { zh: '布鲁明戴尔', es: 'Bloomingdale\'s', fr: 'Bloomingdale\'s', de: 'Bloomingdale\'s', ja: 'ブルーミングデールズ', ko: '블루밍데일즈' },
+  'Menards': { zh: 'Menards', es: 'Menards', fr: 'Menards', de: 'Menards', ja: 'メナーズ', ko: '메나즈' },
+  'Costco': { zh: '好市多', es: 'Costco', fr: 'Costco', de: 'Costco', ja: 'コストコ', ko: '코스트코' },
+  'Home Depot': { zh: '家得宝', es: 'Home Depot', fr: 'Home Depot', de: 'Home Depot', ja: 'ホームデポ', ko: '홈디포' },
+  'Apple': { zh: '苹果', es: 'Apple', fr: 'Apple', de: 'Apple', ja: 'アップル', ko: '애플' },
+  'Nike': { zh: '耐克', es: 'Nike', fr: 'Nike', de: 'Nike', ja: 'ナイキ', ko: '나이키' },
+  'Walgreens': { zh: '沃尔格林', es: 'Walgreens', fr: 'Walgreens', de: 'Walgreens', ja: 'ウォルグリーン', ko: '월그린' },
+  'Kohl\'s': { zh: '科尔士', es: 'Kohl\'s', fr: 'Kohl\'s', de: 'Kohl\'s', ja: 'コールズ', ko: '콜스' },
+  'Sears': { zh: '西尔斯', es: 'Sears', fr: 'Sears', de: 'Sears', ja: 'シアーズ', ko: '시어스' },
+  'Macy\'s': { zh: '梅西百货', es: 'Macy\'s', fr: 'Macy\'s', de: 'Macy\'s', ja: 'メイシーズ', ko: '메이시스' },
+};
+
+/** 获取当前浏览器语言对应的商家名 */
+function tStore(englishName) {
+  const lang = (navigator.language || 'en').split('-')[0];
+  if (lang === 'en') return englishName;
+  const translations = STORE_TRANSLATIONS[englishName];
+  if (translations && translations[lang]) return translations[lang];
+  return englishName;
+}
+
 // ======== Multi-language Keywords ========
 const LANG_KEYWORDS = {
   'airpods pro': ['airpods pro', 'airpods', '苹果耳机', '无线耳机', '降噪耳机', 'аирподс', '에어팟', 'エアポッズ'],
@@ -2241,9 +2275,9 @@ function updateStoreFilter(stores) {
   // 更新隐藏 select（让 applySort 能正常用）
   sel.innerHTML = '<option value="all">All Stores</option>';
   storeList.forEach(s => { sel.innerHTML += `<option value="${s}">${s}</option>`; });
-  // 更新自定义下拉
+  // 更新自定义下拉（显示翻译名，data-value 保持英文原值用于筛选）
   let html = '<button class="store-filter-opt all-opt active" data-value="">All Stores</button>';
-  storeList.forEach(s => { html += `<button class="store-filter-opt" data-value="${s}">${s}</button>`; });
+  storeList.forEach(s => { html += `<button class="store-filter-opt" data-value="${s}">${tStore(s)}</button>`; });
   dd.innerHTML = html;
   document.getElementById('storeFilterBtn').textContent = 'All Stores ▾';
 }
@@ -2262,7 +2296,15 @@ function renderSortedStores(stores, sortBy) {
   const grid = document.getElementById('priceGrid');
   if (!grid) return;
   switch (sortBy) {
-    case 'featured': stores.sort((a,b) => a.price - b.price); break;
+    case 'featured':
+      // 优先商家排前面，同组内按价格排序
+      stores.sort((a, b) => {
+        const aPrio = PRIORITY_STORES.includes(a.store) ? 0 : 1;
+        const bPrio = PRIORITY_STORES.includes(b.store) ? 0 : 1;
+        if (aPrio !== bPrio) return aPrio - bPrio;
+        return a.price - b.price;
+      });
+      break;
     case 'price': stores.sort((a,b) => a.price - b.price); break;
     case 'price-desc': stores.sort((a,b) => b.price - a.price); break;
     case 'rating': stores.sort((a,b) => b.rating - a.rating); break;
@@ -2299,7 +2341,7 @@ function renderPage(page) {
     return `
       <div class="popular-card" style="padding:10px">
         <img class="popular-card-img" src="${proxyImg(currentProduct.image)}" alt="${currentProduct.name}" loading="lazy" onerror="this.parentElement.classList.add('img-failed')">
-        <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">${s.store}</div>
+        <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">${tStore(s.store)}</div>
         <div class="popular-card-name" style="font-size:13px;-webkit-line-clamp:2;line-height:1.3;margin-bottom:4px">${currentProduct.name}</div>
         <div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:6px">$${s.price.toFixed(2)} ${isBest ? '<span style="font-size:11px;color:#16a34a;font-weight:600">Best</span>' : ''}</div>
         <div style="display:flex;gap:4px;margin-top:4px">
