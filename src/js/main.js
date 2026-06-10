@@ -113,8 +113,18 @@ function getStoreUrl(store, productName, price) {
       return `https://www.bestbuy.com/site/searchpage.jsp?st=${q}`;
     case 'Target':
       return `https://www.target.com/s?searchTerm=${q}`;
+    case 'Home Depot':
+      return `https://www.homedepot.com/s/${q}`;
+    case 'Costco':
+      return `https://www.costco.com/CatalogSearch?keyword=${q}`;
+    case 'Kohl\'s':
+      return `https://www.kohls.com/search.jsp?search=${q}`;
+    case 'Macy\'s':
+      return `https://www.macys.com/shop/featured/${q}`;
+    case 'Wayfair':
+      return `https://www.wayfair.com/keyword.php?keyword=${q}`;
     default:
-      return `https://www.amazon.com/s?k=${q}&tag=snapprice04-20`;
+      return `https://www.google.com/search?tbm=shop&q=${q}`;
   }
 }
 
