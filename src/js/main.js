@@ -119,7 +119,7 @@ function getStoreUrl(store, productName, price) {
 }
 
 // ======== 优先展示的商家（搜索结果中排在前面） ========
-const PRIORITY_STORES = ['Amazon','Walmart','Target','Best Buy','eBay','Bed Bath & Beyond','Wayfair','Williams-Sonoma','Bloomingdale\'s','Menards'];
+const PRIORITY_STORES = ['Amazon','Walmart','Target','Best Buy','eBay'];
 
 // ======== 商家名称多语言翻译 ========
 const STORE_TRANSLATIONS = {
@@ -2299,8 +2299,8 @@ function renderSortedStores(stores, sortBy) {
     case 'featured':
       // 优先商家排前面，同组内按价格排序
       stores.sort((a, b) => {
-        const aPrio = PRIORITY_STORES.some(p => a.store.startsWith(p)) ? 0 : 1;
-        const bPrio = PRIORITY_STORES.some(p => b.store.startsWith(p)) ? 0 : 1;
+        const aPrio = PRIORITY_STORES.some(p => a.store.startsWith(p)) ? 1 : 0;
+        const bPrio = PRIORITY_STORES.some(p => b.store.startsWith(p)) ? 1 : 0;
         if (aPrio !== bPrio) return aPrio - bPrio;
         return a.price - b.price;
       });
