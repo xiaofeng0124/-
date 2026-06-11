@@ -180,7 +180,7 @@ const LANG_KEYWORDS = {
   'google pixel': ['google pixel', 'pixel 8', '谷歌手机', 'пиксель', '구글 픽셀', 'グーグルピクセル']
 };
 
-// ======== Popular Products Pool (60 items, refresh picks 40) ========
+// ======== Popular Products Pool (83 items, refresh picks 20) ========
 const POPULAR_POOL = [
   { name: 'Apple iPhone 16 Pro Max', price: 299 },
   { name: 'Samsung Galaxy S25 Ultra', price: 299 },
@@ -1489,7 +1489,7 @@ function shuffleArray(arr) {
 }
 
 function pickPopularBatch() {
-  currentPopular = shuffleArray(POPULAR_POOL).slice(0, 40);
+  currentPopular = shuffleArray(POPULAR_POOL).slice(0, 20);
 }
 
 function getLocalPriceCache() {
