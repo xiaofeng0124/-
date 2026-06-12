@@ -6,42 +6,37 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 
-# API 路由不缓存
+# API 不缓存
 /api/*
   Cache-Control: no-store, must-revalidate
 
-# HTML 页面缓存 10 分钟
-/*.html
-  Cache-Control: public, max-age=600, s-maxage=600
-
+# 首页缓存 10 分钟
 /
   Cache-Control: public, max-age=600, s-maxage=600
 
 # 静态资源长期缓存
-*.js
-  Cache-Control: public, max-age=31536000, immutable
-  Access-Control-Allow-Origin: *
-
-*.css
+/src/*.css
   Cache-Control: public, max-age=31536000, immutable
 
-*.png
-  Cache-Control: public, max-age=31536000, immutable
-  Access-Control-Allow-Origin: *
-
-*.jpg
+/src/*.js
   Cache-Control: public, max-age=31536000, immutable
 
-*.jpeg
+/src/*.png
   Cache-Control: public, max-age=31536000, immutable
 
-*.webp
+/src/*.jpg
   Cache-Control: public, max-age=31536000, immutable
 
-*.svg
+/src/*.jpeg
   Cache-Control: public, max-age=31536000, immutable
 
-*.ico
+/src/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+
+/src/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+/src/*.ico
   Cache-Control: public, max-age=31536000, immutable
 
 *.woff2
