@@ -1,0 +1,23 @@
+# 静态资源缓存
+/src/*.js
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+/src/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/src/*.png
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+/src/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/src/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+/src/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+/src/*.webp
+  Cache-Control: public, max-age=31536000, immutable
