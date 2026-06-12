@@ -1,23 +1,48 @@
-# 静态资源缓存
-/src/*.js
+# 安全头（所有页面）
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# API 路由不缓存
+/api/*
+  Cache-Control: no-store, must-revalidate
+
+# HTML 页面缓存 10 分钟
+/*.html
+  Cache-Control: public, max-age=600, s-maxage=600
+
+/
+  Cache-Control: public, max-age=600, s-maxage=600
+
+# 静态资源长期缓存
+*.js
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
 
-/src/*.css
+*.css
   Cache-Control: public, max-age=31536000, immutable
 
-/src/*.png
+*.png
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
 
-/src/*.jpg
+*.jpg
   Cache-Control: public, max-age=31536000, immutable
 
-/src/*.svg
+*.jpeg
   Cache-Control: public, max-age=31536000, immutable
 
-/src/*.ico
+*.webp
   Cache-Control: public, max-age=31536000, immutable
 
-/src/*.webp
+*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+*.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+*.woff2
   Cache-Control: public, max-age=31536000, immutable
