@@ -2119,9 +2119,9 @@ async function searchViaAPI(query, onProgress) {
 
   try {
     // 三个请求同时发起
-    const serpP = fetch(`/api/search?q=${encodeURIComponent(query)}`).catch(() => null);
-    const ebayP = fetch(`/api/ebay?q=${encodeURIComponent(query)}`).catch(() => null);
-    const amazonP = fetch(`/api/amazon?q=${encodeURIComponent(query)}`).catch(() => null);
+    const serpP = fetch(`/api/search?q=${encodeURIComponent(query)}`, { cache: 'no-cache' }).catch(() => null);
+    const ebayP = fetch(`/api/ebay?q=${encodeURIComponent(query)}`, { cache: 'no-cache' }).catch(() => null);
+    const amazonP = fetch(`/api/amazon?q=${encodeURIComponent(query)}`, { cache: 'no-cache' }).catch(() => null);
 
     let allStores = [];
     let productName = query.charAt(0).toUpperCase() + query.slice(1);
