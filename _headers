@@ -6,10 +6,6 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 
-# API 不缓存
-/api/*
-  Cache-Control: no-store, must-revalidate
-
 # 首页缓存 10 分钟
 /
   Cache-Control: public, max-age=600, s-maxage=600

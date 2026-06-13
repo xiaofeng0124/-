@@ -3,8 +3,11 @@ export async function onRequest(context) {
   const response = await context.next();
   const headers = new Headers(response.headers);
 
-  // 覆盖所有 API 响应为不缓存
+  // 清空所有缓存相关头，然后设置为不缓存
+  headers.delete('Cf-Cache-Status');
   headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+  headers.set('Pragma', 'no-cache');
+  headers.set('Expires', '0');
 
   return new Response(response.body, {
     status: response.status,
