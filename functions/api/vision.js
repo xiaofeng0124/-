@@ -1,3 +1,4 @@
+// 图片识别: Groq (Llama 4 Scout) — 免费 API，无需绑定支付
 export async function onRequest(context) {
   const { request, env } = context;
 
@@ -17,41 +18,46 @@ export async function onRequest(context) {
     return new Response(JSON.stringify({ error: 'Image required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 
-  // Get API key
-  const apiKey = env.GEMINI_KEY || (await env.USERS.get('config:gemini_key'));
+  // Get Groq API key: 环境变量 -> KV 备用
+  const apiKey = env.GROQ_KEY || (await env.USERS.get('config:groq_key'));
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'Vision API not configured' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ ok: false, productName: '', error: 'Vision API not configured' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
   }
 
-  // Parse image data
-  const base64Data = image.includes('base64,') ? image.split('base64,')[1] : image;
-  const mimeType = image.includes('data:') ? image.split(';')[0].split(':')[1] : 'image/jpeg';
+  // 确保图片是 base64 data URL 格式
+  const imageUrl = image.startsWith('data:') ? image : `data:image/jpeg;base64,${image}`;
 
   try {
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey, {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        contents: [{
-          parts: [
-            { text: 'What product is in this image? Reply with ONLY the product name. Nothing else. If unsure, reply "unknown".' },
-            { inline_data: { mime_type: mimeType, data: base64Data } }
+        model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'text', text: 'What product is in this image? Reply with ONLY the product name (1-5 words). If unsure, reply "unknown".' },
+            { type: 'image_url', image_url: { url: imageUrl } }
           ]
-        }]
+        }],
+        max_tokens: 50,
       }),
     });
 
     if (!response.ok) {
-      return new Response(JSON.stringify({ ok: false, productName: '', error: 'API error: ' + response.status }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      const errText = await response.text();
+      return new Response(JSON.stringify({ ok: false, productName: '', error: 'API error: ' + response.status + ' ' + errText }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
 
     const data = await response.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const clean = text.trim();
+    const text = data?.choices?.[0]?.message?.content?.trim() || '';
 
     return new Response(JSON.stringify({
-      ok: clean.toLowerCase() !== 'unknown' && clean.length > 0,
-      productName: clean.toLowerCase() === 'unknown' ? '' : clean
+      ok: text.toLowerCase() !== 'unknown' && text.length > 0,
+      productName: text.toLowerCase() === 'unknown' ? '' : text
     }), { status: 200, headers: { 'Content-Type': 'application/json' } });
 
   } catch (e) {

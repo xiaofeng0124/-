@@ -28,13 +28,12 @@
 </head>
 <body>
   <header>
-    <div class="header-inner" style="display:flex;align-items:center;justify-content:space-between">
+    <div class="header-inner">
       <a href="/" class="logo">
         <img src="/src/logo.png" alt="SnappRice" style="width:56px;height:56px;border-radius:12px">
         <span style="font-size:34px;font-weight:800;color:var(--dark);margin-left:8px">Snap</span>
         <span style="font-size:34px;font-weight:800;color:#16a34a">Price</span>
       </a>
-      <a href="/" style="font-size:14px;color:#16a34a;font-weight:600;text-decoration:none;white-space:nowrap">← Home</a>
     </div>
   </header>
   <main>
@@ -43,6 +42,11 @@
       <p class="subtitle">Shopping tips, price comparison guides, and smart savings strategies.</p>
       <div class="blog-grid" id="blogGrid"></div>
       <div class="pagination-bar" id="paginationBar"></div>
+      <hr style="margin-top:40px;border:none;border-top:1px solid var(--gray-200)">
+      <p style="font-size:13px;color:#94a3b8;text-align:center">SnappRice — Search, compare, save — it's that simple.</p>
+      <div style="text-align:center">
+        <a href="/" style="display:inline-block;padding:10px 24px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">← Back to Search</a>
+      </div>
     </div>
   </main>
   <button class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
@@ -51,6 +55,7 @@
   </script>
   <script>
     var articles = [
+      {file:'summer-bbq-grills-outdoor-cooking-2026.html', title:'Best BBQ Grills & Outdoor Cooking Gear for Summer 2026: Price Comparison Guide', date:'June 15, 2026', tag:'Shopping Guide', desc:'Compare prices on the best BBQ grills, smokers, griddles, and outdoor cooking gear for summer family cookouts. Save on Weber, Traeger, Blackstone and more.'},
       {file:"summer-dresses-swimsuits-2026.html", title:"Best Summer Dresses & Swimsuits 2026: Find the Best Prices", date:"June 12, 2026", tag:"Shopping Guide", desc:"Compare prices on trending summer dresses, bikinis, and swimsuits across Amazon, Walmart, Target, and eBay."},
       {file:'airpods-pro-3-price-comparison.html', title:'AirPods Pro 3 Price Comparison: Where to Buy in 2026', date:'June 11, 2026', tag:'Price Comparison', desc:'Compare AirPods Pro 3 prices across Amazon, Walmart, Best Buy, Target, and eBay to find the best deal.'},
       {file:'macbook-air-m4-deals.html', title:'MacBook Air M4: Best Deals and Price Comparison 2026', date:'June 11, 2026', tag:'Price Comparison', desc:'Find the best price on the MacBook Air M4 across Amazon, Walmart, Best Buy, and more.'},
@@ -64,7 +69,7 @@
       {file:'price-alert-strategies.html', title:'Smart Strategies for Price Alerts in 2026', date:'June 7, 2026', tag:'Consumer Tips', desc:'Master price alerts to never overpay again.'}
     ];
     articles.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
-    var perPage = 16, page = 1, totalPages = Math.ceil(articles.length/perPage);
+    var perPage = 10, page = 1, totalPages = Math.ceil(articles.length/perPage);
     function renderPage(p) {
       var start = (p-1)*perPage, end = Math.min(start+perPage, articles.length);
       var items = articles.slice(start, end);
