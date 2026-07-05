@@ -158,6 +158,63 @@ git push origin master
 
 6. **搜索匹配**: `findProduct()` 支持中英文多语言关键字匹配（`LANG_KEYWORDS` 字典）。
 
+## 博客/文章写作规范
+
+### 内容方向（四选一）
+1. **季节性购物指南** — 节假日促销、季节性商品推荐（如 "4th of July Sales 2026"）
+2. **产品比价** — 热门单品多平台价格对比（如 "iPhone 17 Price Comparison"）
+3. **平台对比** — 零售商深度对比（如 "Amazon vs Walmart 2026"）
+4. **省钱技巧** — 购物策略、价格提醒、识别虚假折扣
+
+### 基本要求
+- **字数**: 500-800 词（英文）
+- **语言**: 英语，面向美国消费者
+- **目标**: SEO 拿流量，引导用户使用 snapprice.co 比价
+
+### 文章结构模板
+```
+标题: [吸引眼球，带年份/数字/关键词]
+日期: "June 22, 2026"
+标签: "Shopping Guide" / "Price Comparison" / "Consumer Tips" / "Comparison"
+摘要: [1-2句话 SEO 摘要]
+
+开头段 → 点明痛点/需求，引出 snapprice.co 链接
+
+## 二级标题（分析/建议）
+内容...
+[highlight-box] 关键数据或提示
+
+### 结尾
+总结 + 引导使用 snapprice.co 比价
+```
+
+### 链接规则
+- 文中嵌入 `snapprice.co` 链接
+- Amazon 链接带 Associates tag: `tag=snapprice04-20`
+- highlight-box 内放核心推荐
+- 价格信息用 `.sale-table` 表格展示
+
+### 数据字段（blog/index.html articles 数组）
+```javascript
+{
+  file: '文章文件名.html',
+  title: '文章标题',
+  date: 'June 28, 2026',
+  tag: 'Shopping Guide',  // Shopping Guide / Price Comparison / Consumer Tips / Comparison
+  desc: 'SEO 摘要'
+}
+```
+
+### 发布流程
+```bash
+# 1. 在 blog/ 目录创建新 HTML 文件（套用现有页面模板）
+# 2. 在 blog/index.html 的 articles 数组添加条目
+# 3. 推送到 GitHub 自动部署
+git add .
+git commit -m "Add [文章名]"
+git push origin master
+```
+
 7. **环境变量**: 
    - `SEARCH_ENGINE` — 搜索引擎（当前使用 `serper`，可选 `serpapi` / `valueserp`）
    - `SERPAPI_KEY` — SerpAPI 密钥（`SEARCH_ENGINE=serpapi` 时必填）
